@@ -1,7 +1,7 @@
 import express from "express"
 import { TOKENS } from "./di"
 import { container } from "tsyringe"
-import { AxiosModule } from "./modules/request/axios"
+import { AxiosModule } from "@modules/request/axios"
 
 const app = express()
 

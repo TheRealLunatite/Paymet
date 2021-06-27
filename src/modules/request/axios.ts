@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosRequestConfig , Method , ResponseType } from "axios"
 import { RequestModule, RequestOptions, RequestResponse } from "./types"
 import { inject, injectable } from "tsyringe"
-import { TOKENS } from "../../di"
+import { TOKENS } from "src/di"
 
 @injectable()
 export class AxiosModule implements RequestModule {
