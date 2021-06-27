@@ -20,7 +20,7 @@ container.register(TOKENS.values.axiosInstance , {
 
 // MODULES
 
-import { AxiosModule } from "./modules/request/axios"
+import { AxiosModule } from "@modules/request/axios"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule

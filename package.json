@@ -6,7 +6,7 @@
   "author": "Luna <bedgowns@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "cd src && ts-node index"
+    "dev": "ts-node -r tsconfig-paths/register src/index.ts"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -16,6 +16,8 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.12",
-    "jest": "^27.0.5"
+    "jest": "^27.0.5",
+    "module-alias": "^2.2.2",
+    "tsconfig-paths": "^3.9.0"
   }
 }

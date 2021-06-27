@@ -1,5 +1,3 @@
-import { ResponseType , Method } from "axios";
-
 export interface RequestModule {
     request(options : RequestOptions) : Promise<RequestResponse>
 }
