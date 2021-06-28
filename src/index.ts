@@ -1,15 +1,15 @@
-import express from "express"
+import { application } from "express"
 import { TOKENS } from "./di"
 import { container } from "tsyringe"
 import { AxiosModule } from "@modules/request/axios"
+import { RobloxExpressComponent } from "@components/roblox/express"
 
-const app = express()
+const app = container.resolve<typeof application>(TOKENS.values.expressApp)
 
-const RequestModule = container.resolve<AxiosModule>(TOKENS.modules.request);
+const component = container.resolve<RobloxExpressComponent>(TOKENS.components.roblox.component)
 
-app.get('/' , async (req , res) => {
-    const { status , data } = await RequestModule.request({ url : "https://roblox.com" , method : "GET"})
-    return res.status(status).send(data)
-})
+component.execute()
 
-app.listen(3000 , () => console.log('Live'))
+const RequestModule = container.resolve<AxiosModule>(TOKENS.modules.request)
+
+app.listen(3000 , () => console.log('Live on PORT 3000'))
