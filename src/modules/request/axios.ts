@@ -7,14 +7,9 @@ import { TOKENS } from "src/di"
 export class AxiosModule implements RequestModule {
     constructor(@inject(TOKENS.values.axiosInstance) private _instance : AxiosInstance) {}
 
-    public async request(options: RequestOptions): Promise<RequestResponse> {
-        const { status , data , headers } = await this._instance.request(this.convertReqOptsToAxiosOpts(options))
-
-        return Promise.resolve({
-            status,
-            data,
-            headers
-        })
+    public async request<T>(options: RequestOptions): Promise<RequestResponse<T>> {
+        const responseSchema : RequestResponse<T> = await this._instance.request(this.convertReqOptsToAxiosOpts(options))
+        return Promise.resolve(responseSchema)
     }
 
     private convertReqOptsToAxiosOpts(options : RequestOptions) : AxiosRequestConfig {

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { IExpressRoute } from "src/common/IExpressRoute";
+import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 
 export class CreatePlaceRoute implements IExpressRoute {
     constructor() {}

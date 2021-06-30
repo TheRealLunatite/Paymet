@@ -1,5 +1,5 @@
 export interface RequestModule {
-    request(options : RequestOptions) : Promise<RequestResponse>
+    request<T>(options : RequestOptions) : Promise<RequestResponse<T>>
 }
 
 export type RequestOptions = {
@@ -19,11 +19,9 @@ export type RequestOptions = {
     }
 }
 
-export type RequestResponse = {
+export type RequestResponse<T> = {
     status : number,
-    data : {
-        [name : string] : unknown
-    },
+    data : T,
     headers : {
         [name : string] : string
     }

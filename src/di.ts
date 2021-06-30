@@ -15,7 +15,8 @@ export const TOKENS = {
         }
     },
     modules : {
-        request : Symbol()
+        request : Symbol(),
+        roblox : Symbol()
     }
 }
 
@@ -58,4 +59,10 @@ import { AxiosModule } from "@modules/request/axios"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
+})
+
+import { RobloxModule } from "@modules/roblox"
+
+container.register<RobloxModule>(TOKENS.modules.roblox , {
+    useClass : RobloxModule
 })
