@@ -18,4 +18,9 @@ component.execute()
 const RequestModule = container.resolve<AxiosModule>(TOKENS.modules.request)
 const Reblex = container.resolve<RobloxModule>(TOKENS.modules.roblox)
 
+async function test() {
+}
+
+test()
+
 app.listen(3000 , () => console.log('Live on PORT 3000'))
