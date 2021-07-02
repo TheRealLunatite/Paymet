@@ -28,11 +28,11 @@ import express from "express"
 container.register(TOKENS.values.axiosInstance , {
     useValue : axios.create({
         // Proxy to Fiddler to log Axios requests.
-        // proxy : {
-        //     protocol : "http",
-        //     host : "127.0.0.1",
-        //     port : 8866
-        // }
+        proxy : {
+            protocol : "http",
+            host : "127.0.0.1",
+            port : 8866
+        }
     })
 })
 

@@ -14,3 +14,8 @@ export type NewUniverseInfo = {
     UniverseId : number,
     RootPlaceId : number
 }
+
+export type ConfigureUniverseOpts = {
+    name? : string,
+    description? : string,
+}

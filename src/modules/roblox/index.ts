@@ -1,9 +1,10 @@
-import { NewUniverseInfo, IRobloxModule, RobloxUserSettings } from "./types";
+import { NewUniverseInfo, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts } from "./types";
 import { TOKENS } from "src/di";
 import { injectable , inject } from "tsyringe";
 import { RequestModule, RequestOptions, RequestResponse } from "@modules/request/types";
 import { Cookie } from "@common/cookie";
 import { RobloxStudioFile } from "@common/robloxStudioFile";
+import { Id } from "@common/id";
 
 @injectable()
 export class RobloxModule implements IRobloxModule {
@@ -41,16 +42,16 @@ export class RobloxModule implements IRobloxModule {
     }
 
     public async getUserSettings(cookie : Cookie) : Promise<RobloxUserSettings> {
-        const getUserSettingsResponse = await this.requestWithCookie<RobloxUserSettings>(cookie , { 
+        const { data } = await this.requestWithCookie<RobloxUserSettings>(cookie , { 
             url : "https://www.roblox.com/my/settings/json",
             method : "GET"
         })
 
-        return Promise.resolve(getUserSettingsResponse.data)
+        return Promise.resolve(data)
     }
-    
+
     public async createUniverse(cookie : Cookie , templateId : number) : Promise<NewUniverseInfo> {
-        const createPlaceResponse = await this.requestWithCookieAndToken<NewUniverseInfo>(cookie , {
+        const { data } = await this.requestWithCookieAndToken<NewUniverseInfo>(cookie , {
             url : "https://api.roblox.com/universes/create",
             method : "POST",
             body : {
@@ -58,10 +59,10 @@ export class RobloxModule implements IRobloxModule {
             }
         })
 
-        return Promise.resolve(createPlaceResponse.data)
+        return Promise.resolve(data)
     }
 
-    public async overwriteUniverse(cookie : Cookie , file : RobloxStudioFile , rootPlaceId : number) : Promise<boolean> {
+    public async overwriteUniverse(cookie : Cookie , file : RobloxStudioFile , rootPlaceId : Id) : Promise<boolean> {
         const overwriteUniverseResponse = await this.requestWithCookieAndToken<number>(cookie , {
             url : `https://data.roblox.com/Data/Upload.ashx?assetid=${rootPlaceId}&issavedversiononly=false`,
             body : file.readFileStream(),
@@ -69,7 +70,18 @@ export class RobloxModule implements IRobloxModule {
         })
 
         // The following ROBLOX endpoint returns the given rootPlaceId if successful.
-        return Promise.resolve(overwriteUniverseResponse.data === rootPlaceId)
+        return Promise.resolve(rootPlaceId.equal(new Id(overwriteUniverseResponse.data)))
+    }
+
+    public async configureUniverse(cookie : Cookie , placeId : Id , opts : ConfigureUniverseOpts) {
+        // don't wanna write the types for the response XD
+        await this.requestWithCookieAndToken<unknown>(cookie , {
+            url : `https://develop.roblox.com/v1/places/${placeId.value}`,
+            method : "PATCH",
+            body : opts
+        })
+
+        return Promise.resolve(true)
     }
 
     public async getXsrfToken(cookie : Cookie) : Promise<string | null> {
