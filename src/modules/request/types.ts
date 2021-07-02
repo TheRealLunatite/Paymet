@@ -1,5 +1,7 @@
+import fs from "fs"
+
 export interface RequestModule {
-    request(options : RequestOptions) : Promise<RequestResponse>
+    request<T>(options : RequestOptions) : Promise<RequestResponse<T>>
 }
 
 export type RequestOptions = {
@@ -10,20 +12,18 @@ export type RequestOptions = {
     responseType? : string,
     params? : {
         [name : string] : string,
-    },
+    } | URLSearchParams ,
     body? : {
         [name : string] : unknown
-    },
+    } | string | Buffer | fs.ReadStream, 
     headers? : {
         [name : string] : unknown
     }
 }
 
-export type RequestResponse = {
+export type RequestResponse<T> = {
     status : number,
-    data : {
-        [name : string] : unknown
-    },
+    data : T,
     headers : {
         [name : string] : string
     }

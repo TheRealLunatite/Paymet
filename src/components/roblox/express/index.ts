@@ -1,6 +1,6 @@
 import { application , Router } from "express";
-import { IExecutable } from "src/common/IExecutable";
-import { IExpressRoute } from "src/common/IExpressRoute";
+import { IExecutable } from "@common/interfaces/IExecutable";
+import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 import { TOKENS } from "src/di";
 import { inject, injectable, Lifecycle, scoped } from "tsyringe";
 

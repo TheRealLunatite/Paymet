@@ -15,7 +15,8 @@ export const TOKENS = {
         }
     },
     modules : {
-        request : Symbol()
+        request : Symbol(),
+        roblox : Symbol()
     }
 }
 
@@ -25,7 +26,14 @@ import axios from "axios"
 import express from "express"
 
 container.register(TOKENS.values.axiosInstance , {
-    useValue : axios.create()
+    useValue : axios.create({
+        // Proxy to Fiddler to log Axios requests.
+        proxy : {
+            protocol : "http",
+            host : "127.0.0.1",
+            port : 8866
+        }
+    })
 })
 
 container.register(TOKENS.values.expressApp , {
@@ -58,4 +66,10 @@ import { AxiosModule } from "@modules/request/axios"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
+})
+
+import { RobloxModule } from "@modules/roblox"
+
+container.register<RobloxModule>(TOKENS.modules.roblox , {
+    useClass : RobloxModule
 })
