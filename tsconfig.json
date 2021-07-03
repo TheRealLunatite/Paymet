@@ -10,7 +10,8 @@
       "@modules/*" : ["src/modules/*"],
       "@components/*" : ["src/components/*"],
       "@common/*" : ["src/common/*"],
-      "@static/*" : ["src/static/*"]
+      "@static/*" : ["src/static/*"],
+      "@config/" : ["src/config/"]
     },
     "esModuleInterop": true,
     "experimentalDecorators": true,
