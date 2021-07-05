@@ -17,8 +17,6 @@ component.execute()
 const transactionDB = container.resolve<TransactionDBModule>(TOKENS.modules.transactionDb)
 
 async function test() {
- 
-    console.log(a)
 }
 
 test()
