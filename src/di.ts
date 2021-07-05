@@ -7,7 +7,10 @@ export const TOKENS = {
         axiosInstance : Symbol(),
         expressApp : Symbol(),
         postgresLib : Symbol(),
-        expressRouter : Symbol()
+        uuidLib : Symbol(),
+        expressRouter : Symbol(),
+        appConfig : Symbol(),
+        transactionDbConfig : Symbol()
     },
     components : {
         roblox : {
@@ -18,7 +21,8 @@ export const TOKENS = {
     modules : {
         request : Symbol(),
         roblox : Symbol(),
-        postgres : Symbol()
+        postgres : Symbol(),
+        transactionDb : Symbol()
     }
 }
 
@@ -26,7 +30,9 @@ export const TOKENS = {
 // VALUES
 import axios from "axios"
 import express from "express"
-import * as postgres from "pg"
+import postgres from "pg"
+import uuid from "uuid"
+import appConfig from "@config/"
 
 container.register(TOKENS.values.axiosInstance , {
     useValue : axios.create({
@@ -51,6 +57,18 @@ container.register(TOKENS.values.postgresLib , {
     useValue : postgres
 })
 
+container.register(TOKENS.values.uuidLib , {
+    useValue : uuid
+})
+
+container.register(TOKENS.values.appConfig , {
+    useValue : appConfig
+})
+
+container.register(TOKENS.values.transactionDbConfig , {
+    useValue : appConfig.postgres
+})
+
 // COMPONENTS
 
 import { RobloxExpressComponent } from "@components/roblox/express"
@@ -72,6 +90,7 @@ container.register(TOKENS.components.roblox.routes , {
 import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
 import { PostgresModule } from "@modules/postgres/pg"
+import { TransactionDBModule } from "@modules/transaction"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -83,4 +102,8 @@ container.register<RobloxModule>(TOKENS.modules.roblox , {
 
 container.register<PostgresModule>(TOKENS.modules.postgres , {
     useClass : PostgresModule
+})
+
+container.register<TransactionDBModule>(TOKENS.modules.transactionDb , {
+    useClass : TransactionDBModule
 })
