@@ -8,9 +8,11 @@ export const TOKENS = {
         expressApp : Symbol(),
         postgresLib : Symbol(),
         uuidLib : Symbol(),
+        websocketLib : Symbol(),
+        httpLib : Symbol(),
         expressRouter : Symbol(),
         appConfig : Symbol(),
-        transactionDbConfig : Symbol()
+        transactionDbConfig : Symbol(),
     },
     components : {
         roblox : {
@@ -18,11 +20,15 @@ export const TOKENS = {
             component : Symbol()
         }
     },
+    websocket : {
+        listeners : Symbol()
+    },
     modules : {
         request : Symbol(),
         roblox : Symbol(),
         postgres : Symbol(),
-        transactionDb : Symbol()
+        transactionDb : Symbol(),
+        websocketServer : Symbol()
     }
 }
 
@@ -32,7 +38,9 @@ import axios from "axios"
 import express from "express"
 import postgres from "pg"
 import uuid from "uuid"
+import ws from "ws"
 import appConfig from "@config/"
+import http from "http"
 
 container.register(TOKENS.values.axiosInstance , {
     useValue : axios.create({
@@ -69,12 +77,28 @@ container.register(TOKENS.values.transactionDbConfig , {
     useValue : appConfig.postgres
 })
 
+container.register(TOKENS.values.websocketLib , {
+    useValue : ws
+})
+
+container.register(TOKENS.values.httpLib , {
+    useValue : http
+})
+
 // COMPONENTS
 
 import { RobloxExpressComponent } from "@components/roblox/express"
 
 container.register(TOKENS.components.roblox.component , {
     useClass : RobloxExpressComponent
+})
+
+// WEBSOCKET
+
+import WebsocketListeners from "src/websocket"
+
+container.register(TOKENS.websocket.listeners , {
+    useValue : WebsocketListeners
 })
 
 // ROUTES
@@ -91,6 +115,7 @@ import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
 import { PostgresModule } from "@modules/postgres/pg"
 import { TransactionDBModule } from "@modules/transaction"
+import { WebSocketServerModule } from "./modules/websocketServer"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -106,4 +131,8 @@ container.register<PostgresModule>(TOKENS.modules.postgres , {
 
 container.register<TransactionDBModule>(TOKENS.modules.transactionDb , {
     useClass : TransactionDBModule
+})
+
+container.register<WebSocketServerModule>(TOKENS.modules.websocketServer , {
+    useClass : WebSocketServerModule
 })
