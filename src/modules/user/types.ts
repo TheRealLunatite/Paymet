@@ -3,7 +3,8 @@ import { Password } from "@common/password";
 import { Username } from "@common/username";
 
 export interface IUserDBModule {
-    add(user : User) : Promise<UserDoc>
+    add(user : User) : Promise<UserDoc>,
+    deleteById(id : Id) : Promise<boolean>
 }
 
 export type User = {
