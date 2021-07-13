@@ -37,7 +37,8 @@ export const TOKENS = {
         roblox : Symbol(),
         postgres : Symbol(),
         transactionDb : Symbol(),
-        websocketServer : Symbol()
+        websocketServer : Symbol(),
+        userDb : Symbol()
     }
 }
 
@@ -118,19 +119,6 @@ container.register(TOKENS.values.jwtSecret, {
     useValue : appConfig.jwt.secret
 })
 
-// COMPONENTS
-
-import { RobloxExpressComponent } from "@components/roblox/express"
-import { AuthExpressComponent } from "@components/auth/express"
-
-container.register(TOKENS.components.roblox.component , {
-    useClass : RobloxExpressComponent
-})
-
-container.register(TOKENS.components.auth.component , {
-    useClass : AuthExpressComponent
-})
-
 // WEBSOCKET
 
 import WebsocketListeners from "src/websocket"
@@ -139,26 +127,14 @@ container.register(TOKENS.websocket.listeners , {
     useValue : WebsocketListeners
 })
 
-// ROUTES
-
-import RobloxExpressComponentRoutes from "@components/roblox/express/routes"
-import AuthExpressComponentRoutes from "@components/auth/express/routes"
-
-container.register(TOKENS.components.roblox.routes , {
-    useValue : RobloxExpressComponentRoutes
-})
-
-container.register(TOKENS.components.auth.routes , {
-    useValue : AuthExpressComponentRoutes
-})
-
 // MODULES
 
 import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
 import { PostgresModule } from "@modules/postgres/pg"
 import { TransactionDBModule } from "@modules/transaction"
-import { WebSocketServerModule } from "./modules/websocketServer"
+import { WebSocketServerModule } from "@modules/websocketServer"
+import { UserDBModule } from "@modules/user"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -176,6 +152,36 @@ container.register<TransactionDBModule>(TOKENS.modules.transactionDb , {
     useClass : TransactionDBModule
 })
 
+container.register<UserDBModule>(TOKENS.modules.userDb , {
+    useClass : UserDBModule
+})
+
 container.register<WebSocketServerModule>(TOKENS.modules.websocketServer , {
     useClass : WebSocketServerModule
+})
+
+// ROUTES
+
+import RobloxExpressComponentRoutes from "@components/roblox/express/routes"
+import AuthExpressComponentRoutes from "@components/auth/express/routes"
+
+container.register(TOKENS.components.roblox.routes , {
+    useValue : RobloxExpressComponentRoutes
+})
+
+container.register(TOKENS.components.auth.routes , {
+    useValue : AuthExpressComponentRoutes
+})
+
+// COMPONENTS
+
+import { RobloxExpressComponent } from "@components/roblox/express"
+import { AuthExpressComponent } from "@components/auth/express"
+
+container.register(TOKENS.components.roblox.component , {
+    useClass : RobloxExpressComponent
+})
+
+container.register(TOKENS.components.auth.component , {
+    useClass : AuthExpressComponent
 })

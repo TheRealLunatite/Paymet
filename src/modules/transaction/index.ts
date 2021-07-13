@@ -2,7 +2,7 @@ import { PostgresModule } from "@modules/postgres/pg";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
 import { ITransactionModule, Transaction, TransactionDoc, TransactionOptional } from "./types";
-import { Client, ConnectionConfig, Query, QueryConfig } from "pg"
+import { Client, ConnectionConfig , QueryConfig } from "pg"
 import { Uuid } from "@common/uuid";
 import { Username } from "@common/username";
 import { DiscordId } from "@common/discordId";
@@ -22,7 +22,7 @@ export class TransactionDBModule implements ITransactionModule {
             await this.setPGClient()
         }
 
-        const { id , status , username , discordid  } = data
+        const { id , status , username , discordid } = data
 
         const query : QueryConfig = {
             name : "add-transaction",

@@ -1,7 +1,3 @@
-CREATE TABLE ROBLOX_ACCOUNTS (
-    .ROBLOSECURITY 
-)
-
 
 -- CREATE TABLE transaction (
 --     id uuid PRIMARY KEY,
