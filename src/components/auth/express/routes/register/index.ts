@@ -14,26 +14,12 @@ export class RegisterRoute implements IExpressRoute {
 
     execute(router : Router) : void {
         router.post('/register' , async (req , res) => {
-            const errors : string[] = []
             const { username , password } = req.body
+            const jwtToken = this.jwtLib?.sign({
+                username : username
+            }, this.jwtSecret!)
 
-            if(!username) {
-                errors.push("The field username is missing.")
-            }
-
-            if(!password) {
-                errors.push("The field password is missing.")
-            }
-
-            if(errors.length >= 1) {
-                return res.status(400).json({
-                    success : false,
-                    errors
-                })
-            }
-
-
-            return res.status(200).json({success : true})
+            return res.status(200).json({success : true , token : jwtToken})
         })
     }
 }
