@@ -7,7 +7,7 @@ export class Username implements IValueObject<string> , IValidate {
         this.value = username
 
         if(!this.isValid()) {
-            throw new UsernameNotValid(`${this.value} must be between 3 and 20 characters long.`)
+            throw new UsernameNotValid(`Username must be between 3 and 20 characters long.`)
         }
     }
 

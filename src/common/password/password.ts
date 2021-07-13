@@ -8,7 +8,7 @@ export class Password implements IValidate , IValueObject<string> {
         this.value = password
 
         if(!this.isValid()) {
-            throw new PasswordNotValid("Password does not pass the RegEx test.")
+            throw new PasswordNotValid(`Password must be greater than or equal to 8, contain one or more uppercase characters , contain one or more lowercase characters , contain one or more numeric values , and contain one or more special characters.`)
         }
     }
 
