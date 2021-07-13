@@ -1,4 +1,3 @@
-import { generateKeyPairSync , publicEncrypt , privateDecrypt } from "crypto"
 import { application } from "express"
 import { TOKENS } from "./di"
 import { container } from "tsyringe"
@@ -11,8 +10,10 @@ import { Username } from "@common/username"
 import { Id } from "@common/id"
 import { WebSocketServerModule } from "@modules/websocketServer"
 import { AuthExpressComponent } from "@components/auth/express"
+import express from "express"
 
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
+app.use(express.json())
 const wsServer = container.resolve<WebSocketServerModule>(TOKENS.modules.websocketServer)
 
 const robloxComponent = container.resolve<RobloxExpressComponent>(TOKENS.components.roblox.component)
@@ -20,7 +21,6 @@ robloxComponent.execute()
 
 const authComponent = container.resolve<AuthExpressComponent>(TOKENS.components.auth.component)
 authComponent.execute()
-
 
 const transactionDB = container.resolve<TransactionDBModule>(TOKENS.modules.transactionDb)
 

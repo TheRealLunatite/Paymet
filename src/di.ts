@@ -16,7 +16,8 @@ export const TOKENS = {
         cryptoLib : Symbol(),
         fsLib : Symbol(),
         jwtLib : Symbol(),
-        bcryptLib : Symbol()
+        bcryptLib : Symbol(),
+        jwtSecret : Symbol()
     },
     components : {
         roblox : {
@@ -111,6 +112,10 @@ container.register(TOKENS.values.httpLib , {
 
 container.register(TOKENS.values.fsLib , {
     useValue : fs
+})
+
+container.register(TOKENS.values.jwtSecret, {
+    useValue : appConfig.jwt.secret
 })
 
 // COMPONENTS

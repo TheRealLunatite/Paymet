@@ -27,5 +27,8 @@ export const config = {
         user : getEnvironmentalVariable("pgUser" , "postgres"),
         password : getEnvironmentalVariable("pgPassword"),
         database : getEnvironmentalVariable("pgDatabase")
+    },
+    jwt : {
+        secret : getEnvironmentalVariable("jwtSecret")
     }
 }
