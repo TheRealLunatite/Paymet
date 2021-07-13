@@ -83,7 +83,7 @@ export class RobloxModule implements IRobloxModule {
             method : "POST"
         })
 
-        // The following ROBLOX endpoint returns the given rootPlaceId if successful.
+        // The following ROBLOX endpoint returns the given rootPlace    d if successful.
         return Promise.resolve(rootPlaceId.equal(new Id(overwriteUniverseResponse.data)))
     }
 

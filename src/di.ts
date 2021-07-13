@@ -13,9 +13,17 @@ export const TOKENS = {
         expressRouter : Symbol(),
         appConfig : Symbol(),
         transactionDbConfig : Symbol(),
+        cryptoLib : Symbol(),
+        fsLib : Symbol(),
+        jwtLib : Symbol(),
+        bcryptLib : Symbol()
     },
     components : {
         roblox : {
+            routes : Symbol(),
+            component : Symbol()
+        },
+        auth : {
             routes : Symbol(),
             component : Symbol()
         }
@@ -41,6 +49,10 @@ import uuid from "uuid"
 import ws from "ws"
 import appConfig from "@config/"
 import http from "http"
+import crypto from "crypto"
+import fs from "fs"
+import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
 
 container.register(TOKENS.values.axiosInstance , {
     useValue : axios.create({
@@ -53,8 +65,20 @@ container.register(TOKENS.values.axiosInstance , {
     })
 })
 
+container.register(TOKENS.values.jwtLib , {
+    useValue : jwt
+})
+
+container.register(TOKENS.values.bcryptLib , {
+    useValue : bcrypt
+})
+
 container.register(TOKENS.values.expressApp , {
     useValue : express()
+})
+
+container.register(TOKENS.values.cryptoLib , {
+    useValue : crypto
 })
 
 container.register(TOKENS.values.expressRouter , {
@@ -85,12 +109,21 @@ container.register(TOKENS.values.httpLib , {
     useValue : http
 })
 
+container.register(TOKENS.values.fsLib , {
+    useValue : fs
+})
+
 // COMPONENTS
 
 import { RobloxExpressComponent } from "@components/roblox/express"
+import { AuthExpressComponent } from "@components/auth/express"
 
 container.register(TOKENS.components.roblox.component , {
     useClass : RobloxExpressComponent
+})
+
+container.register(TOKENS.components.auth.component , {
+    useClass : AuthExpressComponent
 })
 
 // WEBSOCKET
@@ -104,9 +137,14 @@ container.register(TOKENS.websocket.listeners , {
 // ROUTES
 
 import RobloxExpressComponentRoutes from "@components/roblox/express/routes"
+import AuthExpressComponentRoutes from "@components/auth/express/routes"
 
 container.register(TOKENS.components.roblox.routes , {
     useValue : RobloxExpressComponentRoutes
+})
+
+container.register(TOKENS.components.auth.routes , {
+    useValue : AuthExpressComponentRoutes
 })
 
 // MODULES
