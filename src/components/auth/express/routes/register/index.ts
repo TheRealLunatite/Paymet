@@ -8,6 +8,7 @@ import { TOKENS } from "src/di";
 import { RegisterBody } from "./types";
 import { UserDBModule } from "@modules/user";
 import { Password } from "@common/password";
+import { Id } from "@common/id";
 
 @autoInjectable()
 export class RegisterRoute implements IExpressRoute {
@@ -33,10 +34,10 @@ export class RegisterRoute implements IExpressRoute {
                 })
             } catch {
                 return res.status(500).json({success : false , errors : [
-                    "There was a problem on our end. Please try again later."
+                    "This username already exists in our database."
                 ]})
             }
-            
+
             return res.status(200).json({success : true , token : jwtToken})
         })
     }

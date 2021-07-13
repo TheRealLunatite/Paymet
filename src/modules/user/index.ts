@@ -1,7 +1,7 @@
 import { PostgresModule } from "@modules/postgres/pg";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
-import { Client, ConnectionConfig, QueryConfig } from   "pg"
+import { Client, ConnectionConfig, QueryArrayResult, QueryConfig, QueryResult } from   "pg"
 import { IUserDBModule, User, UserDoc } from "./types";
 import { Id } from "@common/id";
 
@@ -29,11 +29,26 @@ export class UserDBModule implements IUserDBModule {
         }   
 
         const result = await this.pgClient?.query(query)
-        
+
         return Promise.resolve({
             id : new Id(+result?.rows[0].id),
             username : username,
             password : password
         })
+    }
+
+    public async deleteById(id : Id) {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }
+
+        const query : QueryConfig = {
+            name : "delete-user-by-id",
+            text : "DELETE FROM paymetUsers WHERE id = $1",
+            values : [id.value]
+        }
+
+        const result = await this.pgClient?.query(query)
+        return Promise.resolve(result?.rowCount! >= 1)
     }
 }
