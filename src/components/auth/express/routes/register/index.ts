@@ -35,7 +35,11 @@ export class RegisterRoute implements IExpressRoute {
                 const hash = await this.bcryptLib?.hash(password.value , 15)!
                 const jwtToken = this.jwtLib?.sign({
                     username : username.value
-                }, this.jwtSecret!)
+                }, this.jwtSecret! , {
+                    expiresIn : "30m",
+                    subject : "Authorization",
+                    issuer : "Paymet"
+                })
 
                 await this.userDb?.add({
                     username,
