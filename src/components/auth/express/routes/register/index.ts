@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import RegisterValidationMiddleware from "../../middlewares/registerValidation"
+import RegisterValidationMiddleware from "@components/auth/express/middlewares/registerValidation"
 import { Router } from "express";
 import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 import { autoInjectable, inject } from "tsyringe";
@@ -8,8 +8,6 @@ import { TOKENS } from "src/di";
 import { RegisterBody } from "./types";
 import { UserDBModule } from "@modules/user";
 import { BCryptHash } from "@common/bcryptHash";
-import { Password } from "@common/password";
-import { Username } from "@common/username";
 
 @autoInjectable()
 export class RegisterRoute implements IExpressRoute {
