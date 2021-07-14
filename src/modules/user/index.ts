@@ -2,7 +2,7 @@ import { PostgresModule } from "@modules/postgres/pg";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
 import { Client, ConnectionConfig, QueryArrayResult, QueryConfig, QueryResult } from   "pg"
-import { IUserDBModule, User, UserDoc } from "./types";
+import { IUserDBModule, User, UserDoc, UserDocOptional } from "./types";
 import { Id } from "@common/id";
 
 @injectable()
@@ -24,16 +24,17 @@ export class UserDBModule implements IUserDBModule {
 
         const query : QueryConfig = {
             name : "add-user",
-            text : `INSERT INTO paymetUsers (username , password) VALUES ($1,$2) RETURNING id;`,
+            text : `INSERT INTO paymetUsers (username , password) VALUES ($1,$2) RETURNING id,timestamp;`,
             values : [username.value , password.value]
         }   
 
-        const result = await this.pgClient?.query(query)
+        const { rows } = await this.pgClient?.query(query)!
 
         return Promise.resolve({
-            id : new Id(+result?.rows[0].id),
+            id : new Id(+rows[0].id),
             username : username,
-            password : password
+            password : password,
+            timestamp : new Date(rows[0].timestamp)
         })
     }
 
@@ -50,5 +51,51 @@ export class UserDBModule implements IUserDBModule {
 
         const result = await this.pgClient?.query(query)
         return Promise.resolve(result?.rowCount! >= 1)
+    }
+
+    public async findOne(doc : UserDocOptional) : Promise<UserDoc | null> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }   
+
+        const objectKeys = Object.keys(doc)
+        const queryText = "SELECT * FROM paymetUsers WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
+        
+        const query : QueryConfig = {
+            name : "find-paymetUser",
+            text : queryText,
+            values : Object.values(doc).map((val) => val.value)
+        }
+
+        const { rows , rowCount } = await this.pgClient?.query(query)!
+
+        if(rowCount >= 1) {
+            return Promise.resolve(rows[0])
+        }
+
+        return Promise.resolve(null)
+    }
+
+    public async findAll(doc : UserDocOptional) : Promise<UserDoc[] | null> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }   
+
+        const objectKeys = Object.keys(doc)
+        const queryText = "SELECT * FROM paymetUsers WHERE " + (objectKeys.length === 0 ? "1 = 1 LIMIT 100;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? ";" : " AND ")).join(""))
+
+        const query : QueryConfig = {
+            name : "find-paymetUser",
+            text : queryText,
+            values : Object.values(doc).map((val) => val.value)
+        }
+
+        const docs : UserDoc[] = await (await this.pgClient?.query(query)!).rows
+        
+        if(docs.length >= 1) {
+            return Promise.resolve(docs)
+        }
+
+        return Promise.resolve(null)
     }
 }

@@ -7,8 +7,9 @@ import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import { RegisterBody } from "./types";
 import { UserDBModule } from "@modules/user";
+import { BCryptHash } from "@common/bcryptHash";
 import { Password } from "@common/password";
-import { Id } from "@common/id";
+import { Username } from "@common/username";
 
 @autoInjectable()
 export class RegisterRoute implements IExpressRoute {
@@ -21,24 +22,32 @@ export class RegisterRoute implements IExpressRoute {
     execute(router : Router) : void {
         router.post('/register' , RegisterValidationMiddleware.value , async (req , res) => {
             const { username , password } : RegisterBody = req.body
-            const hashPassword = await this.bcryptLib?.hash(password.value , 15)
-
-            const jwtToken = this.jwtLib?.sign({
-                username : username.value
-            }, this.jwtSecret!)
-
             try {
-                await this.userDb?.add({
-                    username : username,
-                    password : new Password(hashPassword!)
-                })
-            } catch {
-                return res.status(500).json({success : false , errors : [
-                    "This username already exists in our database."
-                ]})
-            }
+                const findUser = await this.userDb?.findOne({username})
+                
+                if(findUser) {
+                    return res.status(400).json({
+                        success : false,
+                        errors : [
+                            "This username already exists."
+                        ]
+                    })
+                }
 
-            return res.status(200).json({success : true , token : jwtToken})
+                const hash = await this.bcryptLib?.hash(password.value , 15)!
+                const jwtToken = this.jwtLib?.sign({
+                    username : username.value
+                }, this.jwtSecret!)
+
+                await this.userDb?.add({
+                    username,
+                    password : new BCryptHash(hash)
+                })
+
+                return res.status(200).json({success : true , token : jwtToken})
+            } catch (e) {
+                return res.status(500).send("Internal Server Error.")
+            }  
         })
     }
 }
