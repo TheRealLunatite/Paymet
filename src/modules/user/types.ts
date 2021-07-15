@@ -18,7 +18,14 @@ export type UserDoc = {
     id : Id,
     username : Username,
     password : BCryptHash,
-    timestamp : Date
+    registerDate : Date
+}
+
+export type UserPrimitiveDoc = {
+    id : number,
+    username : string,
+    password : string,
+    timestamp : string
 }
 
 export type UserDocOptional = {

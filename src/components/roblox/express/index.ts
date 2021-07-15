@@ -16,6 +16,6 @@ export class RobloxExpressComponent implements IExecutable {
     execute() : void {
         this.routes.forEach((route) => route.execute(this.robloxRouter))
 
-        this.app.use('/login' , this.robloxRouter)
+        this.app.use('/roblox' , this.robloxRouter)
     }
 }

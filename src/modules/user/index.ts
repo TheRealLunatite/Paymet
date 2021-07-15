@@ -2,8 +2,10 @@ import { PostgresModule } from "@modules/postgres/pg";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
 import { Client, ConnectionConfig, QueryArrayResult, QueryConfig, QueryResult } from   "pg"
-import { IUserDBModule, User, UserDoc, UserDocOptional } from "./types";
+import { IUserDBModule, User, UserDoc, UserDocOptional, UserPrimitiveDoc } from "./types";
 import { Id } from "@common/id";
+import { Username } from "@common/username";
+import { Password } from "@common/password";
 
 @injectable()
 export class UserDBModule implements IUserDBModule {
@@ -34,7 +36,7 @@ export class UserDBModule implements IUserDBModule {
             id : new Id(+rows[0].id),
             username : username,
             password : password,
-            timestamp : new Date(rows[0].timestamp)
+            registerDate : new Date(rows[0].timestamp)
         })
     }
 
@@ -70,7 +72,13 @@ export class UserDBModule implements IUserDBModule {
         const { rows , rowCount } = await this.pgClient?.query(query)!
 
         if(rowCount >= 1) {
-            return Promise.resolve(rows[0])
+            const { id , username , password , timestamp }: UserPrimitiveDoc = rows[0]
+            return {
+                id : new Id(+id),
+                username : new Username(username),
+                password : new Password(password),
+                registerDate : new Date(timestamp) 
+            }
         }
 
         return Promise.resolve(null)
@@ -90,10 +98,16 @@ export class UserDBModule implements IUserDBModule {
             values : Object.values(doc).map((val) => val.value)
         }
 
-        const docs : UserDoc[] = await (await this.pgClient?.query(query)!).rows
-        
-        if(docs.length >= 1) {
-            return Promise.resolve(docs)
+        const { rows , rowCount } = await this.pgClient?.query(query)!
+        const docs : UserPrimitiveDoc[] = rows
+
+        if(rowCount >= 1) {
+            return Promise.resolve(docs.map(({id, username , password , timestamp}) => ({
+                id : new Id(+id),
+                username : new Username(username),
+                password : new Password(password),
+                registerDate : new Date(timestamp)
+            })))
         }
 
         return Promise.resolve(null)
