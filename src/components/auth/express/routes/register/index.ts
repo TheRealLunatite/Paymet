@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import AuthValidationMiddleware from "@components/auth/express/middlewares/authValidation"
 import { Router } from "express";
 import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 import { autoInjectable, inject } from "tsyringe";
@@ -8,6 +7,10 @@ import { TOKENS } from "src/di";
 import { RegisterBody } from "./types";
 import { UserDBModule } from "@modules/user";
 import { BCryptHash } from "@common/bcryptHash";
+
+// MIDDLEWARES
+import AuthValidationMiddleware from "@components/auth/express/middlewares/authValidation"
+import IsAuthMiddleware from "@components/globalMiddlewares/isAuth"
 
 @autoInjectable()
 export class RegisterRoute implements IExpressRoute {
@@ -18,7 +21,7 @@ export class RegisterRoute implements IExpressRoute {
         @inject(TOKENS.values.jwtSecret) private jwtSecret? : string) {}
 
     execute(router : Router) : void {
-        router.post('/register' , AuthValidationMiddleware.value , async (req , res) => {
+        router.post('/register' , IsAuthMiddleware.value, AuthValidationMiddleware.value , async (req , res) => {
             const { username , password } : RegisterBody = req.body
             try {
                 const findUser = await this.userDb!.findOne({username})

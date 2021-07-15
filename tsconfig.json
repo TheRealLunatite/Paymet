@@ -13,6 +13,7 @@
       "@static/*" : ["src/static/*"],
       "@config/" : ["src/config/"]
     },
+    "typeRoots": ["src/typings"],
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
