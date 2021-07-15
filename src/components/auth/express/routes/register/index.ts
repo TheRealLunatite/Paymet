@@ -9,8 +9,8 @@ import { UserDBModule } from "@modules/user";
 import { BCryptHash } from "@common/bcryptHash";
 
 // MIDDLEWARES
-import AuthValidationMiddleware from "@components/auth/express/middlewares/authValidation"
-import IsAuthMiddleware from "@components/globalMiddlewares/isAuth"
+import AuthValidationMiddleware from "@components/auth/express/middlewares/authValidation/"
+import IsNotAuthMiddleware from "@components/globalMiddlewares/isNotAuth"
 
 @autoInjectable()
 export class RegisterRoute implements IExpressRoute {
@@ -21,7 +21,7 @@ export class RegisterRoute implements IExpressRoute {
         @inject(TOKENS.values.jwtSecret) private jwtSecret? : string) {}
 
     execute(router : Router) : void {
-        router.post('/register' , IsAuthMiddleware.value, AuthValidationMiddleware.value , async (req , res) => {
+        router.post('/register' , IsNotAuthMiddleware.value, AuthValidationMiddleware.value , async (req , res) => {
             const { username , password } : RegisterBody = req.body
             try {
                 const findUser = await this.userDb!.findOne({username})

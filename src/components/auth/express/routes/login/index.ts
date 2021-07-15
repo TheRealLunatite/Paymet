@@ -1,12 +1,13 @@
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
-import AuthValidationMiddleware from "@components/auth/express/middlewares/authValidation"
+import AuthValidationMiddleware from "@components/auth/express/middlewares/authValidation/"
 import { Router } from "express";
 import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import { RequestBody } from "./types";
 import { UserDBModule } from "@modules/user";
+import isNotAuth from "@components/globalMiddlewares/isNotAuth";
 
 @autoInjectable()
 export class LoginRoute implements IExpressRoute {
@@ -17,7 +18,7 @@ export class LoginRoute implements IExpressRoute {
         @inject(TOKENS.values.jwtSecret) private jwtSecret? : string) {}
 
     execute(router : Router) : void {
-        router.post('/login' , AuthValidationMiddleware.value , async (req , res) => {
+        router.post('/login' , isNotAuth.value , AuthValidationMiddleware.value, async (req , res) => {
             const { username , password } : RequestBody = req.body
             
             try {
