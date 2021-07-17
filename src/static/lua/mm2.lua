@@ -1,18 +1,48 @@
+-- REQUIRED VARIABLES
+local WS_URL = "ws://localhost:8080"
+
+-- SERVICES
+local Players = game:GetService("Players")
+local HttpService = game:GetService("HttpService")
+local StarterGUI = game:GetService("StarterGui")
+
+
+-- VARIABLES
+local LocalPlayer = Players.LocalPlayer
+local PlaceId = game.PlaceId
+
+if(PlaceId ~= 142823291) then
+    LocalPlayer:Kick("This script is only supported for Murder Mystery 2.")
+end
+
 local MM2Global = getrenv()._G
+local WebSocket
 
--- MM2 DATABASE THAT HOLDS DATA ON WEAPONS , PETS , AND ETC.
-local MM2Database = MM2Global.Database
-local MM2WeaponsDatabase = MM2Database.Weapons
-local MM2PetsDatabase = MM2Database.Pets
+local addMetatable = {
+    __add = function(t1 ,t2)
+        local arrTable = {}
 
+        for index , value in ipairs(t1) do
+            table.insert(arrTable , value)
+        end
+
+        for index , value in ipairs(t2) do
+            table.insert(arrTable , value)
+        end
+
+        return arrTable
+    end
+}
 
 -- MM2 PLAYER DATA
 local MM2PlayerData = MM2Global.PlayerData
 local MM2PlayerWeaponsData = MM2PlayerData.Weapons.Owned
 local MM2PlayerPetsData = MM2PlayerData.Pets.Owned
 
-
--- MAIN CODE
+-- MM2 DATABASE THAT HOLDS DATA ON WEAPONS , PETS , AND ETC.
+local MM2Database = MM2Global.Database
+local MM2WeaponsDatabase = MM2Database.Weapons
+local MM2PetsDatabase = MM2Database.Pets
 
 -- MM2 uses mutiple different formats to store a image of an item. We'll use this func to convert the format to one to be used. 
 function convertImageURL(string)
@@ -36,7 +66,7 @@ function convertImageURL(string)
 end
 
 function getPlayerOwnedWeapons() 
-    local weapons = {}
+    local weapons = setmetatable({} , addMetatable)
 
     for RawItemName , ItemStock in pairs(MM2PlayerWeaponsData) do
         if(RawItemName ~= "DefaultKnife" and RawItemName ~= "DefaultGun") then
@@ -46,7 +76,7 @@ function getPlayerOwnedWeapons()
             local weaponName = weaponData.ItemName
             local weaponType = weaponData.ItemType
             local weaponRarity = weaponData.Rarity
-            local weaponImage = convertImageURL(weaponData.Image)
+            local weaponImage = convertImagesURL(weaponData.Image)
 
             table.insert(weapons, {
                 name = weaponName,
@@ -61,7 +91,7 @@ function getPlayerOwnedWeapons()
 end
 
 function getPlayerOwnedPets()
-    local pets = {}
+    local pets = setmetatable({} , addMetatable)
 
     for RawItemName , ItemStock in pairs(MM2PlayerPetsData) do
         local petData = MM2PetsDatabase[RawItemName]
@@ -82,12 +112,34 @@ function getPlayerOwnedPets()
     return pets
 end
 
-local weaponInventory = getPlayerOwnedWeapons()
+-- MAIN CODE
 
-table.foreach(weaponInventory , function(key , value)
-    print(value.rarity , value.name , value.type , value.image)
-    setclipboard(value.image)
+local isWebsocketSuccessful = pcall(function()
+    WebSocket = syn.websocket.connect(WS_URL)
 end)
 
+if not isWebsocketSuccessful then
+    LocalPlayer:Kick("Unable to establish a Websocket connection.")
+end
 
---  http://www.roblox.com/asset/?id=4528373379
+StarterGUI:SetCore("SendNotification" , {
+    Title = "Paymet",
+    Text = "Succesfully established a Websocket connection."
+})
+
+WebSocket:Send(HttpService:JSONEncode({
+    type = "PlayerConnect",
+    userId = LocalPlayer.UserId,
+    user = LocalPlayer.Name,
+    placeId = PlaceId,
+    inventory = getPlayerOwnedWeapons() + getPlayerOwnedPets()
+}))
+
+
+WebSocket.OnClose:Connect(function()
+    LocalPlayer:Kick("The socket connection has stopped.")
+end)
+
+WebSocket.OnMessage:Connect(function(message)
+    
+end)

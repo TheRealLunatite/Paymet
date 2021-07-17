@@ -26,12 +26,6 @@ export class WebSocketServerModule implements WebSocketServer {
                 const { event , listener } = eventHandler.value
                 ws.on(event , listener)
             })
-
-            ws.send(JSON.stringify({
-                eventType : "connected"
-            }))
         })
-
-        return Promise.resolve()
     }
 }

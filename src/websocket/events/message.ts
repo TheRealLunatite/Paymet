@@ -10,8 +10,8 @@ type PlayerInfo = {
 export default new WebsocketEventHandler({
     event : "message",
     listener : (data) => {
-        const JSONData = JSON.parse(data as string)
+        const a = JSON.parse(data.toString())
 
-        console.log(JSONData.userId)
+        console.log(a)
     }
 })
