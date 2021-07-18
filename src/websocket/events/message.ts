@@ -9,9 +9,11 @@ type PlayerInfo = {
 
 export default new WebsocketEventHandler({
     event : "message",
-    listener : (data) => {
-        const a = JSON.parse(data.toString())
-
-        console.log(a)
+    listener : function(data) {
+        try {
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
     }
 })

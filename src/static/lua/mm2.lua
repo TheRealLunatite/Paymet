@@ -70,14 +70,12 @@ function getPlayerOwnedWeapons()
 
     for RawItemName , ItemStock in pairs(MM2PlayerWeaponsData) do
         if(RawItemName ~= "DefaultKnife" and RawItemName ~= "DefaultGun") then
-            
             local weaponData = MM2WeaponsDatabase[RawItemName]
-    
             local weaponName = weaponData.ItemName
             local weaponType = weaponData.ItemType
             local weaponRarity = weaponData.Rarity
-            local weaponImage = convertImagesURL(weaponData.Image)
-
+            local weaponImage = convertImageURL(weaponData.Image)
+            
             table.insert(weapons, {
                 name = weaponName,
                 type = weaponType,
@@ -134,7 +132,6 @@ WebSocket:Send(HttpService:JSONEncode({
     placeId = PlaceId,
     inventory = getPlayerOwnedWeapons() + getPlayerOwnedPets()
 }))
-
 
 WebSocket.OnClose:Connect(function()
     LocalPlayer:Kick("The socket connection has stopped.")
