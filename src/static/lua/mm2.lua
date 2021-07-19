@@ -156,6 +156,6 @@ WebSocket.OnClose:Connect(function()
     LocalPlayer:Kick("The socket connection has stopped.")
 end)
 
-WebSocket.OnMessage:Connect(function(message)
-    
+WebSocket.OnMessage:Connect(function(msg)
+    -- game.ReplicatedStorage:FindFirstChild("Trade").AcceptRequest:FireServer()
 end)

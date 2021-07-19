@@ -1,5 +1,6 @@
-import {
-    AuthValidationMiddleware
-} from "./authValidation"
+import { Middleware } from "@common/middlware"
+import { AuthValidationMiddleware} from "./authValidation"
 
-export default new AuthValidationMiddleware()
+const AuthValidationMiddlewareHandler = new AuthValidationMiddleware().execute()
+
+export default new Middleware(AuthValidationMiddlewareHandler)

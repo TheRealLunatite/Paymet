@@ -2,14 +2,14 @@ import { Username } from "@common/username";
 import { Password } from "@common/password";
 import { RequestHandler } from "express";
 import { autoInjectable } from "tsyringe";
-import { IValueObject } from "@common/interfaces/IValueObject";
+import { IExecutableValue } from "@common/interfaces/IExecutable";
 
 @autoInjectable()
-export class AuthValidationMiddleware implements IValueObject<RequestHandler> {
-    _value : RequestHandler
-    
-    constructor() {
-        this._value = async function (req, res , next) {
+export class AuthValidationMiddleware implements IExecutableValue<RequestHandler> {
+    constructor() {}
+
+    public execute() : RequestHandler {
+        return async (req, res , next) => {
             const { username , password } = req.body
             const errors : string[] = []
 
@@ -57,9 +57,5 @@ export class AuthValidationMiddleware implements IValueObject<RequestHandler> {
 
             next()
         }
-    }
-
-    get value() {
-        return this._value
     }
 }

@@ -35,12 +35,13 @@ export default new WebsocketEventHandler({
                     break
                 case "ReceivedTradeRequest":
                     console.log(`${wsData.user} has sent you a trade request on MM2.`)
+                    ws.send(JSON.stringify({type : "AcceptTrade"}))
                     break
                 default:
-                    ws.send({
+                    ws.send(JSON.stringify({
                         type : "error",
                         message : "Unsupported event type."
-                    })
+                    }))
             }
         } catch (e) {
             return ws.send({

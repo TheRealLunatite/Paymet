@@ -2,14 +2,17 @@ import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { RequestHandler } from "express";
 import jwt from "jsonwebtoken";
-import { IValueObject } from "@common/interfaces/IValueObject";
+import { IExecutableValue } from "@common/interfaces/IExecutable";
 
 @autoInjectable()
-export class isAuthMiddleware implements IValueObject<RequestHandler> {
-    _value : RequestHandler
-    
-    constructor(@inject(TOKENS.values.jwtLib) jwtLib? : typeof jwt , @inject(TOKENS.values.jwtSecret) jwtSecret? : string) {
-        this._value = async function (req, res , next) {
+export class isAuthMiddleware implements IExecutableValue<RequestHandler> {
+    constructor(
+        @inject(TOKENS.values.jwtLib) private jwtLib? : typeof jwt,
+        @inject(TOKENS.values.jwtSecret) private jwtSecret? : string
+    ) {}
+
+    public execute() : RequestHandler {
+        return async (req, res , next) => {
             const authHeader = req.headers["authorization"]
             const token = authHeader && authHeader.split(' ')[1]
 
@@ -21,7 +24,7 @@ export class isAuthMiddleware implements IValueObject<RequestHandler> {
             }
             
             try {
-                const payload = jwtLib!.verify(token, jwtSecret! , { issuer : "Paymet" , subject : "Authorization" })
+                const payload = this.jwtLib!.verify(token, this.jwtSecret! , { issuer : "Paymet" , subject : "Authorization" })
                 req.user = payload
                 
                 return next()
@@ -34,9 +37,5 @@ export class isAuthMiddleware implements IValueObject<RequestHandler> {
                 })
             }
         }
-    }
-
-    get value() {
-        return this._value
     }
 }

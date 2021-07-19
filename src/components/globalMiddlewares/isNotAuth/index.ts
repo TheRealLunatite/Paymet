@@ -1,3 +1,6 @@
 import { isNotAuthMiddleware } from "./isNotAuth";
+import { Middleware } from "@common/middlware";
 
-export default new isNotAuthMiddleware()
+const isNotAuthMiddlewareHandler = new isNotAuthMiddleware().execute()
+
+export default new Middleware(isNotAuthMiddlewareHandler)

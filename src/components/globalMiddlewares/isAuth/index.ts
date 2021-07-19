@@ -1,3 +1,6 @@
 import { isAuthMiddleware } from "./isAuth";
+import { Middleware } from "@common/middlware";
 
-export default new isAuthMiddleware()
+const isAuthMiddlewareHandler = new isAuthMiddleware().execute()
+
+export default new Middleware(isAuthMiddlewareHandler)
