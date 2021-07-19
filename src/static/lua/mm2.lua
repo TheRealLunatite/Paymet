@@ -6,8 +6,8 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local StarterGUI = game:GetService("StarterGui")
 
-
 -- VARIABLES
+local TradeModule = require(game.ReplicatedStorage.Modules.TradeModule)
 local LocalPlayer = Players.LocalPlayer
 local PlaceId = game.PlaceId
 
@@ -15,8 +15,9 @@ if(PlaceId ~= 142823291) then
     LocalPlayer:Kick("This script is only supported for Murder Mystery 2.")
 end
 
+local OldUpdateTradeRequestWindowFunc = nil
 local MM2Global = getrenv()._G
-local WebSocket
+local WebSocket = nil
 
 local addMetatable = {
     __add = function(t1 ,t2)
@@ -110,8 +111,26 @@ function getPlayerOwnedPets()
     return pets
 end
 
--- MAIN CODE
+function sendToWebsocket(t) 
+    if WebSocket and typeof(t) == "table" then
+        WebSocket:Send(HttpService:JSONEncode(t))
+    end
+end
 
+OldUpdateTradeRequestWindowFunc = hookfunction(TradeModule.UpdateTradeRequestWindow , function(...)
+    local type , data = ...
+
+    if not checkcaller() and type == "ReceivingRequest" then
+        sendToWebsocket({
+            type = "ReceivedTradeRequest",
+            user = data.Sender.Name
+        })
+    end
+
+    return OldUpdateTradeRequestWindowFunc(...)
+end)
+
+-- MAIN CODE
 local isWebsocketSuccessful = pcall(function()
     WebSocket = syn.websocket.connect(WS_URL)
 end)
@@ -125,13 +144,13 @@ StarterGUI:SetCore("SendNotification" , {
     Text = "Succesfully established a Websocket connection."
 })
 
-WebSocket:Send(HttpService:JSONEncode({
+sendToWebsocket({
     type = "PlayerConnect",
     userId = LocalPlayer.UserId,
     user = LocalPlayer.Name,
     placeId = PlaceId,
     inventory = getPlayerOwnedWeapons() + getPlayerOwnedPets()
-}))
+})
 
 WebSocket.OnClose:Connect(function()
     LocalPlayer:Kick("The socket connection has stopped.")

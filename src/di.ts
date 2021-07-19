@@ -7,7 +7,7 @@ export const TOKENS = {
         axiosInstance : Symbol(),
         expressApp : Symbol(),
         postgresLib : Symbol(),
-        uuidLib : Symbol(),
+        uuid : Symbol(),
         websocketLib : Symbol(),
         httpLib : Symbol(),
         expressRouter : Symbol(),
@@ -47,7 +47,7 @@ export const TOKENS = {
 import axios from "axios"
 import express from "express"
 import postgres from "pg"
-import uuid from "uuid"
+import { v4 as uuid } from "uuid"
 import ws from "ws"
 import appConfig from "@config/"
 import http from "http"
@@ -91,10 +91,6 @@ container.register(TOKENS.values.postgresLib , {
     useValue : postgres
 })
 
-container.register(TOKENS.values.uuidLib , {
-    useValue : uuid
-})
-
 container.register(TOKENS.values.appConfig , {
     useValue : appConfig
 })
@@ -105,6 +101,10 @@ container.register(TOKENS.values.transactionDbConfig , {
 
 container.register(TOKENS.values.websocketLib , {
     useValue : ws
+})
+
+container.register(TOKENS.values.uuid , {
+    useValue : uuid
 })
 
 container.register(TOKENS.values.httpLib , {

@@ -1,19 +1,52 @@
 import { WebsocketEventHandler } from "@common/eventHandler"
+import { WebSocket } from "ws"
 
-type PlayerInfo = {
-    eventType : string,
+export type InventoryItem = {
+    name : string,
+    rarity : string,
+    type : string,
+    image : string,
+    stock : string
+}
+
+export interface PlayerConnect {
+    type : "PlayerConnect"
     userId : number,
-    username : string,
     placeId : number,
+    user : string,
+    inventory : InventoryItem[]
+}
+
+export interface ReceivedTradeRequest {
+    type : "ReceivedTradeRequest",
+    user : string
 }
 
 export default new WebsocketEventHandler({
     event : "message",
     listener : function(data) {
+        const ws : WebSocket = this        
         try {
-            console.log(data)
+            const wsData : PlayerConnect | ReceivedTradeRequest = JSON.parse(data.toString())
+            
+            switch(wsData.type) {
+                case "PlayerConnect":
+                    console.log(`${wsData.user} has connected to the websocket.`)
+                    break
+                case "ReceivedTradeRequest":
+                    console.log(`${wsData.user} has sent you a trade request on MM2.`)
+                    break
+                default:
+                    ws.send({
+                        type : "error",
+                        message : "Unsupported event type."
+                    })
+            }
         } catch (e) {
-            console.log(e)
+            return ws.send({
+                type : "error",
+                message : e.message
+            })
         }
     }
 })
