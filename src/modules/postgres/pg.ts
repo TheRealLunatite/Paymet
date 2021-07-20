@@ -1,10 +1,9 @@
 import pg , { ConnectionConfig , Client } from "pg";
 import { TOKENS } from "src/di";
-import { inject, injectable } from "tsyringe";
+import { inject , singleton } from "tsyringe";
 import { IPostgresModule, PostgresOptionsNotValid } from "./types";
 
-
-@injectable()
+@singleton()
 export class PostgresModule implements IPostgresModule {
     private pgClient : Client | null = null
 

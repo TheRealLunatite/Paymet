@@ -11,7 +11,7 @@ import { DiscordId } from "@common/discordId";
 export class TransactionDBModule implements ITransactionModule {
     private pgClient : Client | null = null
     
-    constructor(@inject(TOKENS.modules.postgres) private postgres : PostgresModule, @inject(TOKENS.values.transactionDbConfig) private pgConnectionConfig : ConnectionConfig) {}
+    constructor(@inject(TOKENS.modules.postgres) private postgres : PostgresModule, @inject(TOKENS.values.postgresConfig) private pgConnectionConfig : ConnectionConfig) {}
 
     private async setPGClient() {
         this.pgClient = await this.postgres.getPGClient(this.pgConnectionConfig)

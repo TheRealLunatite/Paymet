@@ -1,17 +1,22 @@
 import { PostgresModule } from "@modules/postgres/pg";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
-import { Client, ConnectionConfig, QueryArrayResult, QueryConfig, QueryResult } from   "pg"
+import { Client, ConnectionConfig, QueryConfig } from   "pg"
 import { IUserDBModule, User, UserDoc, UserDocOptional, UserPrimitiveDoc } from "./types";
 import { Id } from "@common/id";
 import { Username } from "@common/username";
 import { Password } from "@common/password";
+import { v4 as uuid } from "uuid";
 
 @injectable()
 export class UserDBModule implements IUserDBModule {
     private pgClient : Client | null = null
     
-    constructor(@inject(TOKENS.modules.postgres) private postgres : PostgresModule, @inject(TOKENS.values.transactionDbConfig) private pgConnectionConfig : ConnectionConfig) {}
+    constructor(
+        @inject(TOKENS.modules.postgres) private postgres : PostgresModule,
+        @inject(TOKENS.values.postgresConfig) private pgConnectionConfig : ConnectionConfig,
+        @inject(TOKENS.values.uuid) private v4 : typeof uuid
+    ) {}
 
     private async setPGClient() {
         this.pgClient = await this.postgres.getPGClient(this.pgConnectionConfig)

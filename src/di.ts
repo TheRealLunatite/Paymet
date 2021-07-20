@@ -12,7 +12,7 @@ export const TOKENS = {
         httpLib : Symbol(),
         expressRouter : Symbol(),
         appConfig : Symbol(),
-        transactionDbConfig : Symbol(),
+        postgresConfig : Symbol(),
         cryptoLib : Symbol(),
         fsLib : Symbol(),
         jwtLib : Symbol(),
@@ -38,7 +38,8 @@ export const TOKENS = {
         postgres : Symbol(),
         transactionDb : Symbol(),
         websocketServer : Symbol(),
-        userDb : Symbol()
+        userDb : Symbol(),
+        inventoryDB : Symbol()
     }
 }
 
@@ -95,7 +96,7 @@ container.register(TOKENS.values.appConfig , {
     useValue : appConfig
 })
 
-container.register(TOKENS.values.transactionDbConfig , {
+container.register(TOKENS.values.postgresConfig , {
     useValue : appConfig.postgres
 })
 
@@ -135,6 +136,7 @@ import { PostgresModule } from "@modules/postgres/pg"
 import { TransactionDBModule } from "@modules/transaction"
 import { WebSocketServerModule } from "@modules/websocketServer"
 import { UserDBModule } from "@modules/user"
+import { InventoryDBModule } from "@modules/inventory"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -158,6 +160,10 @@ container.register<UserDBModule>(TOKENS.modules.userDb , {
 
 container.register<WebSocketServerModule>(TOKENS.modules.websocketServer , {
     useClass : WebSocketServerModule
+})
+
+container.register<InventoryDBModule>(TOKENS.modules.inventoryDB , {
+    useClass : InventoryDBModule
 })
 
 // ROUTES

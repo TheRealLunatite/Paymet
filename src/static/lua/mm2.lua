@@ -72,17 +72,17 @@ function getPlayerOwnedWeapons()
     for RawItemName , ItemStock in pairs(MM2PlayerWeaponsData) do
         if(RawItemName ~= "DefaultKnife" and RawItemName ~= "DefaultGun") then
             local weaponData = MM2WeaponsDatabase[RawItemName]
-            local weaponName = weaponData.ItemName
-            local weaponType = weaponData.ItemType
-            local weaponRarity = weaponData.Rarity
-            local weaponImage = convertImageURL(weaponData.Image)
+            local itemName = weaponData.ItemName
+            local itemType = weaponData.ItemType
+            local itemRarity = weaponData.Rarity
+            local itemImage = convertImageURL(weaponData.Image)
             
             table.insert(weapons, {
-                name = weaponName,
-                type = weaponType,
-                rarity = weaponRarity,
-                image = weaponImage,
-                stock = ItemStock
+                itemName = itemName,
+                itemRarity = itemRarity,
+                itemType = itemType,
+                itemImage = itemImage,
+                itemStock = ItemStock
             })
         end
     end
@@ -94,17 +94,17 @@ function getPlayerOwnedPets()
 
     for RawItemName , ItemStock in pairs(MM2PlayerPetsData) do
         local petData = MM2PetsDatabase[RawItemName]
-        local petName = petData.Name
-        local petRarity = petData.Rarity
-        local petType = petData.Type
-        local petImage = convertImageURL(petData.Image)
+        local itemName = petData.Name
+        local itemRarity = petData.Rarity
+        local itemType = petData.Type
+        local itemImage = convertImageURL(petData.Image)
 
         table.insert(pets , {
-            name = petName,
-            rarity = petRarity,
-            type = petType,
-            image = petImage,
-            stock = ItemStock
+            itemName = itemName,
+            itemRarity = itemRarity,
+            itemType = itemType,
+            itemImage = itemImage,
+            itemStock = ItemStock
         })
     end
 
