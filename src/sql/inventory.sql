@@ -12,7 +12,7 @@ CREATE TYPE inventoryitem as (
     itemRarity text,
     itemType text,
     itemImage text,
-    itemStock bigint
+    itemStock text
 );
 
 INSERT INTO inventory(
@@ -26,5 +26,5 @@ INSERT INTO inventory(
     123,
     123,
     'Lunatite',
-    ARRAY[('Reindeer', 'Godly','Knife','https://rbx.cool',1)]::inventoryitem[]
+    ARRAY[('Night','Uncommon','Gun','http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=159971385',1),('High Tech','Uncommon','Knife','http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=4659635055',1),('Viper','Legendary','Gun','http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=160299600',1),('Laser','Classic','Gun','http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=54798135',1),('Splash','Legendary','Gun','http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=4659626370',3),('Vampire's Edge','Godly','Knife','http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=5873256998',1),('Frostbite','Godly','Knife','http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=4528373246',1)]::inventoryitem[]
 );

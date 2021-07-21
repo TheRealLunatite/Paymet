@@ -11,7 +11,8 @@
       "@components/*" : ["src/components/*"],
       "@common/*" : ["src/common/*"],
       "@static/*" : ["src/static/*"],
-      "@config/" : ["src/config/"]
+      "@config/" : ["src/config/"],
+      "@websocket/*" : ["src/websocket/*"]
     },
     "typeRoots": ["src/typings"],
     "esModuleInterop": true,

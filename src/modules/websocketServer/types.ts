@@ -1,5 +1,5 @@
-import { ServerOptions } from "ws";
+import { ServerOptions , WebSocket } from "ws";
 
 export interface WebSocketServer {
-    start(options? : ServerOptions) : Promise<void>
+    listen(options? : ServerOptions , cb? : (ws : WebSocket) => void) : void
 }

@@ -15,7 +15,7 @@ if(PlaceId ~= 142823291) then
     LocalPlayer:Kick("This script is only supported for Murder Mystery 2.")
 end
 
-local OldUpdateTradeRequestWindowFunc = nil
+local OldUpdateTradeRequestWindowFunc = TradeModule.UpdateTradeRequestWindow
 local MM2Global = getrenv()._G
 local WebSocket = nil
 
@@ -157,5 +157,6 @@ WebSocket.OnClose:Connect(function()
 end)
 
 WebSocket.OnMessage:Connect(function(msg)
+    print(msg)
     -- game.ReplicatedStorage:FindFirstChild("Trade").AcceptRequest:FireServer()
 end)

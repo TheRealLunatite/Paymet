@@ -1,6 +1,7 @@
 import "reflect-metadata"
 
 import { container } from "tsyringe"
+import { ISocket } from "@common/interfaces/ISocket"
 
 export const TOKENS = {
     values : {
@@ -29,8 +30,8 @@ export const TOKENS = {
             component : Symbol()
         }
     },
-    websocket : {
-        listeners : Symbol()
+    listeners : {
+        websocket : Symbol(),
     },
     modules : {
         request : Symbol(),
@@ -39,7 +40,7 @@ export const TOKENS = {
         transactionDb : Symbol(),
         websocketServer : Symbol(),
         userDb : Symbol(),
-        inventoryDB : Symbol()
+        inventoryDb : Symbol()
     }
 }
 
@@ -120,14 +121,6 @@ container.register(TOKENS.values.jwtSecret, {
     useValue : appConfig.jwt.secret
 })
 
-// WEBSOCKET
-
-import WebsocketListeners from "src/websocket"
-
-container.register(TOKENS.websocket.listeners , {
-    useValue : WebsocketListeners
-})
-
 // MODULES
 
 import { AxiosModule } from "@modules/request/axios"
@@ -162,9 +155,17 @@ container.register<WebSocketServerModule>(TOKENS.modules.websocketServer , {
     useClass : WebSocketServerModule
 })
 
-container.register<InventoryDBModule>(TOKENS.modules.inventoryDB , {
+container.register<InventoryDBModule>(TOKENS.modules.inventoryDb , {
     useClass : InventoryDBModule
 })
+
+// SOCKET LISTENERS
+
+import SocketListeners from "@websocket/listeners"
+
+container.register<ISocket[]>(TOKENS.listeners.websocket , {
+    useValue : SocketListeners
+}) 
 
 // ROUTES
 
