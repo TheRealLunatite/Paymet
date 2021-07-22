@@ -30,5 +30,8 @@ export const config = {
     },
     jwt : {
         secret : getEnvironmentalVariable("jwtSecret")
+    } ,
+    hmac : {
+        secret : getEnvironmentalVariable("hmacSecret")
     }
 }
