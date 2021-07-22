@@ -28,6 +28,10 @@ export const TOKENS = {
         auth : {
             routes : Symbol(),
             component : Symbol()
+        },
+        transaction : {
+            routes : Symbol(),
+            component : Symbol()
         }
     },
     listeners : {
@@ -171,6 +175,7 @@ container.register<ISocket[]>(TOKENS.listeners.websocket , {
 
 import RobloxExpressComponentRoutes from "@components/roblox/express/routes"
 import AuthExpressComponentRoutes from "@components/auth/express/routes"
+import TransactionExpressComponentRoutes from "@components/transaction/express/routes"
 
 container.register(TOKENS.components.roblox.routes , {
     useValue : RobloxExpressComponentRoutes
@@ -180,10 +185,15 @@ container.register(TOKENS.components.auth.routes , {
     useValue : AuthExpressComponentRoutes
 })
 
+container.register(TOKENS.components.transaction.routes , {
+    useValue : TransactionExpressComponentRoutes
+})
+
 // COMPONENTS
 
 import { RobloxExpressComponent } from "@components/roblox/express"
 import { AuthExpressComponent } from "@components/auth/express"
+import { TransactionExpressComponent } from "@components/transaction/express"
 
 container.register(TOKENS.components.roblox.component , {
     useClass : RobloxExpressComponent
@@ -191,4 +201,8 @@ container.register(TOKENS.components.roblox.component , {
 
 container.register(TOKENS.components.auth.component , {
     useClass : AuthExpressComponent
+})
+
+container.register(TOKENS.components.transaction.component , {
+    useClass : TransactionExpressComponent
 })

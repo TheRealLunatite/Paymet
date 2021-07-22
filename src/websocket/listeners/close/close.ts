@@ -8,7 +8,7 @@ import { Uuid } from "@common/uuid";
 @autoInjectable()
 export class CloseSocketListener implements ISocket {
     constructor(
-        @inject(TOKENS.modules.inventoryDb) private inventoryDb : IInventoryModule
+        @inject(TOKENS.modules.inventoryDb) private inventoryDb? : IInventoryModule
     ){}
     execute(ws : WebSocket) {   
         ws.on("close" , async (code , reason) => {

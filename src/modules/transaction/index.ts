@@ -17,7 +17,7 @@ export class TransactionDBModule implements ITransactionModule {
         this.pgClient = await this.postgres.getPGClient(this.pgConnectionConfig)
     }
 
-    public async add(data : Transaction) : Promise<boolean> {
+    public async add(data : Transaction) : Promise<Transaction> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
@@ -26,12 +26,12 @@ export class TransactionDBModule implements ITransactionModule {
 
         const query : QueryConfig = {
             name : "add-transaction",
-            text : `INSERT INTO transaction(id , status , robloxuser , discordid ) VALUES($1,$2,$3,$4)`,
+            text : `INSERT INTO transaction(id , status , robloxuser , discordid) VALUES($1,$2,$3,$4)`,
             values : [ id.value , status , username.value , discordid.value ]
         }
 
         await this.pgClient!.query(query)
-        return Promise.resolve(true)
+        return Promise.resolve(data)
     }
 
     public async deleteById(id : Uuid) : Promise<boolean> {

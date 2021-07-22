@@ -3,7 +3,7 @@ import { Username } from "@common/username/username"
 import { Uuid } from "@common/uuid"
 
 export interface ITransactionModule {
-    add(data : Transaction) : Promise<boolean>,
+    add(data : Transaction) : Promise<Transaction>,
     deleteById(id : Uuid) : Promise<boolean>,
     findById(id : Uuid) : Promise<Transaction | null>,
     deleteById(id : Uuid) : Promise<boolean>,
