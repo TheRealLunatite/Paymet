@@ -20,6 +20,7 @@ export class MessageSocketListener implements ISocket {
     execute(ws: WebSocket): void {
         ws.on("message" , async (data) => {
             try {
+                console.log(ws.id)
                 const wsData : PlayerConnect | ReceivedTradeRequest = JSON.parse(data as string)
                 
                 switch(wsData.type) {

@@ -29,33 +29,6 @@ async function test() {
     await wsServer.listen({ port : 8080 })
     console.log('Websocket listening on port 8080.')
     app.listen(3000 , () => console.log('Express server listening on Port : 3000.'))
-
-    try {
-        await inventoryDB.add({
-            socketId : new Uuid(v4()),
-            robloxUser : new Username("Hello"),
-            placeId : new Id(1123),
-            userId : new Id(123),
-            inventory : [
-                {
-                    itemImage: 'http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=5872999805',
-                    itemStock: 1,
-                    itemType: 'Floating',
-                    itemName: 'Scarecrow',
-                    itemRarity: 'Rare'
-                },
-                {
-                    itemImage: 'http://www.roblox.com/Thumbs/Asset.ashx?format=png&width=250&height=250&assetId=582999805',
-                    itemStock: 11,
-                    itemType: '312',
-                    itemName: '3123',
-                    itemRarity: '12312313'
-                }
-            ]
-        })
-    } catch (e) {
-        console.error(e)
-    }
 }
 
 test()
