@@ -39,6 +39,7 @@ export const TOKENS = {
     },
     modules : {
         request : Symbol(),
+        hmac : Symbol(),
         roblox : Symbol(),
         postgres : Symbol(),
         transactionDb : Symbol(),
@@ -134,6 +135,7 @@ import { TransactionDBModule } from "@modules/transaction"
 import { WebSocketServerModule } from "@modules/websocketServer"
 import { UserDBModule } from "@modules/user"
 import { InventoryDBModule } from "@modules/inventory"
+import { HmacModule } from "@modules/hmac/hmac"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -161,6 +163,10 @@ container.register<WebSocketServerModule>(TOKENS.modules.websocketServer , {
 
 container.register<InventoryDBModule>(TOKENS.modules.inventoryDb , {
     useClass : InventoryDBModule
+})
+
+container.register<HmacModule>(TOKENS.modules.hmac , {
+    useClass : HmacModule
 })
 
 // SOCKET LISTENERS

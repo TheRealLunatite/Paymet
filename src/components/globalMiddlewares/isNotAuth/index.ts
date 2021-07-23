@@ -1,5 +1,5 @@
 import { isNotAuthMiddleware } from "./isNotAuth";
-import { Middleware } from "@common/middlware";
+import { Middleware } from "@common/middleware";
 
 const isNotAuthMiddlewareHandler = new isNotAuthMiddleware().execute()
 

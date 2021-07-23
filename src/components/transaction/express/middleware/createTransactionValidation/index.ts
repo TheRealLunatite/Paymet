@@ -1,4 +1,4 @@
-import { Middleware } from "@common/middlware";
+import { Middleware } from "@common/middleware";
 import { CreateTransactionValidation } from "./createTransactionValidation";
 
 const CreateTransactionValidationMiddleware = new CreateTransactionValidation().execute()

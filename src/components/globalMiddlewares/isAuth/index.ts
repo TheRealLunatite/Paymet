@@ -1,5 +1,5 @@
 import { isAuthMiddleware } from "./isAuth";
-import { Middleware } from "@common/middlware";
+import { Middleware } from "@common/middleware";
 
 const isAuthMiddlewareHandler = new isAuthMiddleware().execute()
 
