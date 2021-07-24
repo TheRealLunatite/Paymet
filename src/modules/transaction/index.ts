@@ -105,7 +105,7 @@ export class TransactionDBModule implements ITransactionModule {
 
         const query : QueryConfig = {
             name : "update-transaction",
-            text : `UPDATE transaction SET status = COALESCE($1,$2) , id = COALESCE($3 , $4)::UUID , robloxuser = COALESCE($5,$6) , discordid = COALESCE($7,$8)::BIGINT WHERE id = $9`,
+            text : `UPDATE transaction SET status = COALESCE($1,$2) , id = COALESCE($3 , $4)::UUID , username = COALESCE($5,$6) , discordid = COALESCE($7,$8)::BIGINT WHERE id = $9`,
             values : [
                 status,
                 findDataById.status,
@@ -140,12 +140,12 @@ export class TransactionDBModule implements ITransactionModule {
             return Promise.resolve(null)
         }
 
-        const [{ id : docId , status , robloxuser , discordid , timestamp , items }] : Array<TransactionDoc> = queryData.rows
+        const [{ id : docId , status , username , discordid , timestamp , items }] : Array<TransactionDoc> = queryData.rows
     
         return Promise.resolve({
             id : new Uuid(docId),
             discordId : new DiscordId(+discordid),
-            username : new Username(robloxuser),
+            username : new Username(username),
             timestamp : new Date(timestamp),
             items,
             status

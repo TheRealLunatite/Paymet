@@ -29,7 +29,7 @@ export type TransactionOptional = {
 export type TransactionDoc = {
     id : string,
     status : "success" | "initalized" | "pending",
-    robloxuser : string,
+    username : string,
     discordid : string,
     timestamp : string,
     items : InventoryItem[]

@@ -17,8 +17,8 @@ export class UpdateTransactionRoute implements IExpressRoute {
             const { id , status , discordId , username } : UpdateTransactionValidatedRequestBody = req.body
 
             try {
-                const updatedTransaction = await this.transactionDb!.updateById(id, {status , discordId : discordId , username : username })
-                
+                const updatedTransaction = await this.transactionDb!.updateById(id, {status , discordId : discordId , username : username})
+
                 if(!updatedTransaction) {
                     return res.status(400).json({
                         success : false,
