@@ -1,13 +1,14 @@
 
--- CREATE TABLE transaction (
---     id uuid PRIMARY KEY,
---     status text NOT NULL,
---     robloxUser text NOT NULL,
---     discordId bigint NOT NULL,
---     timestamp timestamptz DEFAULT NOW(), 
---     CONSTRAINT CHK_TRANSACTION_STATUS CHECK (status = 'initalized' OR status = 'pending' OR status = 'success'),
---     CONSTRAINT CHK_ROBLOXUSER_CHAR CHECK (length(robloxUser) >= 3 or length(robloxUser) <= 20)
--- );
+CREATE TABLE transaction (
+    id uuid PRIMARY KEY,
+    status text NOT NULL,
+    username text NOT NULL,
+    discordId bigint NOT NULL,
+    items inventoryitem[] NOT NULL,
+    timestamp timestamptz DEFAULT NOW(), 
+    CONSTRAINT CHK_TRANSACTION_STATUS CHECK (status = 'initalized' OR status = 'pending' OR status = 'success'),
+    CONSTRAINT CHK_USERNAME_CHAR CHECK (length(username) >= 3 or length(username) <= 20)
+);
 
 -- -- 3 - 20
 -- -- INSERT INTO transcation (

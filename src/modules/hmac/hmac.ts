@@ -9,14 +9,14 @@ export class HmacModule implements HashModule {
         @inject(TOKENS.values.cryptoLib) private cryptoLib : typeof crypto
     ) {}
 
-    public createHash(plainText : string , options? : { algorithm : string }) : string {
-        const hmac = this.cryptoLib.createHmac(options ? options.algorithm : "sha256" , "this is the secret key")
+    public createHash(plainText : string , key : string , options? : { algorithm : string }) : string {
+        const hmac = this.cryptoLib.createHmac(options ? options.algorithm : "sha256" , key)
         hmac.update(plainText)
         return hmac.digest("hex")
     }
 
-    public compare(plainText: string, hmac: string): boolean {
-        const hash = this.createHash(plainText)
+    public compare(plainText: string, hmac: string , key : string): boolean {
+        const hash = this.createHash(plainText , key)
         return hmac === hash
     }
 }

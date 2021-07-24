@@ -17,18 +17,27 @@ export class CreateTransactionRoute implements IExpressRoute {
 
     execute(router : Router) : void {
         router.post('/create' , CreateTransactionValidationMiddleware.value , async (req , res) => {
-            const { robloxUser , discordId } : CreateTransactionRequestValidatedBody = req.body
+            const { username  , discordId , items } : CreateTransactionRequestValidatedBody = req.body
 
-            const { id } = await this.transactionDb!.add({
-                id : new Uuid(this.v4!()),
-                status : "initalized",
-                username : robloxUser,
-                discordid : discordId
-            })
+            try {
+                const { id } = await this.transactionDb!.add({
+                    id : new Uuid(this.v4!()),
+                    status : "initalized",
+                    username,
+                    discordId, 
+                    items
+                })
 
-            return res.status(200).json({
-                id : id.value
-            })
+                return res.status(200).json({
+                    id : id.value
+                })
+
+            } catch (e) {
+                return res.status(400).json({
+                    success : false,
+                    errors : ["Unable to create a transaction."]
+                })
+            }
         })
     }
 }

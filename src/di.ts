@@ -18,7 +18,8 @@ export const TOKENS = {
         fsLib : Symbol(),
         jwtLib : Symbol(),
         bcryptLib : Symbol(),
-        jwtSecret : Symbol()
+        jwtSecret : Symbol(),
+        transactionHmacSecret : Symbol()
     },
     components : {
         roblox : {
@@ -74,6 +75,14 @@ container.register(TOKENS.values.axiosInstance , {
     })
 })
 
+container.register(TOKENS.values.appConfig , {
+    useValue : appConfig
+})
+
+container.register(TOKENS.values.transactionHmacSecret , {
+    useValue : appConfig.hmac.transactionHmacSecret
+})
+
 container.register(TOKENS.values.jwtLib , {
     useValue : jwt
 })
@@ -96,10 +105,6 @@ container.register(TOKENS.values.expressRouter , {
 
 container.register(TOKENS.values.postgresLib , {
     useValue : postgres
-})
-
-container.register(TOKENS.values.appConfig , {
-    useValue : appConfig
 })
 
 container.register(TOKENS.values.postgresConfig , {

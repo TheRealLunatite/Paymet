@@ -1,17 +1,39 @@
 import { Router } from "express";
 import { IExpressRoute } from "@common/interfaces/IExpressRoute";
-import { autoInjectable } from "tsyringe";
-import ValidatePaymetHeaderMiddleware from "@components/globalMiddlewares/validatePaymetHeader"
+import { autoInjectable, inject } from "tsyringe";
+import { TOKENS } from "src/di";
+import { ITransactionModule } from "@modules/transaction/types";
+import { UpdateTransactionValidatedRequestBody } from "./types";
+import UpdateTransactionValidationMiddleware from "../../middleware/updateTransactionValidation/";
 
 @autoInjectable()
 export class UpdateTransactionRoute implements IExpressRoute {
     constructor(
-
+        @inject(TOKENS.modules.transactionDb) private transactionDb? : ITransactionModule
     ) {}
 
     execute(router : Router) : void {
-        router.post('/update' , ValidatePaymetHeaderMiddleware.value , async (req , res) => {
-            return res.status(200).send("hello world")
+        router.post('/update' , UpdateTransactionValidationMiddleware.value, async (req , res) => {
+            const { id , status , discordId , username } : UpdateTransactionValidatedRequestBody = req.body
+
+            try {
+                const updatedTransaction = await this.transactionDb!.updateById(id, {status , discordId : discordId , username : username })
+                
+                if(!updatedTransaction) {
+                    return res.status(400).json({
+                        success : false,
+                        errors : ["Transaction does not exist."]
+                    })
+                }
+
+                return res.status(200).json({success : true})
+
+            } catch (e) {
+                return res.status(500).json({
+                    success : false,
+                    error : [e.message]
+                })
+            }
         })
     }
 }

@@ -1,12 +1,15 @@
 import { DiscordId } from "@common/discordId"
 import { Username } from "@common/username"
+import { InventoryItem } from "@modules/inventory/types"
 
 export type CreateTransactionRequestBody = {
-    robloxUser : string,
-    discordId : number
+    username : string,
+    discordId : number,
+    items : InventoryItem[]
 }
 
 export type CreateTransactionRequestValidatedBody = {
-    robloxUser : Username,
-    discordId : DiscordId
+    username : Username,
+    discordId : DiscordId,
+    items : InventoryItem[]
 }

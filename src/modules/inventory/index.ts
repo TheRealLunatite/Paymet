@@ -30,7 +30,6 @@ export class InventoryDBModule implements IInventoryModule {
     }
 
     private toPGArrayFormat(data : InventoryItem[]) {   
-
         if(Array.isArray(data) && data.length >= 1) {
             const pgArray = data.map((inventoryItem) => {
                 let string = ""

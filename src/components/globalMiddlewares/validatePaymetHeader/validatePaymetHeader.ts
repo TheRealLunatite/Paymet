@@ -7,7 +7,8 @@ import { HashModule } from "@modules/hmac/types";
 @autoInjectable()
 export class ValidatePaymetHeader implements IExecutableValue<RequestHandler> {
     constructor(
-        @inject(TOKENS.modules.hmac) private hmac? : HashModule
+        @inject(TOKENS.modules.hmac) private hmac? : HashModule,
+        @inject(TOKENS.values.transactionHmacSecret) private hmacSecretKey? : string
     ){}
 
     public execute() : RequestHandler {
@@ -31,18 +32,18 @@ export class ValidatePaymetHeader implements IExecutableValue<RequestHandler> {
             if(tName !== "t" || !tValue) {
                 return res.status(400).json({
                     success : false,
-                    errors : [ "Please provide a valid t schema in Paymet-Signature header." ]
+                    errors : ["Please provide a valid t key-pair value in the Paymet-Signature header."]
                 })
             }
 
             if(vName !== "v" || !vValue) {
                 return res.status(400).json({
                     success : false,
-                    errors : [ "Please provide a valid v schema in Paymet-Signature header." ]
+                    errors : ["Please provide a valid v key-pair value in Paymet-Signature header."]
                 })
             }
 
-            if(!this.hmac!.compare(JSON.stringify(body) , vValue)) {
+            if(!this.hmac!.compare(JSON.stringify(body) , vValue , this.hmacSecretKey!)) {
                 return res.status(400).json({
                     success : false,
                     errors : ["Invalid signature."]

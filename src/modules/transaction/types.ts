@@ -1,6 +1,7 @@
 import { DiscordId } from "@common/discordId"
 import { Username } from "@common/username/username"
 import { Uuid } from "@common/uuid"
+import { InventoryItem } from "@modules/inventory/types"
 
 export interface ITransactionModule {
     add(data : Transaction) : Promise<Transaction>,
@@ -14,14 +15,15 @@ export type Transaction = {
     id : Uuid,
     status : "success" | "initalized" | "pending",
     username : Username,
-    discordid : DiscordId
+    discordId : DiscordId,
+    items : InventoryItem[]
 }
 
 export type TransactionOptional = {
     id? : Uuid,
     status? : "success" | "initalized" | "pending",
     username? : Username,
-    discordid? : DiscordId
+    discordId? : DiscordId
 }
 
 export type TransactionDoc = {
@@ -29,7 +31,8 @@ export type TransactionDoc = {
     status : "success" | "initalized" | "pending",
     robloxuser : string,
     discordid : string,
-    timestamp : string
+    timestamp : string,
+    items : InventoryItem[]
 }
 
 /*

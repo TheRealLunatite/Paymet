@@ -12,7 +12,23 @@ export class CreateTransactionValidation implements IExecutableValue<RequestHand
     public execute() : RequestHandler {
         return async (req , res , next) => {
             const errors = []
-            const { discordId , robloxUser } : CreateTransactionRequestBody = req.body
+            const { username , discordId , items } : CreateTransactionRequestBody = req.body
+
+            if(!username) {
+                errors.push("Username field is missing from the body.")
+            }
+
+            if(!discordId) {
+                errors.push("DiscordId field is missing from the body.")
+            }
+
+            if(!items) {
+                errors.push("Items field is missing from the body.")
+            }
+
+            if(errors.length >= 1) {
+                return res.status(400).json({ success : false , errors})
+            }
 
             let validatedDiscordId : DiscordId
             let validatedRobloxUser : Username
@@ -20,25 +36,31 @@ export class CreateTransactionValidation implements IExecutableValue<RequestHand
             try {
                 validatedDiscordId = new DiscordId(discordId)
             } catch {
-                errors.push("discordId field is not a valid discord id.")
+                errors.push("DiscordId field contains an invalid snowflake.")
             }
 
             try {
-                validatedRobloxUser = new Username(robloxUser)
+                validatedRobloxUser = new Username(username)
             } catch {
-                errors.push("robloxUser field is not a valid username.")
+                errors.push("Username field contains a value that does not meet the username requirement.")
             }
 
+            if(!Array.isArray(items)) {
+                errors.push("Items field must contain a array value.")
+            } 
+
             if(errors.length >= 1) {
-                return res.status(400).json({
-                    success : false,
-                    errors
-                })
+                return res.status(400).json({ success : false , errors})
+            }
+
+            if(items.length <= 0) {
+                return res.status(400).json({ success : false , errors : ["Items field cannot contain an empty array."] })
             }
 
             req.body = {
+                username : validatedRobloxUser!,
                 discordId : validatedDiscordId!,
-                robloxUser : validatedRobloxUser!
+                items
             }
 
             next()

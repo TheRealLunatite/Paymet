@@ -32,6 +32,6 @@ export const config = {
         secret : getEnvironmentalVariable("jwtSecret")
     } ,
     hmac : {
-        secret : getEnvironmentalVariable("hmacSecret")
+        transactionHmacSecret : getEnvironmentalVariable("transactionHmacSecret")
     }
 }

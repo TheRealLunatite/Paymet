@@ -2,6 +2,7 @@ import { PostgresModule } from "@modules/postgres/pg";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
 import { ITransactionModule, Transaction, TransactionDoc, TransactionOptional } from "./types";
+import { InventoryItem } from "@modules/inventory/types";
 import { Client, ConnectionConfig , QueryConfig } from "pg"
 import { Uuid } from "@common/uuid";
 import { Username } from "@common/username";
@@ -17,17 +18,58 @@ export class TransactionDBModule implements ITransactionModule {
         this.pgClient = await this.postgres.getPGClient(this.pgConnectionConfig)
     }
 
+    private sortInventory(inventory : InventoryItem[]) : InventoryItem[] {
+        return inventory.map(({ itemName , itemImage , itemRarity , itemStock , itemType }) => ({
+            itemName,
+            itemRarity,
+            itemType,
+            itemImage,
+            itemStock
+        }))
+    }
+
+    private toPGArrayFormat(data : InventoryItem[]) {   
+        if(Array.isArray(data) && data.length >= 1) {
+            const pgArray = data.map((inventoryItem) => {
+                let string = ""
+                const values = Object.values(inventoryItem)
+
+                values.forEach((val , index) => {
+                    val = val.toString().replace(/'/gm,'')
+
+                    if(val.length === 0) {
+                        string += "''"
+                    } else if (index === values.length - 1) {
+                        string += +val
+                    } else {
+                        string += `'${val}'`
+                    }
+
+                    if(index !== values.length - 1) {
+                        string += ","
+                    }
+                })
+                
+                return `(${string})`
+            })
+            
+            return pgArray
+        }
+        
+        return null
+    }
+
     public async add(data : Transaction) : Promise<Transaction> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
 
-        const { id , status , username , discordid } = data
+        const { id , status , username , discordId , items } = data
 
         const query : QueryConfig = {
             name : "add-transaction",
-            text : `INSERT INTO transaction(id , status , robloxuser , discordid) VALUES($1,$2,$3,$4)`,
-            values : [ id.value , status , username.value , discordid.value ]
+            text : `INSERT INTO transaction(id , status , username , discordid, items) VALUES($1,$2,$3,$4,$5)`,
+            values : [ id.value , status , username.value , discordId.value , this.toPGArrayFormat(this.sortInventory(items)) ]
         }
 
         await this.pgClient!.query(query)
@@ -54,7 +96,7 @@ export class TransactionDBModule implements ITransactionModule {
             await this.setPGClient()
         }
 
-        const { id : newId , status , discordid , username } = data
+        const { id : newId , status , discordId , username } = data
         const findDataById = await this.findById(id)
 
         if(!findDataById) {
@@ -71,8 +113,8 @@ export class TransactionDBModule implements ITransactionModule {
                 findDataById.id.value,
                 username?.value,
                 findDataById.username.value,
-                discordid?.value,
-                findDataById.discordid.value,
+                discordId?.value,
+                findDataById.discordId.value,
                 id.value
             ]
         }
@@ -98,13 +140,14 @@ export class TransactionDBModule implements ITransactionModule {
             return Promise.resolve(null)
         }
 
-        const [{ id : docId , status , robloxuser , discordid , timestamp }] : Array<TransactionDoc> = queryData.rows
+        const [{ id : docId , status , robloxuser , discordid , timestamp , items }] : Array<TransactionDoc> = queryData.rows
     
         return Promise.resolve({
             id : new Uuid(docId),
-            discordid : new DiscordId(+discordid),
+            discordId : new DiscordId(+discordid),
             username : new Username(robloxuser),
             timestamp : new Date(timestamp),
+            items,
             status
         })
     }
