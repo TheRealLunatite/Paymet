@@ -13,44 +13,66 @@ export class UpdateTransactionValidation implements IExecutableValue<RequestHand
     public execute() : RequestHandler {
         return async (req , res , next) => {
             const errors = []
-            const { id : transactionId , status , discordId , username } : UpdateTransactionRequestBody = req.body
-        
-            if(!transactionId) {
+            const { id , status , discordId , username } : UpdateTransactionRequestBody = req.body
+
+            let validatedUuid : Uuid
+
+            if(!id) {
                 return res.status(400).json({
                     success : false,
-                    errors : ["Please provide a UUID to update a exisiting transaction."]
+                    errors : ["Id field is missing from the body."]
+                })
+            }
+
+            try {
+                validatedUuid = new Uuid(id)
+            } catch {
+                return res.status(400).json({
+                    success : false,
+                    errors : ["Id field contains an invalid uuid value."]
                 })
             }
 
             if(Object.keys(req.body).length === 1) {
                 return res.status(400).json({
                     success : false,
-                    errors : ["Please provide one or more values to update a transaction."]
+                    errors : ["Please provide one or more field to update a transaction."]
                 })
             } 
 
+            req.body = {
+                id : validatedUuid!
+            }
+
             if((status) && ((status !== "initalized") && (status !== "pending") && (status !== "success"))) {
                 errors.push("Unsupported transaction status.")
+            } else {
+                req.body.status = status
             }
-            
-            try {
-                req.body = {
-                    id : new Uuid(transactionId),
-                    username : username && new Username(username),
-                    discordId : discordId && new DiscordId(discordId),
-                    status
+
+            if(discordId) {
+                try {
+                    req.body.discordId = new DiscordId(discordId)
+                } catch {
+                    errors.push("DiscordId field contains an invalid snowflake.")
                 }
-            } catch(e) {
-                errors.push(e.message)
             }
-            
+
+            if(username) {
+                try {
+                    req.body.username = new Username(username)
+                } catch {
+                    errors.push("Username field contains a value that does not meet the username requirement.")
+                }
+            }
+
             if(errors.length >= 1) {
                 return res.status(400).json({
                     success : false,
                     errors
                 })
             }
-
+            
             next()
         }
     }
