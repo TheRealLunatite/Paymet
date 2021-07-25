@@ -3,7 +3,8 @@ import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import { ITransactionModule } from "@modules/transaction/types";
-import { Uuid } from "@common/uuid";
+import { UpdateTransactionValidatedBody } from "./types";
+import RetrieveTransactionValidationMiddleware from "../../middleware/retrieveTransactionValidation"
 
 @autoInjectable()
 export class RetrieveTransactionRoute implements IExpressRoute {
@@ -12,8 +13,9 @@ export class RetrieveTransactionRoute implements IExpressRoute {
     ) {}
 
     execute(router : Router) : void {
-        router.post('/retrieve' , async (req , res) => {
-            const transaction = await this.transactionDb?.findById(new Uuid(req.body.id))
+        router.post('/retrieve' , RetrieveTransactionValidationMiddleware.value , async (req , res) => {
+            const { id } : UpdateTransactionValidatedBody = req.body
+            const transaction = await this.transactionDb?.findById(id)
             
             if(!transaction) {
                 return res.status(400).json({
