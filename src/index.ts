@@ -3,13 +3,24 @@ import { TOKENS } from "./di"
 import { container } from "tsyringe"
 import { RobloxExpressComponent } from "@components/roblox/express"
 import { TransactionExpressComponent } from "@components/transaction/express"
-import { WebSocketServerModule } from "@modules/websocketServer"
+import { WebSocketServerModule } from "@modules/socketServer"
 import { AuthExpressComponent } from "@components/auth/express"
-import express from "express"
+import express , { ErrorRequestHandler } from "express"
 
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
+
 app.use(express.json())
-const wsServer = container.resolve<WebSocketServerModule>(TOKENS.modules.websocketServer)
+
+const logErrorHandler : ErrorRequestHandler = function(err , req , res , next) {
+    console.log(err.message)
+    next(err)
+}
+
+const errorHandler : ErrorRequestHandler = function(err , req , res , next) {
+    return res.status(500).send("Internal Server Error.")
+}
+
+const wsServer = container.resolve<WebSocketServerModule>(TOKENS.modules.socketServer)
 
 const robloxComponent = container.resolve<RobloxExpressComponent>(TOKENS.components.roblox.component)
 robloxComponent.execute()
@@ -19,6 +30,9 @@ authComponent.execute()
 
 const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
 transactionComponent.execute()
+
+app.use(logErrorHandler)
+app.use(errorHandler)
 
 async function test() {
     await wsServer.listen({ port : 8080 })

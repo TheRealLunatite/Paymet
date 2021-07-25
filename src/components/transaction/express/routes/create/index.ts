@@ -16,10 +16,11 @@ export class CreateTransactionRoute implements IExpressRoute {
     ) {}
 
     execute(router : Router) : void {
-        router.post('/create' , CreateTransactionValidationMiddleware.value , async (req , res) => {
+        router.post('/create' , CreateTransactionValidationMiddleware.value , async (req , res , next) => {
             const { username  , discordId , items } : CreateTransactionRequestValidatedBody = req.body
 
             try {
+                next(new Error("There was a problem creating a new transaction."))
                 const { id } = await this.transactionDb!.add({
                     id : new Uuid(this.v4!()),
                     status : "initalized",
@@ -32,11 +33,8 @@ export class CreateTransactionRoute implements IExpressRoute {
                     id : id.value
                 })
 
-            } catch (e) {
-                return res.status(400).json({
-                    success : false,
-                    errors : ["Unable to create a transaction."]
-                })
+            } catch {
+                // next(new Error)
             }
         })
     }

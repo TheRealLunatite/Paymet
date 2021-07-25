@@ -44,7 +44,7 @@ export const TOKENS = {
         roblox : Symbol(),
         postgres : Symbol(),
         transactionDb : Symbol(),
-        websocketServer : Symbol(),
+        socketServer : Symbol(),
         userDb : Symbol(),
         inventoryDb : Symbol()
     }
@@ -137,7 +137,7 @@ import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
 import { PostgresModule } from "@modules/postgres/pg"
 import { TransactionDBModule } from "@modules/transaction"
-import { WebSocketServerModule } from "@modules/websocketServer"
+import { WebSocketServerModule } from "@modules/socketServer"
 import { UserDBModule } from "@modules/user"
 import { InventoryDBModule } from "@modules/inventory"
 import { HmacModule } from "@modules/hmac/hmac"
@@ -162,7 +162,7 @@ container.register<UserDBModule>(TOKENS.modules.userDb , {
     useClass : UserDBModule
 })
 
-container.register<WebSocketServerModule>(TOKENS.modules.websocketServer , {
+container.register<WebSocketServerModule>(TOKENS.modules.socketServer , {
     useClass : WebSocketServerModule
 })
 
