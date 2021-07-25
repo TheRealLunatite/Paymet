@@ -28,6 +28,23 @@ export class TransactionDBModule implements ITransactionModule {
         }))
     }
 
+    private toArray(data : string) {
+        const arrOfItems = data.substr(2 , data.length - 4).replace(/'/gm , "").replace(/","/gm , "|").split("|")
+        
+        return arrOfItems.map((items) => {
+            const [ itemName , itemRarity , itemType , itemImage , itemStock ] = items.substring(1,items.length - 1).split(",")
+            
+            return {
+                itemName,
+                itemRarity,
+                itemType,
+                itemImage,
+                itemStock : +itemStock
+            }
+        })
+
+    }
+
     private toPGArrayFormat(data : InventoryItem[]) {   
         if(Array.isArray(data) && data.length >= 1) {
             const pgArray = data.map((inventoryItem) => {
@@ -141,14 +158,14 @@ export class TransactionDBModule implements ITransactionModule {
         }
 
         const [{ id : docId , status , username , discordid , timestamp , items }] : Array<TransactionDoc> = queryData.rows
-    
+
         return Promise.resolve({
             id : new Uuid(docId),
             discordId : new DiscordId(+discordid),
             username : new Username(username),
+            status,
+            items : this.toArray(items),
             timestamp : new Date(timestamp),
-            items,
-            status
         })
     }
 

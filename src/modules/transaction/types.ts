@@ -16,7 +16,8 @@ export type Transaction = {
     status : "success" | "initalized" | "pending",
     username : Username,
     discordId : DiscordId,
-    items : InventoryItem[]
+    items : InventoryItem[],
+    timestamp? : Date
 }
 
 export type TransactionOptional = {
@@ -32,7 +33,7 @@ export type TransactionDoc = {
     username : string,
     discordid : string,
     timestamp : string,
-    items : InventoryItem[]
+    items : string
 }
 
 /*
