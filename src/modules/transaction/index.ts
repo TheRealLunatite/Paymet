@@ -1,4 +1,4 @@
-import { PostgresModule } from "@modules/postgres/pg";
+import { IPostgresModule } from "@modules/postgres/types";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
 import { ITransactionModule, Transaction, TransactionDoc, TransactionOptional } from "./types";
@@ -12,7 +12,7 @@ import { DiscordId } from "@common/discordId";
 export class TransactionDBModule implements ITransactionModule {
     private pgClient : Client | null = null
     
-    constructor(@inject(TOKENS.modules.postgres) private postgres : PostgresModule, @inject(TOKENS.values.postgresConfig) private pgConnectionConfig : ConnectionConfig) {}
+    constructor(@inject(TOKENS.modules.postgres) private postgres : IPostgresModule , @inject(TOKENS.values.postgresConfig) private pgConnectionConfig : ConnectionConfig) {}
 
     private async setPGClient() {
         this.pgClient = await this.postgres.getPGClient(this.pgConnectionConfig)

@@ -1,4 +1,4 @@
-import { PostgresModule } from "@modules/postgres/pg";
+import { IPostgresModule } from "@modules/postgres/types"
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
 import { Client, ConnectionConfig, QueryConfig } from   "pg"
@@ -13,7 +13,7 @@ export class UserDBModule implements IUserDBModule {
     private pgClient : Client | null = null
     
     constructor(
-        @inject(TOKENS.modules.postgres) private postgres : PostgresModule,
+        @inject(TOKENS.modules.postgres) private postgres : IPostgresModule,
         @inject(TOKENS.values.postgresConfig) private pgConnectionConfig : ConnectionConfig,
         @inject(TOKENS.values.uuid) private v4 : typeof uuid
     ) {}
