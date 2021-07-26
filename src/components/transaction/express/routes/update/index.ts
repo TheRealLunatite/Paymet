@@ -13,7 +13,7 @@ export class UpdateTransactionRoute implements IExpressRoute {
     ) {}
 
     execute(router : Router) : void {
-        router.post('/update' , UpdateTransactionValidationMiddleware.value, async (req , res) => {
+        router.post('/update' , UpdateTransactionValidationMiddleware.value, async (req , res , next) => {
             const { id , status , discordId , username } : UpdateTransactionValidatedRequestBody = req.body
 
             try {
@@ -28,11 +28,8 @@ export class UpdateTransactionRoute implements IExpressRoute {
 
                 return res.status(200).json({success : true})
 
-            } catch (e) {
-                return res.status(500).json({
-                    success : false,
-                    error : [e.message]
-                })
+            } catch {
+                next(new Error("There was a problem updating a transaction."))
             }
         })
     }
