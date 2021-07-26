@@ -6,7 +6,7 @@ import { InventoryItem } from "@modules/inventory/types"
 export interface TransactionModule {
     add(data : Transaction) : Promise<Transaction>,
     deleteById(id : Uuid) : Promise<boolean>,
-    findById(id : Uuid) : Promise<Transaction | null>,
+    findOne(opts : FindTransactionOptions) : Promise<Transaction | null>,
     deleteById(id : Uuid) : Promise<boolean>,
     updateById(id : Uuid , data : TransactionOptional) : Promise<boolean>
 }
@@ -34,6 +34,12 @@ export type TransactionDoc = {
     discordid : string,
     timestamp : string,
     items : string
+}
+
+export type FindTransactionOptions = {
+    id? : Uuid,
+    discordId? : DiscordId,
+    username? : Username,
 }
 
 /*

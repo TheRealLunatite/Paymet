@@ -1,7 +1,7 @@
 import { IPostgresModule } from "@modules/postgres/types";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
-import { TransactionModule, Transaction, TransactionDoc, TransactionOptional } from "./types";
+import { TransactionModule, Transaction, TransactionDoc, TransactionOptional , FindTransactionOptions } from "./types";
 import { InventoryItem } from "@modules/inventory/types";
 import { Client, ConnectionConfig , QueryConfig } from "pg"
 import { Uuid } from "@common/uuid";
@@ -114,7 +114,7 @@ export class TransactionDBModule implements TransactionModule {
         }
 
         const { id : newId , status , discordId , username } = data
-        const findDataById = await this.findById(id)
+        const findDataById = await this.findOne({ id })
 
         if(!findDataById) {
             return Promise.resolve(false)
@@ -140,33 +140,34 @@ export class TransactionDBModule implements TransactionModule {
         return Promise.resolve(true)
     }
 
-    public async findById(id : Uuid) : Promise<Transaction | null> {
+    public async findOne(opts : FindTransactionOptions) : Promise<Transaction | null> {
         if(!this.pgClient) {
             await this.setPGClient()
-        }
+        }   
 
+        const objectKeys = Object.keys(opts)
+        const queryText = "SELECT * FROM paymetUsers WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
+        
         const query : QueryConfig = {
             name : "find-transaction",
-            text : "SELECT * FROM transaction WHERE id = $1",
-            values : [id.value]
+            text : queryText,
+            values : Object.values(opts).map((val) => val.value)
         }
 
-        const queryData = await this.pgClient!.query(query)
+        const { rows , rowCount } = await this.pgClient?.query(query)!
 
-        if(!queryData.rowCount) {
-            return Promise.resolve(null)
+        if(rowCount >= 1) {
+            const { id , username , discordid , items, status , timestamp }: TransactionDoc = rows[0]
+            return {
+                id : new Uuid(id),
+                username : new Username(username),
+                discordId : new DiscordId(+discordid),
+                status,
+                items : this.toArray(items),
+                timestamp : new Date(timestamp)
+            }
         }
 
-        const [{ id : docId , status , username , discordid , timestamp , items }] : Array<TransactionDoc> = queryData.rows
-
-        return Promise.resolve({
-            id : new Uuid(docId),
-            discordId : new DiscordId(+discordid),
-            username : new Username(username),
-            status,
-            items : this.toArray(items),
-            timestamp : new Date(timestamp),
-        })
+        return Promise.resolve(null)
     }
-
 }

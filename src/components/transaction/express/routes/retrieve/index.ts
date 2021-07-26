@@ -16,7 +16,7 @@ export class RetrieveTransactionRoute implements IExpressRoute {
         router.post('/retrieve' , RetrieveTransactionValidationMiddleware.value , async (req , res , next) => {
             try {
                 const { id } : UpdateTransactionValidatedBody = req.body
-                const transaction = await this.transactionDb?.findById(id)
+                const transaction = await this.transactionDb?.findOne({ id })
             
                 if(!transaction) {
                     return res.status(400).json({
