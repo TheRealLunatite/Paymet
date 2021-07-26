@@ -19,7 +19,8 @@ export const TOKENS = {
         jwtLib : Symbol(),
         bcryptLib : Symbol(),
         jwtSecret : Symbol(),
-        transactionHmacSecret : Symbol()
+        transactionHmacSecret : Symbol(),
+        tsLogger : Symbol()
     },
     components : {
         roblox : {
@@ -39,6 +40,7 @@ export const TOKENS = {
         websocket : Symbol(),
     },
     modules : {
+        logger : Symbol(),
         request : Symbol(),
         hmac : Symbol(),
         roblox : Symbol(),
@@ -63,6 +65,7 @@ import crypto from "crypto"
 import fs from "fs"
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
+import { Logger } from "tslog"
 
 container.register(TOKENS.values.axiosInstance , {
     useValue : axios.create({
@@ -131,6 +134,10 @@ container.register(TOKENS.values.jwtSecret, {
     useValue : appConfig.jwt.secret
 })
 
+container.register(TOKENS.values.tsLogger , {
+    useValue : new Logger()
+})
+
 // MODULES
 
 import { AxiosModule } from "@modules/request/axios"
@@ -140,7 +147,8 @@ import { TransactionDBModule } from "@modules/transaction"
 import { WebSocketServerModule } from "@modules/socketServer"
 import { UserDBModule } from "@modules/user"
 import { InventoryDBModule } from "@modules/inventory"
-import { HmacModule } from "@modules/hmac/hmac"
+import { HmacModule } from "@modules/hmac"
+import { TsLoggerModule } from "@modules/logger"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -172,6 +180,10 @@ container.register<InventoryDBModule>(TOKENS.modules.inventoryDb , {
 
 container.register<HmacModule>(TOKENS.modules.hmac , {
     useClass : HmacModule
+})
+
+container.register<TsLoggerModule>(TOKENS.modules.logger , {
+    useClass : TsLoggerModule
 })
 
 // SOCKET LISTENERS

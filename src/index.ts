@@ -6,13 +6,15 @@ import { TransactionExpressComponent } from "@components/transaction/express"
 import { WebSocketServerModule } from "@modules/socketServer"
 import { AuthExpressComponent } from "@components/auth/express"
 import express , { ErrorRequestHandler } from "express"
+import { LoggerModule } from "@modules/logger/types"
 
+const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
 
 app.use(express.json())
 
 const logErrorHandler : ErrorRequestHandler = function(err , req , res , next) {
-    console.log(err.message)
+    logger.error(`${req.url} : ${err.message}`)
     next(err)
 }
 
@@ -36,13 +38,8 @@ app.use(errorHandler)
 
 async function test() {
     await wsServer.listen({ port : 8080 })
-    console.log('Websocket listening on port 8080.')
-    app.listen(3000 , () => console.log('Express server listening on Port : 3000.'))
+    logger.info("Socket server is now listening on Port : 8080")
+    app.listen(3000 , () => logger.info("Express server is now listening on Port : 3000"))
 }
 
 test()
-
-
-// app.listen(3000 , () => console.log('Live on PORT 3000'))
-
-// id uuid NOT NULL
