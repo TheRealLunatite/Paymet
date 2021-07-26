@@ -2,9 +2,9 @@ CREATE TABLE inventory (
     socketId uuid PRIMARY KEY,
     userId bigint NOT NULL UNIQUE,
     placeId bigint NOT NULL,
-    robloxUser text NOT NULL UNIQUE,
+    username text NOT NULL UNIQUE,
     inventory inventoryitem[] NOT NULL,
-    CONSTRAINT CHK_ROBLOXUSER_CHAR CHECK (length(robloxUser) >= 3 or length(robloxUser) <= 20)
+    CONSTRAINT CHK_USERNAME_CHAR CHECK (length(username) >= 3 or length(username) <= 20)
 )
 
 CREATE TYPE inventoryitem as (

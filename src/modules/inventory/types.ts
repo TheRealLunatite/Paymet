@@ -2,7 +2,7 @@ import { Id } from "@common/id";
 import { Username } from "@common/username";
 import { Uuid } from "@common/uuid";
 
-export interface IInventoryModule {
+export interface InventoryModule {
     add(data : InventoryData) : void,
     deleteById(id : Uuid) : Promise<boolean>
 }
@@ -11,7 +11,7 @@ export type InventoryData = {
     socketId : Uuid,
     userId : Id,
     placeId : Id,
-    robloxUser : Username,
+    username : Username,
     inventory : Array<InventoryItem>
 }
 

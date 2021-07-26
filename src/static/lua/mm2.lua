@@ -23,11 +23,11 @@ local addMetatable = {
     __add = function(t1 ,t2)
         local arrTable = {}
 
-        for index , value in ipairs(t1) do
+        for _ , value in ipairs(t1) do
             table.insert(arrTable , value)
         end
 
-        for index , value in ipairs(t2) do
+        for _ , value in ipairs(t2) do
             table.insert(arrTable , value)
         end
 
@@ -107,7 +107,7 @@ function getPlayerOwnedPets()
             itemStock = ItemStock
         })
     end
-
+ 
     return pets
 end
 

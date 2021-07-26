@@ -3,7 +3,7 @@ import { Username } from "@common/username/username"
 import { Uuid } from "@common/uuid"
 import { InventoryItem } from "@modules/inventory/types"
 
-export interface ITransactionModule {
+export interface TransactionModule {
     add(data : Transaction) : Promise<Transaction>,
     deleteById(id : Uuid) : Promise<boolean>,
     findById(id : Uuid) : Promise<Transaction | null>,

@@ -18,3 +18,4 @@ export interface ReceivedTradeRequest {
     type : "ReceivedTradeRequest",
     user : string
 }
+

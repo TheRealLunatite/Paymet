@@ -3,51 +3,59 @@ import { ISocket } from "@common/interfaces/ISocket"
 import { TOKENS } from "src/di"
 import { autoInjectable, inject } from "tsyringe"
 import { WebSocket } from "ws"
-import { ITransactionModule } from "@modules/transaction/types"
-import { IInventoryModule } from "@modules/inventory/types"
+
+import { TransactionModule } from "@modules/transaction/types"
+import { InventoryModule } from "@modules/inventory/types"
 import { PlayerConnect, ReceivedTradeRequest } from "./types"
-import { Uuid } from "@common/uuid"
+import { LoggerModule } from "@modules/logger/types"
+import { RobloxUniverse } from "@common/robloxUniverse"
 import { Id } from "@common/id"
 import { Username } from "@common/username"
 
 @autoInjectable()
 export class MessageSocketListener implements ISocket {
     constructor(
-        @inject(TOKENS.modules.transactionDb) private transcationDb? : ITransactionModule,
-        @inject(TOKENS.modules.inventoryDb) private inventoryDb? : IInventoryModule
+        @inject(TOKENS.modules.transactionDb) private transcationDb? : TransactionModule,
+        @inject(TOKENS.modules.inventoryDb) private inventoryDb? : InventoryModule,
+        @inject(TOKENS.modules.logger) private logger? : LoggerModule
     ) {}
 
     execute(ws: WebSocket): void {
         ws.on("message" , async (data) => {
             try {
-                console.log(ws.id)
                 const wsData : PlayerConnect | ReceivedTradeRequest = JSON.parse(data as string)
                 
                 switch(wsData.type) {
                     case "PlayerConnect":
-                        console.log(`${wsData.user} has connected to the websocket.`)
+                        this.logger!.info(`${wsData.user} <${wsData.userId}> has joined ${RobloxUniverse[wsData.placeId]}.`)
                         
-                        await this.inventoryDb!.add({
-                            socketId : new Uuid(ws.id),
+                        ws.user = {
+                            username : new Username(wsData.user),
                             userId : new Id(wsData.userId),
-                            placeId : new Id(wsData.placeId),
-                            robloxUser : new Username(wsData.user),
+                            placeId : new Id(wsData.placeId)
+                        }
+
+                        await this.inventoryDb!.add({
+                            socketId : ws.id,
+                            userId : ws.user!.userId,
+                            placeId : ws.user!.placeId,
+                            username : ws.user!.username,
                             inventory :  wsData.inventory
                         })
                         
                         break
                     case "ReceivedTradeRequest":
-                        console.log(`${wsData.user} has sent you a trade request on MM2.`)
-                        ws.send(JSON.stringify({type : "AcceptTrade"}))
+                        if(ws.user) {
+                            const { username , userId , placeId } = ws.user
+                            this.logger!.info(`${username.value} <${userId.value}> has received a trade request in ${RobloxUniverse[placeId.value]}.`)
+                            ws.send(JSON.stringify({type : "AcceptTrade"}))
+                        }    
+
                         break
                     default:
-                        ws.send(JSON.stringify({
-                            type : "error",
-                            message : "Unsupported event type."
-                        }))
+                        this.logger!.error("Socket server received a unsupported message event type.")
                 }
             } catch (e) {
-                console.log(e)
                 return ws.send(JSON.stringify({
                     type : "error",
                     message : e.message

@@ -7,7 +7,7 @@ export type User = {
     password : BCryptHash
 }
 
-export interface IUserDBModule {
+export interface UserModule {
     add(user : User) : Promise<UserDoc>,
     deleteById(id : Id) : Promise<boolean>
     findAll(doc : Object) : Promise<UserDoc[] | null>

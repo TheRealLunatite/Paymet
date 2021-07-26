@@ -1,7 +1,7 @@
 import { IPostgresModule } from "@modules/postgres/types";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
-import { ITransactionModule, Transaction, TransactionDoc, TransactionOptional } from "./types";
+import { TransactionModule, Transaction, TransactionDoc, TransactionOptional } from "./types";
 import { InventoryItem } from "@modules/inventory/types";
 import { Client, ConnectionConfig , QueryConfig } from "pg"
 import { Uuid } from "@common/uuid";
@@ -9,7 +9,7 @@ import { Username } from "@common/username";
 import { DiscordId } from "@common/discordId";
 
 @injectable()
-export class TransactionDBModule implements ITransactionModule {
+export class TransactionDBModule implements TransactionModule {
     private pgClient : Client | null = null
     
     constructor(@inject(TOKENS.modules.postgres) private postgres : IPostgresModule , @inject(TOKENS.values.postgresConfig) private pgConnectionConfig : ConnectionConfig) {}

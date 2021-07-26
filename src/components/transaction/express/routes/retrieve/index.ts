@@ -2,14 +2,14 @@ import { Router } from "express";
 import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
-import { ITransactionModule } from "@modules/transaction/types";
+import { TransactionModule } from "@modules/transaction/types";
 import { UpdateTransactionValidatedBody } from "./types";
 import RetrieveTransactionValidationMiddleware from "../../middleware/retrieveTransactionValidation"
 
 @autoInjectable()
 export class RetrieveTransactionRoute implements IExpressRoute {
     constructor(
-        @inject(TOKENS.modules.transactionDb) private transactionDb? : ITransactionModule
+        @inject(TOKENS.modules.transactionDb) private transactionDb? : TransactionModule
     ) {}
 
     execute(router : Router) : void {

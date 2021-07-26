@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { IExpressRoute } from "@common/interfaces/IExpressRoute";
-import { ITransactionModule } from "@modules/transaction/types";
+import { TransactionModule } from "@modules/transaction/types";
 import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import { v4 as uuid } from "uuid";
@@ -11,7 +11,7 @@ import { Uuid } from "@common/uuid";
 @autoInjectable()
 export class CreateTransactionRoute implements IExpressRoute {
     constructor(
-        @inject(TOKENS.modules.transactionDb) private transactionDb? : ITransactionModule,
+        @inject(TOKENS.modules.transactionDb) private transactionDb? : TransactionModule,
         @inject(TOKENS.values.uuid) private v4? : typeof uuid
     ) {}
 

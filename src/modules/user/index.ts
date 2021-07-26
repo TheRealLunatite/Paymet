@@ -2,14 +2,14 @@ import { IPostgresModule } from "@modules/postgres/types"
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
 import { Client, ConnectionConfig, QueryConfig } from   "pg"
-import { IUserDBModule, User, UserDoc, UserDocOptional, UserPrimitiveDoc } from "./types";
+import { UserModule, User, UserDoc, UserDocOptional, UserPrimitiveDoc } from "./types";
 import { Id } from "@common/id";
 import { Username } from "@common/username";
 import { Password } from "@common/password";
 import { v4 as uuid } from "uuid";
 
 @injectable()
-export class UserDBModule implements IUserDBModule {
+export class UserDBModule implements UserModule {
     private pgClient : Client | null = null
     
     constructor(

@@ -6,6 +6,7 @@ import http , { Server } from "http"
 import { WebSocketServer } from "./types";
 import { v4 } from "uuid"
 import { ISocket } from "@common/interfaces/ISocket";
+import { Uuid } from "@common/uuid";
 
 @injectable()
 export class WebSocketServerModule implements WebSocketServer {
@@ -30,7 +31,7 @@ export class WebSocketServerModule implements WebSocketServer {
         
         this.wsServer.on("connection" , (ws , req) => {
             // Set an id to identify each individual client connected to our websocket.
-            ws.id = this.uuid()
+            ws.id = new Uuid(this.uuid())
 
             this.socketListeners.forEach((socketListener) => {
                 socketListener.execute(ws)

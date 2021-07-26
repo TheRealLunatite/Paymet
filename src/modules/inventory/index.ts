@@ -4,10 +4,10 @@ import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
 import { InventoryItem } from "./types";
 import { singleton , inject } from "tsyringe";
-import { IInventoryModule, InventoryData } from "./types";
+import { InventoryModule, InventoryData } from "./types";
 
 @singleton()
-export class InventoryDBModule implements IInventoryModule {
+export class InventoryDBModule implements InventoryModule {
     private pgClient : Client | null = null
 
     constructor(
@@ -67,13 +67,13 @@ export class InventoryDBModule implements IInventoryModule {
             await this.setPGClient()
         }
 
-        const { socketId , userId , placeId , robloxUser, inventory } = data
+        const { socketId , userId , placeId , username, inventory } = data
         
         // Validate the inventory data before adding the data in.
         const query : QueryConfig = {
             name : "add-inventory",
-            text : `INSERT INTO inventory(socketId , userId , placeId , robloxUser , inventory) VALUES($1,$2,$3,$4,$5::inventoryitem[])`,
-            values : [socketId.value , userId.value , placeId.value , robloxUser.value , this.toPGArrayFormat(this.sortInventory(inventory))]
+            text : `INSERT INTO inventory(socketId , userId , placeId , username , inventory) VALUES($1,$2,$3,$4,$5::inventoryitem[])`,
+            values : [socketId.value , userId.value , placeId.value , username.value , this.toPGArrayFormat(this.sortInventory(inventory))]
         }    
 
         await this.pgClient!.query(query)
