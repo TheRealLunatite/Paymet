@@ -11,7 +11,6 @@ import { LoggerModule } from "@modules/logger/types"
 import { RobloxUniverse } from "@common/robloxUniverse"
 import { Id } from "@common/id"
 import { Username } from "@common/username"
-import { Uuid } from "@common/uuid"
 
 @autoInjectable()
 export class MessageSocketListener implements ISocket {
@@ -24,13 +23,11 @@ export class MessageSocketListener implements ISocket {
     execute(ws: WebSocket): void {
         ws.on("message" , async (data) => {
             const wsData : PlayerConnect | ReceivedTradeRequest = JSON.parse(data as string)
-            
+
             switch(wsData.type) {
-                case "PlayerConnect":
-                    this.logger!.info(`${wsData.user} <${wsData.userId}> has joined ${RobloxUniverse[wsData.placeId]}.`)
-                    
+                case "PlayerConnect":                    
                     ws.user = {
-                        username : new Username(wsData.user),
+                        username : new Username(wsData.username),
                         userId : new Id(wsData.userId),
                         placeId : new Id(wsData.placeId)
                     }
@@ -42,21 +39,28 @@ export class MessageSocketListener implements ISocket {
                         username : ws.user!.username,
                         inventory :  wsData.inventory
                     })
-                    
+
+                    this.logger!.info(`${wsData.username} <${wsData.userId}> has joined ${RobloxUniverse[wsData.placeId]}.`)                    
                     break
                 case "ReceivedTradeRequest":
                     if(ws.user) {
                         const { username , userId , placeId } = ws.user
                         this.logger!.info(`${username.value} <${userId.value}> has received a trade request in ${RobloxUniverse[placeId.value]}.`)
 
-                        const transaction = await this.transcationDb!.findById(new Uuid("123"))
+                        const transaction = await this.transcationDb!.findOne({ username : new Username(wsData.username) })
 
-                        if(transaction) {
-                            
-                            ws.send(JSON.stringify({type : "AcceptTrade"}))
+                        if((transaction) && (transaction.status === "pending")) {
+                            this.logger!.info(`${username.value} <${userId.value}> is accepting ${wsData.username} trade in ${RobloxUniverse[placeId.value]}.`)
+
+                            ws.send(JSON.stringify({
+                                type : "AcceptTrade",
+                                items : transaction.items
+                            }))
+
+                        } else {
+                            this.logger!.info(`${username.value} <${userId.value}> is declining ${wsData.username} trade in ${RobloxUniverse[placeId.value]}.`)
+                            ws.send(JSON.stringify({ type : "DeclineTrade" }))
                         }
-
-                        // ws.send(JSON.stringify({type : "AcceptTrade"}))
                     }    
 
                     break

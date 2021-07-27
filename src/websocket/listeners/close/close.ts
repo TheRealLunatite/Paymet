@@ -17,8 +17,8 @@ export class CloseSocketListener implements ISocket {
             try {
                 await this.inventoryDb?.deleteById(ws.id)
                 if(ws.user) {
-                    const { username , placeId } = ws.user
-                    this.logger!.info(`${username.value} has left ${RobloxUniverse[placeId.value]}.`)
+                    const { username , placeId , userId } = ws.user
+                    this.logger!.info(`${username.value} <${userId.value}> has left ${RobloxUniverse[placeId.value]}.`)
                 } else {
                     await this.logger!.error("Unable to log disconnection data. <ws.user> is undefined.")
                 }

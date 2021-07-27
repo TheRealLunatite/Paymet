@@ -4,10 +4,16 @@ CREATE TABLE transaction (
     status text NOT NULL,
     username text NOT NULL,
     discordId bigint NOT NULL,
-    items inventoryitem[] NOT NULL,
+    items itempurchased[] NOT NULL,
     timestamp timestamptz DEFAULT NOW(), 
     CONSTRAINT CHK_TRANSACTION_STATUS CHECK (status = 'initalized' OR status = 'pending' OR status = 'success'),
     CONSTRAINT CHK_USERNAME_CHAR CHECK (length(username) >= 3 or length(username) <= 20)
+);
+
+CREATE TYPE itempurchased as (
+    itemName text,
+    itemRawName text,
+    itemPurchased integer
 );
 
 -- -- 3 - 20

@@ -1,21 +1,15 @@
-export type InventoryItem = {
-    itemName : string,
-    itemRarity : string,
-    itemType : string,
-    itemImage : string,
-    itemStock : number
-}
+import { InventoryItem } from "@modules/inventory/types";
 
 export interface PlayerConnect {
     type : "PlayerConnect"
     userId : number,
     placeId : number,
-    user : string,
+    username : string,
     inventory : InventoryItem[]
 }
 
 export interface ReceivedTradeRequest {
     type : "ReceivedTradeRequest",
-    user : string
+    username : string
 }
 

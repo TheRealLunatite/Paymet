@@ -20,8 +20,9 @@ export class InventoryDBModule implements InventoryModule {
     }
 
     private sortInventory(inventory : InventoryItem[]) : InventoryItem[] {
-        return inventory.map(({ itemName , itemImage , itemRarity , itemStock , itemType }) => ({
+        return inventory.map(({ itemName , itemImage , itemRarity , itemStock , itemType , itemRawName }) => ({
             itemName,
+            itemRawName,
             itemRarity,
             itemType,
             itemImage,
@@ -29,7 +30,7 @@ export class InventoryDBModule implements InventoryModule {
         }))
     }
 
-    private toPGArrayFormat(data : InventoryItem[]) {   
+    private toPGArrayFormat(data : InventoryItem[]) : [] | string[] {   
         if(Array.isArray(data) && data.length >= 1) {
             const pgArray = data.map((inventoryItem) => {
                 let string = ""
@@ -57,7 +58,7 @@ export class InventoryDBModule implements InventoryModule {
             return pgArray
         }
         
-        return null
+        return []
     }
 
     private parsePGArrayFormat() {}
@@ -68,7 +69,7 @@ export class InventoryDBModule implements InventoryModule {
         }
 
         const { socketId , userId , placeId , username, inventory } = data
-        
+
         // Validate the inventory data before adding the data in.
         const query : QueryConfig = {
             name : "add-inventory",

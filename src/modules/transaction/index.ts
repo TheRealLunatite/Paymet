@@ -1,8 +1,7 @@
 import { IPostgresModule } from "@modules/postgres/types";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
-import { TransactionModule, Transaction, TransactionDoc, TransactionOptional , FindTransactionOptions } from "./types";
-import { InventoryItem } from "@modules/inventory/types";
+import { TransactionModule, Transaction, TransactionDoc, TransactionOptional , FindTransactionOptions , ItemPurchased } from "./types";
 import { Client, ConnectionConfig , QueryConfig } from "pg"
 import { Uuid } from "@common/uuid";
 import { Username } from "@common/username";
@@ -18,34 +17,30 @@ export class TransactionDBModule implements TransactionModule {
         this.pgClient = await this.postgres.getPGClient(this.pgConnectionConfig)
     }
 
-    private sortInventory(inventory : InventoryItem[]) : InventoryItem[] {
-        return inventory.map(({ itemName , itemImage , itemRarity , itemStock , itemType }) => ({
+    private sortInventory(inventory : ItemPurchased[]) : ItemPurchased[] {
+        return inventory.map(({ itemName , itemRawName , itemPurchased }) => ({
             itemName,
-            itemRarity,
-            itemType,
-            itemImage,
-            itemStock
+            itemRawName,
+            itemPurchased
         }))
     }
 
-    private toArray(data : string) {
+    private toArray(data : string) : ItemPurchased[] {
         const arrOfItems = data.substr(2 , data.length - 4).replace(/'/gm , "").replace(/","/gm , "|").split("|")
         
         return arrOfItems.map((items) => {
-            const [ itemName , itemRarity , itemType , itemImage , itemStock ] = items.substring(1,items.length - 1).split(",")
+            const [ itemName , itemRawName , itemPurchased ] = items.substring(1,items.length - 1).split(",")
             
             return {
                 itemName,
-                itemRarity,
-                itemType,
-                itemImage,
-                itemStock : +itemStock
+                itemRawName,
+                itemPurchased : +itemPurchased
             }
         })
 
     }
 
-    private toPGArrayFormat(data : InventoryItem[]) {   
+    private toPGArrayFormat(data : ItemPurchased[]) {   
         if(Array.isArray(data) && data.length >= 1) {
             const pgArray = data.map((inventoryItem) => {
                 let string = ""
@@ -146,7 +141,7 @@ export class TransactionDBModule implements TransactionModule {
         }   
 
         const objectKeys = Object.keys(opts)
-        const queryText = "SELECT * FROM paymetUsers WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
+        const queryText = "SELECT * FROM transaction WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
         
         const query : QueryConfig = {
             name : "find-transaction",

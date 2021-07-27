@@ -17,6 +17,7 @@ export type InventoryData = {
 
 export type InventoryItem = {
     itemName : string,
+    itemRawName: string,
     itemRarity : string,
     itemType : string,
     itemImage : string,

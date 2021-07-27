@@ -1,15 +1,15 @@
 import { DiscordId } from "@common/discordId"
 import { Username } from "@common/username"
-import { InventoryItem } from "@modules/inventory/types"
+import { ItemPurchased } from "@modules/transaction/types"
 
 export type CreateTransactionRequestBody = {
     username : string,
     discordId : number,
-    items : InventoryItem[]
+    items : ItemPurchased[]
 }
 
 export type CreateTransactionRequestValidatedBody = {
     username : Username,
     discordId : DiscordId,
-    items : InventoryItem[]
+    items : ItemPurchased[]
 }

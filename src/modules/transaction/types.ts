@@ -1,7 +1,6 @@
 import { DiscordId } from "@common/discordId"
 import { Username } from "@common/username/username"
 import { Uuid } from "@common/uuid"
-import { InventoryItem } from "@modules/inventory/types"
 
 export interface TransactionModule {
     add(data : Transaction) : Promise<Transaction>,
@@ -11,12 +10,17 @@ export interface TransactionModule {
     updateById(id : Uuid , data : TransactionOptional) : Promise<boolean>
 }
 
+export type ItemPurchased = {
+    itemName : string,
+    itemPurchased : number
+}
+
 export type Transaction = {
     id : Uuid,
     status : "success" | "initalized" | "pending",
     username : Username,
     discordId : DiscordId,
-    items : InventoryItem[],
+    items : ItemPurchased[],
     timestamp? : Date
 }
 

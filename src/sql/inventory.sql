@@ -9,10 +9,11 @@ CREATE TABLE inventory (
 
 CREATE TYPE inventoryitem as (
     itemName text,
+    itemRawName text,
     itemRarity text,
     itemType text,
     itemImage text,
-    itemStock text
+    itemStock integer
 );
 
 INSERT INTO inventory(
