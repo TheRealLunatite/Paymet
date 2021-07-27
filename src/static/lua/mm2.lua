@@ -114,10 +114,10 @@ end
 
 function offerTradeItems(items)
     for _ , itemData in ipairs(items) do
-        for i = 1 , itemData.itemStock do
+        for i = 1 , itemData.itemPurchased do
             local args = {
-                [1] = itemData.itemName,
-                [2] = itemData.itemType == "Knife" and "Weapons" or "Pets"
+                [1] = itemData.itemRawName,
+                [2] = (itemData.itemType == "Knife" or itemData.itemType == "Gun") and "Weapons" or "Pets"
             }
             
             game:GetService("ReplicatedStorage").Trade.OfferItem:FireServer(unpack(args))
@@ -174,12 +174,36 @@ WebSocket.OnMessage:Connect(function(msg)
     local data  = HttpService:JSONDecode(msg)
 
     if data.type == "AcceptTrade" then
+        local tries = 0
+
         game.ReplicatedStorage:FindFirstChild("Trade").AcceptRequest:FireServer()
         TradeModule.GUI.RequestFrame.Visible = false
 
-        wait(3)
-        offerTradeItems(data.items)
-        game:GetService("ReplicatedStorage").Trade.AcceptTrade:FireServer()
+        -- Try to look for the Trade screen 5 times. 
+        repeat
+            if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
+                break
+            end
+            tries += 1
+            wait(1)
+        until tries >= 5
+
+        if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
+            offerTradeItems(data.items)
+            if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
+                
+                wait(6) -- MM2 Trade Cooldown
+                game:GetService("ReplicatedStorage").Trade.AcceptTrade:FireServer()
+            
+                sendToWebsocket({
+                    type = "TradeSuccess"
+                })
+            end
+        else
+            sendToWebsocket({
+                type = "TradeFailed"
+            })
+        end
 
     elseif data.type == "DeclineTrade" then
         game.ReplicatedStorage:FindFirstChild("Trade").DeclineRequest:FireServer()

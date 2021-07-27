@@ -18,9 +18,10 @@ export class TransactionDBModule implements TransactionModule {
     }
 
     private sortInventory(inventory : ItemPurchased[]) : ItemPurchased[] {
-        return inventory.map(({ itemName , itemRawName , itemPurchased }) => ({
+        return inventory.map(({ itemName , itemRawName , itemType , itemPurchased }) => ({
             itemName,
             itemRawName,
+            itemType,
             itemPurchased
         }))
     }
@@ -29,11 +30,12 @@ export class TransactionDBModule implements TransactionModule {
         const arrOfItems = data.substr(2 , data.length - 4).replace(/'/gm , "").replace(/","/gm , "|").split("|")
         
         return arrOfItems.map((items) => {
-            const [ itemName , itemRawName , itemPurchased ] = items.substring(1,items.length - 1).split(",")
+            const [ itemName , itemRawName , itemType , itemPurchased ] = items.substring(1,items.length - 1).split(",")
             
             return {
                 itemName,
                 itemRawName,
+                itemType,
                 itemPurchased : +itemPurchased
             }
         })

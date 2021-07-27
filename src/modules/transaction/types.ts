@@ -12,6 +12,8 @@ export interface TransactionModule {
 
 export type ItemPurchased = {
     itemName : string,
+    itemRawName : string,
+    itemType : string,
     itemPurchased : number
 }
 
@@ -45,7 +47,3 @@ export type FindTransactionOptions = {
     discordId? : DiscordId,
     username? : Username,
 }
-
-/*
-
-*/

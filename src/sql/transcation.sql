@@ -13,6 +13,7 @@ CREATE TABLE transaction (
 CREATE TYPE itempurchased as (
     itemName text,
     itemRawName text,
+    itemType text,
     itemPurchased integer
 );
 
