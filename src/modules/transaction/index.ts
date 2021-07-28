@@ -105,38 +105,6 @@ export class TransactionDBModule implements TransactionModule {
         return Promise.resolve(rowCount >= 1)
     }
 
-    public async updateById(id : Uuid , data : TransactionOptional) : Promise<boolean> { 
-        if(!this.pgClient) {
-            await this.setPGClient()
-        }
-
-        const { id : newId , status , discordId , username } = data
-        const findDataById = await this.findOne({ id })
-
-        if(!findDataById) {
-            return Promise.resolve(false)
-        }
-
-        const query : QueryConfig = {
-            name : "update-transaction",
-            text : `UPDATE transaction SET status = COALESCE($1,$2) , id = COALESCE($3 , $4)::UUID , username = COALESCE($5,$6) , discordid = COALESCE($7,$8)::BIGINT WHERE id = $9`,
-            values : [
-                status,
-                findDataById.status,
-                newId?.value,
-                findDataById.id.value,
-                username?.value,
-                findDataById.username.value,
-                discordId?.value,
-                findDataById.discordId.value,
-                id.value
-            ]
-        }
-        
-        await this.pgClient?.query(query)
-        return Promise.resolve(true)
-    }
-
     public async findOne(opts : FindTransactionOptions) : Promise<Transaction | null> {
         if(!this.pgClient) {
             await this.setPGClient()
@@ -167,4 +135,21 @@ export class TransactionDBModule implements TransactionModule {
 
         return Promise.resolve(null)
     }
+
+    public async updateById(id : Uuid , opts : TransactionOptional) : Promise<boolean> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }
+
+        const objectEntries = Object.entries(opts)
+
+        const query : QueryConfig = {
+            name : "update-transaction",
+            text : "UPDATE transaction SET " + objectEntries.map((value , index) => `${value[0]}='${value[1]}'` + (index === objectEntries.length ? "," : "")) + " WHERE id=$1",
+            values : [id.value]
+        }
+
+        const { rowCount } = await this.pgClient!.query(query)
+        return Promise.resolve(rowCount === 1)
+    } 
 }

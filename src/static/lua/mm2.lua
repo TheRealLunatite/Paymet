@@ -4,7 +4,16 @@ local WS_URL = "ws://localhost:8080"
 -- SERVICES
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
-local StarterGUI = game:GetService("StarterGui")
+local StarterGui = game:GetService("StarterGui")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- REMOTES
+local TradeRemotes = ReplicatedStorage:FindFirstChild("Trade")
+local AcceptTradeRemote = TradeRemotes.AcceptTrade
+local DeclineTradeRemote = TradeRemotes.DeclineTrade
+local AcceptRequestRemote = TradeRemotes.AcceptRequest
+local DeclineRequestRemote = TradeRemotes.DeclineRequest
+local OfferTradeItemRemote = TradeRemotes.OfferItem
 
 -- VARIABLES
 local TradeModule = require(game.ReplicatedStorage.Modules.TradeModule)
@@ -120,7 +129,7 @@ function offerTradeItems(items)
                 [2] = (itemData.itemType == "Knife" or itemData.itemType == "Gun") and "Weapons" or "Pets"
             }
             
-            game:GetService("ReplicatedStorage").Trade.OfferItem:FireServer(unpack(args))
+            OfferTradeItemRemote:FireServer(unpack(args))
         end
     end
 end
@@ -153,7 +162,7 @@ if not isWebsocketSuccessful then
     LocalPlayer:Kick("Unable to establish a Websocket connection.")
 end
 
-StarterGUI:SetCore("SendNotification" , {
+StarterGui:SetCore("SendNotification" , {
     Title = "Paymet",
     Text = "Succesfully established a Websocket connection."
 })
@@ -173,13 +182,19 @@ end)
 WebSocket.OnMessage:Connect(function(msg)
     local data  = HttpService:JSONDecode(msg)
 
-    if data.type == "AcceptTrade" then
+    if data.type == "AcceptTradeRequest" then
         local tries = 0
 
-        game.ReplicatedStorage:FindFirstChild("Trade").AcceptRequest:FireServer()
+        -- Accept trade request.
+        AcceptRequestRemote:FireServer() 
         TradeModule.GUI.RequestFrame.Visible = false
+        
+        sendToWebsocket({
+            type = "AcceptedTradeRequest",
+            username = data.username
+        })
 
-        -- Try to look for the Trade screen 5 times. 
+        -- Try to look for the Trade screen 5 times.
         repeat
             if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
                 break
@@ -189,24 +204,32 @@ WebSocket.OnMessage:Connect(function(msg)
         until tries >= 5
 
         if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
+            -- Offer trade items that user has purchased.
             offerTradeItems(data.items)
+
             if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
-                
-                wait(6) -- MM2 Trade Cooldown
-                game:GetService("ReplicatedStorage").Trade.AcceptTrade:FireServer()
-            
+                -- Have to wait 6 seconds for the MM2 Trade countdown.
+                wait(6)
+                AcceptTradeRemote:FireServer()
                 sendToWebsocket({
-                    type = "TradeSuccess"
+                    type = "AcceptedTrade",
+                    username = data.username
                 })
             end
         else
             sendToWebsocket({
-                type = "TradeFailed"
+                type = "TradeFailed",
+                username = data.username
             })
         end
 
-    elseif data.type == "DeclineTrade" then
-        game.ReplicatedStorage:FindFirstChild("Trade").DeclineRequest:FireServer()
+    elseif data.type == "DeclineTradeRequest" then
+        DeclineRequestRemote:FireServer()
         TradeModule.GUI.RequestFrame.Visible = false
+
+        sendToWebsocket({
+            type = "DeclinedTradeRequest",
+            username = data.username
+        })
     end
 end)

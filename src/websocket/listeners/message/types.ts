@@ -1,6 +1,8 @@
 import { InventoryItem } from "@modules/inventory/types";
 
-export interface PlayerConnect {
+export type WebsocketData = PlayerConnect | Trade
+
+export type PlayerConnect = {
     type : "PlayerConnect"
     userId : number,
     placeId : number,
@@ -8,8 +10,7 @@ export interface PlayerConnect {
     inventory : InventoryItem[]
 }
 
-export interface ReceivedTradeRequest {
-    type : "ReceivedTradeRequest",
+export type Trade = {
+    type : "DeclineTradeRequest" | "AcceptedTradeRequest" | "ReceivedTradeRequest" | "AcceptedTrade" | "DeclinedTradeRequest",
     username : string
 }
-

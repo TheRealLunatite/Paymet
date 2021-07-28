@@ -41,18 +41,19 @@ export class UpdateTransactionValidation implements IExecutableValue<RequestHand
             } 
 
             req.body = {
-                id : validatedUuid!
+                id : validatedUuid!,
+                opts : {}
             }
 
             if((status) && ((status !== "initalized") && (status !== "pending") && (status !== "success"))) {
                 errors.push("Unsupported transaction status.")
             } else {
-                req.body.status = status
+                req.body.opts.status = status
             }
 
             if(discordId) {
                 try {
-                    req.body.discordId = new DiscordId(discordId)
+                    req.body.opts.discordId = new DiscordId(discordId)
                 } catch {
                     errors.push("DiscordId field contains an invalid snowflake.")
                 }
@@ -60,7 +61,7 @@ export class UpdateTransactionValidation implements IExecutableValue<RequestHand
 
             if(username) {
                 try {
-                    req.body.username = new Username(username)
+                    req.body.opts.username = new Username(username)
                 } catch {
                     errors.push("Username field contains a value that does not meet the username requirement.")
                 }

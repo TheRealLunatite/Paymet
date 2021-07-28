@@ -2,7 +2,7 @@ import { Router } from "express";
 import { IExpressRoute } from "@common/interfaces/IExpressRoute";
 import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
-import { TransactionModule } from "@modules/transaction/types";
+import { TransactionModule , TransactionOptional } from "@modules/transaction/types";
 import { UpdateTransactionValidatedRequestBody } from "./types";
 import UpdateTransactionValidationMiddleware from "../../middleware/updateTransactionValidation/";
 
@@ -14,10 +14,11 @@ export class UpdateTransactionRoute implements IExpressRoute {
 
     execute(router : Router) : void {
         router.post('/update' , UpdateTransactionValidationMiddleware.value, async (req , res , next) => {
-            const { id , status , discordId , username } : UpdateTransactionValidatedRequestBody = req.body
+            const { id } : UpdateTransactionValidatedRequestBody = req.body
+            const opts : TransactionOptional = req.body.opts
 
             try {
-                const updatedTransaction = await this.transactionDb!.updateById(id, {status , discordId : discordId , username : username})
+                const updatedTransaction = await this.transactionDb!.updateById(id, opts)
 
                 if(!updatedTransaction) {
                     return res.status(400).json({
@@ -28,7 +29,8 @@ export class UpdateTransactionRoute implements IExpressRoute {
 
                 return res.status(200).json({success : true})
 
-            } catch {
+            } catch (e) {
+                console.log(e)
                 next(new Error("There was a problem updating a transaction."))
             }
         })

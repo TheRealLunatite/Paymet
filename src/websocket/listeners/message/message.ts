@@ -3,10 +3,9 @@ import { ISocket } from "@common/interfaces/ISocket"
 import { TOKENS } from "src/di"
 import { autoInjectable, inject } from "tsyringe"
 import { WebSocket } from "ws"
-
 import { TransactionModule } from "@modules/transaction/types"
 import { InventoryModule } from "@modules/inventory/types"
-import { PlayerConnect, ReceivedTradeRequest } from "./types"
+import { WebsocketData } from "./types"
 import { LoggerModule } from "@modules/logger/types"
 import { RobloxUniverse } from "@common/robloxUniverse"
 import { Id } from "@common/id"
@@ -22,7 +21,7 @@ export class MessageSocketListener implements ISocket {
 
     execute(ws: WebSocket): void {
         ws.on("message" , async (data) => {
-            const wsData : PlayerConnect | ReceivedTradeRequest = JSON.parse(data as string)
+            const wsData : WebsocketData = JSON.parse(data as string)
 
             switch(wsData.type) {
                 case "PlayerConnect":                    
@@ -43,25 +42,48 @@ export class MessageSocketListener implements ISocket {
                     this.logger!.info(`${wsData.username} <${wsData.userId}> has joined ${RobloxUniverse[wsData.placeId]}.`)                    
                     break
                 case "ReceivedTradeRequest":
-                    if(ws.user) {
-                        const { username , userId , placeId } = ws.user
-                        this.logger!.info(`${username.value} <${userId.value}> has received a trade request in ${RobloxUniverse[placeId.value]}.`)
+                    if(!ws.user) {
+                        return ws.close(69420360 , "ws.user undefined.")
+                    }
 
-                        const transaction = await this.transcationDb!.findOne({ username : new Username(wsData.username) })
+                    this.logger!.info(`${ws.user.username.value} <${ws.user.userId.value}> has received a trade request in ${RobloxUniverse[ws.user.placeId.value]}.`)
+                    const transaction = await this.transcationDb!.findOne({ username : new Username(wsData.username) })
 
-                        if((transaction) && (transaction.status === "pending")) {
-                            this.logger!.info(`${username.value} <${userId.value}> is accepting ${wsData.username} trade in ${RobloxUniverse[placeId.value]}.`)
+                    if((transaction) && (transaction.status === "pending")) {
+                        return ws.send(JSON.stringify({
+                            type : "AcceptTradeRequest",
+                            username : wsData.username,
+                            items : transaction.items
+                        }))
+                    }
+                    
+                    return ws.send(JSON.stringify({
+                        type : "DeclineTradeRequest",
+                        username : wsData.username 
+                    }))
+                case "AcceptedTradeRequest":
+                    if(!ws.user) {
+                        return ws.close(69420360 , "ws.user undefined.")
+                    }
 
-                            ws.send(JSON.stringify({
-                                type : "AcceptTrade",
-                                items : transaction.items
-                            }))
+                    this.logger!.info(`${ws.user.username.value} <${ws.user.userId.value}> has accepted ${wsData.username} trade request in ${RobloxUniverse[ws.user.placeId.value]}.`)
+                    break
+                case "DeclinedTradeRequest":
+                    if(!ws.user) {
+                        return ws.close(69420360 , "ws.user undefined.")
+                    }
 
-                        } else {
-                            this.logger!.info(`${username.value} <${userId.value}> is declining ${wsData.username} trade in ${RobloxUniverse[placeId.value]}.`)
-                            ws.send(JSON.stringify({ type : "DeclineTrade" }))
-                        }
-                    }    
+                    this.logger!.info(`${ws.user.username.value} <${ws.user.userId.value}> has declined ${wsData.username} trade request in ${RobloxUniverse[ws.user.placeId.value]}.`)
+                    
+                    break
+                case "AcceptedTrade":
+                    if(!ws.user) {
+                        return ws.close(69420360 , "ws.user undefined.")
+                    }
+
+                    this.logger!.info(`${ws.user.username.value} <${ws.user.userId.value}> has accepted a trade with ${wsData.username} in ${RobloxUniverse[ws.user.placeId.value]}.`)
+
+                    
 
                     break
                 default:
