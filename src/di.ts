@@ -36,8 +36,11 @@ export const TOKENS = {
             component : Symbol()
         }
     },
-    listeners : {
-        websocket : Symbol(),
+    websocket : {
+        listeners : Symbol(),
+        modules : {
+            message : Symbol()
+        }  
     },
     modules : {
         logger : Symbol(),
@@ -186,11 +189,18 @@ container.register<TsLoggerModule>(TOKENS.modules.logger , {
     useClass : TsLoggerModule
 })
 
-// SOCKET LISTENERS
+// SOCKET MODULES
+import MessageModules from "@websocket/listeners/message/modules"
+import { MessageType } from "@websocket/listeners/message/modules/types"
 
+container.register<Map<MessageType , ISocketModule>>(TOKENS.websocket.modules.message , {
+    useValue : MessageModules
+})
+
+// SOCKET LISTENERS
 import SocketListeners from "@websocket/listeners"
 
-container.register<ISocket[]>(TOKENS.listeners.websocket , {
+container.register<ISocket[]>(TOKENS.websocket.listeners , {
     useValue : SocketListeners
 }) 
 
@@ -217,6 +227,7 @@ container.register(TOKENS.components.transaction.routes , {
 import { RobloxExpressComponent } from "@components/roblox/express"
 import { AuthExpressComponent } from "@components/auth/express"
 import { TransactionExpressComponent } from "@components/transaction/express"
+import { ISocketModule } from "@common/interfaces/ISocketModule"
 
 container.register(TOKENS.components.roblox.component , {
     useClass : RobloxExpressComponent

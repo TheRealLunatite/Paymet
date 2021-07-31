@@ -18,7 +18,7 @@ export class WebSocketServerModule implements WebSocketServer {
         @inject(TOKENS.values.httpLib) private httpLib : typeof http,
         @inject(TOKENS.values.uuid) private uuid : typeof v4,
         @inject(TOKENS.values.websocketLib) private websocketLib : typeof ws,
-        @inject(TOKENS.listeners.websocket) private socketListeners : ISocket[]
+        @inject(TOKENS.websocket.listeners) private socketListeners : ISocket[]
     ) {
         this.httpServer = this.httpLib.createServer(this.app)
     }

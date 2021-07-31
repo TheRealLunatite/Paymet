@@ -11,8 +11,6 @@ import { LoggerModule } from "@modules/logger/types"
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
 
-app.use(express.json())
-
 const logErrorHandler : ErrorRequestHandler = function(err , req , res , next) {
     logger.error(`${req.url} : ${err.message}`)
     next(err)
@@ -21,6 +19,10 @@ const logErrorHandler : ErrorRequestHandler = function(err , req , res , next) {
 const errorHandler : ErrorRequestHandler = function(err , req , res , next) {
     return res.status(500).send("Internal Server Error.")
 }
+
+app.use(express.json())
+app.use(logErrorHandler)
+app.use(errorHandler)
 
 const wsServer = container.resolve<WebSocketServerModule>(TOKENS.modules.socketServer)
 
@@ -32,9 +34,6 @@ authComponent.execute()
 
 const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
 transactionComponent.execute()
-
-app.use(logErrorHandler)
-app.use(errorHandler)
 
 async function test() {
     await wsServer.listen({ port : 8080 })

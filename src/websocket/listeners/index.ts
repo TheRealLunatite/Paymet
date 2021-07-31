@@ -1,5 +1,5 @@
-import { MessageSocketListener } from "./message/message";
-import { CloseSocketListener } from "./close/close";
+import { MessageSocketListener } from "./message";
+import { CloseSocketListener } from "./close";
 
 export default [
     new MessageSocketListener(),
