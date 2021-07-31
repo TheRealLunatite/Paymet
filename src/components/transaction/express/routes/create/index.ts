@@ -7,17 +7,23 @@ import { v4 as uuid } from "uuid";
 import CreateTransactionValidationMiddleware from "../../middleware/createTransactionValidation";
 import { CreateTransactionRequestValidatedBody } from "./types";
 import { Uuid } from "@common/uuid";
+import { IRobloxModule } from "@modules/roblox/types";
+import { PriceModule } from "@modules/prices/types";
 
 @autoInjectable()
 export class CreateTransactionRoute implements IExpressRoute {
     constructor(
         @inject(TOKENS.modules.transactionDb) private transactionDb? : TransactionModule,
+        @inject(TOKENS.modules.roblox) private roblox? : IRobloxModule,
+        @inject(TOKENS.modules.priceDb) private priceDb? : PriceModule,
         @inject(TOKENS.values.uuid) private v4? : typeof uuid
     ) {}
 
     execute(router : Router) : void {
         router.post('/create' , CreateTransactionValidationMiddleware.value , async (req , res , next) => {
             const { username  , discordId , items } : CreateTransactionRequestValidatedBody = req.body
+
+            this.priceDb!.updateById(new Uuid("4b030956-89b5-4ac0-91d7-58ff5593e83c") , { id : new Uuid(this.v4!())})
 
             try {
                 const { id } = await this.transactionDb!.add({

@@ -51,7 +51,8 @@ export const TOKENS = {
         transactionDb : Symbol(),
         socketServer : Symbol(),
         userDb : Symbol(),
-        inventoryDb : Symbol()
+        inventoryDb : Symbol(),
+        priceDb : Symbol()
     }
 }
 
@@ -152,6 +153,7 @@ import { UserDBModule } from "@modules/user"
 import { InventoryDBModule } from "@modules/inventory"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
+import { PriceDBModule } from "@modules/prices"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -187,6 +189,10 @@ container.register<HmacModule>(TOKENS.modules.hmac , {
 
 container.register<TsLoggerModule>(TOKENS.modules.logger , {
     useClass : TsLoggerModule
+})
+
+container.register<PriceDBModule>(TOKENS.modules.priceDb , {
+    useClass : PriceDBModule
 })
 
 // SOCKET MODULES
@@ -228,6 +234,7 @@ import { RobloxExpressComponent } from "@components/roblox/express"
 import { AuthExpressComponent } from "@components/auth/express"
 import { TransactionExpressComponent } from "@components/transaction/express"
 import { ISocketModule } from "@common/interfaces/ISocketModule"
+import { PriceModule } from "@modules/prices/types"
 
 container.register(TOKENS.components.roblox.component , {
     useClass : RobloxExpressComponent
