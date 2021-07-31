@@ -22,9 +22,7 @@ export class CreateTransactionRoute implements IExpressRoute {
     execute(router : Router) : void {
         router.post('/create' , CreateTransactionValidationMiddleware.value , async (req , res , next) => {
             const { username  , discordId , items } : CreateTransactionRequestValidatedBody = req.body
-
-            this.priceDb!.updateById(new Uuid("4b030956-89b5-4ac0-91d7-58ff5593e83c") , { id : new Uuid(this.v4!())})
-
+            
             try {
                 const { id } = await this.transactionDb!.add({
                     id : new Uuid(this.v4!()),
