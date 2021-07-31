@@ -145,7 +145,7 @@ export class TransactionDBModule implements TransactionModule {
 
         const query : QueryConfig = {
             name : "update-transaction",
-            text : "UPDATE transaction SET " + objectEntries.map((value , index) => `${value[0]}='${value[1]}'` + (index === objectEntries.length ? "," : "")) + " WHERE id=$1",
+            text : "UPDATE transaction SET " + objectEntries.map((value , index) => `${value[0]}='${typeof(value[1]) === "object" ? value[1].value : value[1]}'` + (index === objectEntries.length ? "," : "")) + " WHERE id=$1",
             values : [id.value]
         }
 
