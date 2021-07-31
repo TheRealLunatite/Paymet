@@ -11,7 +11,9 @@ export interface IRobloxModule {
     overwriteUniverse(cookie : Cookie , file : RobloxStudioFile , rootPlaceId : Id) : Promise<boolean>,
     configureUniverse(cookie : Cookie , placeId : Id , opts : ConfigureUniverseOpts) : Promise<boolean>,
     getXsrfToken(cookie : Cookie) : Promise<string | null>,
-    createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<CreateDevProductResponse | boolean>
+    createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<Id | boolean>,
+    getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts>,
+    getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>
 }
 
 export type AuthenticatedUser = {
@@ -46,4 +48,22 @@ export type CreateDevProductOpts = {
 
 export type CreateDevProductResponse = {
     productId : Id
+}
+
+export type GetDeveloperProducts = {
+    DeveloperProducts : DeveloperProduct[],
+    FinalPage : boolean,
+    PageSize : 50
+}
+
+export type DeveloperProduct = {
+    ProductId : number,
+    DeveloperProductId : number,
+    Name : string,
+    Description : string,
+    IconImageAssetId : null | number,
+    displayName : string,
+    displayDescription : null | string,
+    displayIcon : null | number,
+    PriceInRobux : null | number
 }

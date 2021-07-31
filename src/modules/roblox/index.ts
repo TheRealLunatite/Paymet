@@ -1,4 +1,4 @@
-import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser, CreateDevProductOpts, CreateDevProductResponse } from "./types";
+import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser, CreateDevProductOpts, CreateDevProductResponse, DeveloperProduct, GetDeveloperProducts } from "./types";
 import { TOKENS } from "src/di";
 import { injectable , inject } from "tsyringe";
 import { RequestModule, RequestOptions, RequestResponse } from "@modules/request/types";
@@ -11,12 +11,26 @@ import { Id } from "@common/id";
 export class RobloxModule implements IRobloxModule {
     constructor(@inject(TOKENS.modules.request) private requestModule : RequestModule) {}
 
+    private async request<T>(requestOptions : RequestOptions) : Promise<RequestResponse<T>> {
+        const responseSchema = await this.requestModule.request<T>({
+            url : requestOptions.url,
+            method : requestOptions.method,
+            headers : {
+                "User-Agent" : "RobloxStudio/WinInet RobloxApp/0.484.0.425477 (GlobalDist; RobloxDirectDownload)",
+                ...requestOptions.headers
+            },
+            body : requestOptions.body
+        })
+
+        return Promise.resolve(responseSchema)
+    }
+
     private async requestWithCookie<T>(cookie : Cookie , requestOptions : RequestOptions) : Promise<RequestResponse<T>> {
         const responseSchema = await this.requestModule.request<T>({
             url : requestOptions.url,
             method : requestOptions.method,
             headers : {
-                "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0", // Roblox Studio User-Agent XD
+                "User-Agent" : "RobloxStudio/WinInet RobloxApp/0.484.0.425477 (GlobalDist; RobloxDirectDownload)", // Roblox Studio User-Agent XD
                 "Cookie" : `.ROBLOSECURITY=${cookie.value}`,
                 ...requestOptions.headers
             },
@@ -111,7 +125,7 @@ export class RobloxModule implements IRobloxModule {
         }
     }
 
-    public async createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<boolean | CreateDevProductResponse> {
+    public async createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<boolean | Id> {
         const response = await this.requestWithCookieAndToken<string>(cookie , {
             url : "https://www.roblox.com/places/developerproducts/add",
             method : "POST",
@@ -134,15 +148,31 @@ export class RobloxModule implements IRobloxModule {
             return Promise.resolve(false)
         }
 
-        return Promise.resolve({
-            productId : new Id(+findProductId[1])
+        return Promise.resolve(new Id(+findProductId[1]))
+    }
+
+    public async getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts> {
+        const response = await this.request<GetDeveloperProducts>({
+            url : `http://api.roblox.com/developerproducts/list?placeid=${placeId.value}&page=${pageNum}`,
+            method : "GET"
         })
+
+        return Promise.resolve(response.data)
+    }
+
+    public async getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>{
+        const recursiveFunc = async (data : DeveloperProduct[] , pageNum : number) : Promise<DeveloperProduct[]> => {
+            const response = await this.getDeveloperProducts(placeId , pageNum)
+            const newData = [...data , ...response.DeveloperProducts]
+
+            if((response.DeveloperProducts.length <= 0) || (response.FinalPage)) {
+                return newData
+            }
+
+            return await recursiveFunc(newData , pageNum + 1)
+        }
+
+        const allDeveloperProducts : DeveloperProduct[] = await recursiveFunc([] , 1)
+        return Promise.resolve(allDeveloperProducts)
     }
 }
-
-/*
-    universeId	"2700158656"
-name	"11111"
-priceInRobux	"123"
-description	"123"
-*/
