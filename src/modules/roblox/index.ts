@@ -1,4 +1,4 @@
-import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser } from "./types";
+import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser, CreateDevProductOpts, CreateDevProductResponse } from "./types";
 import { TOKENS } from "src/di";
 import { injectable , inject } from "tsyringe";
 import { RequestModule, RequestOptions, RequestResponse } from "@modules/request/types";
@@ -16,7 +16,7 @@ export class RobloxModule implements IRobloxModule {
             url : requestOptions.url,
             method : requestOptions.method,
             headers : {
-                "User-Agent" : "RobloxStudio/WinInet RobloxApp/0.484.0.425477 (GlobalDist; RobloxDirectDownload)", // Roblox Studio User-Agent XD
+                "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0", // Roblox Studio User-Agent XD
                 "Cookie" : `.ROBLOSECURITY=${cookie.value}`,
                 ...requestOptions.headers
             },
@@ -110,4 +110,39 @@ export class RobloxModule implements IRobloxModule {
             return Promise.resolve(e.response.headers['x-csrf-token'])
         }
     }
+
+    public async createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<boolean | CreateDevProductResponse> {
+        const response = await this.requestWithCookieAndToken<string>(cookie , {
+            url : "https://www.roblox.com/places/developerproducts/add",
+            method : "POST",
+            body : {
+                universeId : opts.universeId.value,
+                name : opts.name,
+                priceInRobux : opts.priceInRobux,
+                description : opts.description,
+                imageAssetId : opts.imageAssetId || ""
+            }
+        })
+
+        const findProductId = /Product ([0-9]*)/m.exec(response.data)
+
+        if(!findProductId) {
+            return Promise.resolve(false)
+        }
+
+        if(findProductId[1] === "0") {
+            return Promise.resolve(false)
+        }
+
+        return Promise.resolve({
+            productId : new Id(+findProductId[1])
+        })
+    }
 }
+
+/*
+    universeId	"2700158656"
+name	"11111"
+priceInRobux	"123"
+description	"123"
+*/
