@@ -38,11 +38,7 @@ authComponent.execute()
 const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
 transactionComponent.execute()
 
-const robloxModule = container.resolve<IRobloxModule>(TOKENS.modules.roblox)
-
 async function test() {
-   console.log(await (await robloxModule.getAllDeveloperProducts(new Id(7000549832))).length)
-
     await wsServer.listen({ port : 8080 })
     logger.info("Socket server is now listening on Port : 8080")
     app.listen(3000 , () => logger.info("Express server is now listening on Port : 3000"))
