@@ -31,7 +31,7 @@ export class ValidateItems implements IExecutableValue<RequestHandler> {
                     })
                 }
             } catch {
-                next("There was a problem accessing the findInventory database.")
+                next(new Error("There was a problem accessing the findInventory database."))
             }
 
             const purchasedInventoryItems : InventoryItem[] = []
@@ -54,7 +54,7 @@ export class ValidateItems implements IExecutableValue<RequestHandler> {
                     purchasedInventoryItems.push(findItem)
                 })
             } catch (e) {
-                return next("There was something wrong while filtering items in your inventory.")
+                return next(new Error("There was something wrong while filtering items in your inventory."))
             }
 
             if(errors.length >= 1) {
