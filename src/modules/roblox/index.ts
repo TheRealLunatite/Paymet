@@ -1,4 +1,4 @@
-import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser, CreateDevProductOpts, CreateDevProductResponse, DeveloperProduct, GetDeveloperProducts } from "./types";
+import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser, CreateDevProductOpts, CreateDevProductResponse, DeveloperProduct, GetDeveloperProducts, PlaceDetail } from "./types";
 import { TOKENS } from "src/di";
 import { injectable , inject } from "tsyringe";
 import { RequestModule, RequestOptions, RequestResponse } from "@modules/request/types";
@@ -126,14 +126,17 @@ export class RobloxModule implements IRobloxModule {
     }
 
     public async createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<boolean | Id> {
+        const universeId = await this.getUniverseId(cookie , opts.placeId)
+        console.log(universeId)
+
         const response = await this.requestWithCookieAndToken<string>(cookie , {
             url : "https://www.roblox.com/places/developerproducts/add",
             method : "POST",
             body : {
-                universeId : opts.universeId.value,
+                universeId : universeId,
                 name : opts.name,
                 priceInRobux : opts.priceInRobux,
-                description : opts.description,
+                description : opts.description || "",
                 imageAssetId : opts.imageAssetId || ""
             }
         })
@@ -149,6 +152,19 @@ export class RobloxModule implements IRobloxModule {
         }
 
         return Promise.resolve(new Id(+findProductId[1]))
+    }
+
+    public async getUniverseId(cookie : Cookie , placeId : Id) : Promise<number | null> {
+        const response = await this.requestWithCookieAndToken<PlaceDetail[]>(cookie , {
+            url : `https://games.roblox.com/v1/games/multiget-place-details?placeIds=${placeId.value}`,
+            method : "GET"
+        })
+
+        if(response.data.length === 0) {
+            return Promise.resolve(null)
+        }
+
+        return Promise.resolve(response.data[0].universeId)
     }
 
     public async getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts> {

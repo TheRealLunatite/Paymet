@@ -39,10 +39,10 @@ export type ConfigureUniverseOpts = {
 }
 
 export type CreateDevProductOpts = {
-    universeId : Id,
+    placeId : Id,
     name : string,
     priceInRobux : number,
-    description : string,
+    description? : string,
     imageAssetId? : string
 }
 
@@ -66,4 +66,19 @@ export type DeveloperProduct = {
     displayDescription : null | string,
     displayIcon : null | number,
     PriceInRobux : null | number
+}
+
+export type PlaceDetail = {
+    placeId : number,
+    name : string,
+    description : string,
+    url : string,
+    builder : string,
+    builderId : number,
+    isPlayable : boolean,
+    reasonProhibited : string,
+    universeId : number,
+    universeRootPlaceId : number,
+    price : number,
+    imageToken : string
 }
