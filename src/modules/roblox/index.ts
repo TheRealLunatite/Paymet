@@ -125,10 +125,8 @@ export class RobloxModule implements IRobloxModule {
         }
     }
 
-    public async createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<boolean | Id> {
+    public async createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<null | Id> {
         const universeId = await this.getUniverseId(cookie , opts.placeId)
-        console.log(universeId)
-
         const response = await this.requestWithCookieAndToken<string>(cookie , {
             url : "https://www.roblox.com/places/developerproducts/add",
             method : "POST",
@@ -144,11 +142,11 @@ export class RobloxModule implements IRobloxModule {
         const findProductId = /Product ([0-9]*)/m.exec(response.data)
 
         if(!findProductId) {
-            return Promise.resolve(false)
+            return Promise.resolve(null)
         }
 
         if(findProductId[1] === "0") {
-            return Promise.resolve(false)
+            return Promise.resolve(null)
         }
 
         return Promise.resolve(new Id(+findProductId[1]))

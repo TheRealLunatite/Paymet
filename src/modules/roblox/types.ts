@@ -11,7 +11,7 @@ export interface IRobloxModule {
     overwriteUniverse(cookie : Cookie , file : RobloxStudioFile , rootPlaceId : Id) : Promise<boolean>,
     configureUniverse(cookie : Cookie , placeId : Id , opts : ConfigureUniverseOpts) : Promise<boolean>,
     getXsrfToken(cookie : Cookie) : Promise<string | null>,
-    createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<Id | boolean>,
+    createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<Id | null>,
     getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts>,
     getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>,
     getUniverseId(cookie : Cookie , placeId : Id) : Promise<null | number>
