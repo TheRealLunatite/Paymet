@@ -1,5 +1,5 @@
 
-CREATE TABLE transaction (
+CREATE TABLE transactions (
     id uuid PRIMARY KEY,
     status text NOT NULL,
     username text NOT NULL,
@@ -12,9 +12,8 @@ CREATE TABLE transaction (
 
 CREATE TYPE itempurchased as (
     itemName text,
-    itemRawName text,
     itemType text,
-    itemPurchased integer
+    amount integer
 );
 
 -- -- 3 - 20

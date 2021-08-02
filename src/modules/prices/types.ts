@@ -1,4 +1,5 @@
 import { Uuid } from "@common/uuid"
+import { Id } from "@common/id"
 
 export interface PriceModule {
     add(item : Item) : Promise<boolean>,
@@ -9,18 +10,21 @@ export interface PriceModule {
 
 export type Item = {
     id : Uuid,
-    name : string,
-    price : number
+    itemPlaceId : Id,
+    itemName : string,
+    priceInRobux : number
 }
 
 export type ItemOptional = {
     id? : Uuid,
-    name? : string,
-    price? : number
+    itemPlaceId? : Id,
+    itemName? : string,
+    priceInRobux? : number
 }
 
 export type ItemDoc = {
     id : string,
-    name : string,
-    price : number
+    itemname : string,
+    itemplaceid : string,
+    priceinrobux : number
 }

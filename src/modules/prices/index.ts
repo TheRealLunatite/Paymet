@@ -1,12 +1,12 @@
 import { IPostgresModule } from "@modules/postgres/types"
 import { TOKENS } from "src/di";
-import { inject, injectable } from "tsyringe";
+import { inject, singleton } from "tsyringe";
 import { Client, ConnectionConfig, QueryConfig } from   "pg"
 import { Item, ItemOptional, PriceModule , ItemDoc } from "./types";
 import { Uuid } from "@common/uuid";
-import instance from "tsyringe/dist/typings/dependency-container";
+import { Id } from "@common/id";
 
-@injectable()
+@singleton()
 export class PriceDBModule implements PriceModule {
     private pgClient : Client | null = null
     
@@ -24,12 +24,12 @@ export class PriceDBModule implements PriceModule {
             await this.setPGClient()
         }
 
-        const { id , name , price } = item
+        const { id , itemName , itemPlaceId , priceInRobux } = item
 
         const query : QueryConfig = {
             name : "add-price",
-            text : "INSERT INTO prices(id, name , price) VALUES($1,$2,$3)",
-            values : [id.value , name , price]
+            text : "INSERT INTO prices(id, itemname , itemplaceid , priceinrobux) VALUES($1,$2,$3,$4)",
+            values : [id.value , itemName , itemPlaceId.value , priceInRobux]
         }
 
         await this.pgClient!.query(query)
@@ -42,23 +42,25 @@ export class PriceDBModule implements PriceModule {
         }
 
         const objectKeys = Object.keys(opts)
+        
         const queryText = "SELECT * FROM prices WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
         
         const query : QueryConfig = {
             name : "find-price",
             text : queryText,
-            values : Object.values(opts).map((val) => val instanceof Uuid ? val.value : val)
-        }
+            values : Object.values(opts).map((val) => val instanceof Object ? val.value : val)
+        } 
 
         const { rows , rowCount } = await this.pgClient!.query(query)
 
         if(rowCount >= 1) {
-            const { name , price , id }: ItemDoc = rows[0]
+            const { id , itemname , itemplaceid , priceinrobux } : ItemDoc = rows[0]
             
             return Promise.resolve({
                 id : new Uuid(id),
-                name,
-                price
+                itemName : itemname,
+                itemPlaceId : new Id(+itemplaceid),
+                priceInRobux : +priceinrobux
             })
         }
 

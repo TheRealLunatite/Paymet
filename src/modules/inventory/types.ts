@@ -3,11 +3,12 @@ import { Username } from "@common/username";
 import { Uuid } from "@common/uuid";
 
 export interface InventoryModule {
-    add(data : InventoryData) : void,
-    deleteById(id : Uuid) : Promise<boolean>
+    add(data : Inventory) : void,
+    deleteById(id : Uuid) : Promise<boolean>,
+    findOne(opts : FindInventoryOpts) : Promise<Inventory | null>
 }
 
-export type InventoryData = {
+export type Inventory = {
     socketId : Uuid,
     userId : Id,
     placeId : Id,
@@ -24,6 +25,17 @@ export type InventoryItem = {
     itemStock : number
 }
 
-export type InventoryDoc = {
+export type FindInventoryOpts = {
+    socketId? : Uuid,
+    userId? : Id,
+    placeId? : Id,
+    username? : Username
+}
 
+export type InventoryDoc = {
+    socketid : string,
+    userid : string,
+    placeid : string,
+    username : string,
+    inventory : string
 }

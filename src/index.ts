@@ -7,9 +7,6 @@ import { WebSocketServerModule } from "@modules/socketServer"
 import { AuthExpressComponent } from "@components/auth/express"
 import express , { ErrorRequestHandler } from "express"
 import { LoggerModule } from "@modules/logger/types"
-import { IRobloxModule } from "@modules/roblox/types"
-import { Cookie } from "@common/cookie"
-import { Id } from "@common/id"
 
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
@@ -24,8 +21,6 @@ const errorHandler : ErrorRequestHandler = function(err , req , res , next) {
 }
 
 app.use(express.json())
-app.use(logErrorHandler)
-app.use(errorHandler)
 
 const wsServer = container.resolve<WebSocketServerModule>(TOKENS.modules.socketServer)
 
@@ -37,6 +32,9 @@ authComponent.execute()
 
 const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
 transactionComponent.execute()
+
+app.use(logErrorHandler)
+app.use(errorHandler)
 
 async function test() {
     await wsServer.listen({ port : 8080 })

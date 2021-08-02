@@ -2,9 +2,11 @@ import { Uuid } from "@common/uuid";
 import { IPostgresModule } from "@modules/postgres/types";
 import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
-import { InventoryItem } from "./types";
+import { FindInventoryOpts, InventoryItem , InventoryDoc } from "./types";
 import { singleton , inject } from "tsyringe";
-import { InventoryModule, InventoryData } from "./types";
+import { InventoryModule, Inventory } from "./types";
+import { Username } from "@common/username";
+import { Id } from "@common/id";
 
 @singleton()
 export class InventoryDBModule implements InventoryModule {
@@ -30,7 +32,24 @@ export class InventoryDBModule implements InventoryModule {
         }))
     }
 
-    private toPGArrayFormat(data : InventoryItem[]) : [] | string[] {   
+    private toArray(data : string) : InventoryItem[] {
+        const arrOfItems = data.substr(2 , data.length - 4).replace(/'/gm , "").replace(/","/gm , "|").split("|")
+        
+        return arrOfItems.map((items) => {
+            const [ itemName , itemRawName , itemRarity , itemType , itemImage , itemStock ] = items.substring(1,items.length - 1).split(",")
+
+            return {
+                itemName,
+                itemRawName,
+                itemRarity,
+                itemType,
+                itemImage,
+                itemStock : +itemStock
+            }
+        })
+    }
+
+    private toPGArrayFormat(data : InventoryItem[]) {   
         if(Array.isArray(data) && data.length >= 1) {
             const pgArray = data.map((inventoryItem) => {
                 let string = ""
@@ -58,12 +77,10 @@ export class InventoryDBModule implements InventoryModule {
             return pgArray
         }
         
-        return []
+        return null
     }
 
-    private parsePGArrayFormat() {}
-
-    public async add(data : InventoryData) : Promise<InventoryData> {
+    public async add(data : Inventory) : Promise<Inventory> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
@@ -96,5 +113,38 @@ export class InventoryDBModule implements InventoryModule {
         await this.pgClient!.query(query)
 
         return Promise.resolve(true)
+    }
+
+    public async findOne(opts : FindInventoryOpts) : Promise<Inventory | null> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }   
+
+        const objectKeys = Object.keys(opts)
+        const queryText = "SELECT * FROM inventory WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
+        
+        const query : QueryConfig = {
+            name : "find-inventory",
+            text : queryText,
+            values : Object.values(opts).map((val) => val.value)
+        }
+
+        const { rows , rowCount } = await this.pgClient?.query(query)!
+
+        if(rowCount >= 1) {
+            const { socketid , userid , placeid , username , inventory }: InventoryDoc = rows[0]
+
+            
+
+            return {
+                socketId : new Uuid(socketid),
+                username : new Username(username),
+                userId : new Id(+userid),
+                placeId : new Id(+placeid),
+                inventory : this.toArray(inventory)
+            }
+        }
+
+        return Promise.resolve(null)
     }
 }

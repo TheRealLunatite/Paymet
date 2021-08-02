@@ -234,7 +234,6 @@ import { RobloxExpressComponent } from "@components/roblox/express"
 import { AuthExpressComponent } from "@components/auth/express"
 import { TransactionExpressComponent } from "@components/transaction/express"
 import { ISocketModule } from "@common/interfaces/ISocketModule"
-import { PriceModule } from "@modules/prices/types"
 
 container.register(TOKENS.components.roblox.component , {
     useClass : RobloxExpressComponent
