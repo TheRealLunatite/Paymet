@@ -106,4 +106,4 @@ dist
 .tern-port
 
 # sql
-src/sql
+sql/
