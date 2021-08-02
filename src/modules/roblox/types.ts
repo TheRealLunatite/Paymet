@@ -13,7 +13,8 @@ export interface IRobloxModule {
     getXsrfToken(cookie : Cookie) : Promise<string | null>,
     createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<Id | boolean>,
     getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts>,
-    getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>
+    getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>,
+    getUniverseId(cookie : Cookie , placeId : Id) : Promise<null | number>
 }
 
 export type AuthenticatedUser = {
