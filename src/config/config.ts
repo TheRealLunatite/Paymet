@@ -33,5 +33,9 @@ export const config = {
     } ,
     hmac : {
         transactionHmacSecret : getEnvironmentalVariable("transactionHmacSecret")
+    },
+    roblox : {
+        cookie : getEnvironmentalVariable("robloxCookie"),
+        placeId : +getEnvironmentalVariable("robloxPlaceId")
     }
 }

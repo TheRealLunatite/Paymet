@@ -21,7 +21,8 @@ export class CreateTransactionRoute implements IExpressRoute {
     constructor(
         @inject(TOKENS.modules.transactionDb) private transactionDb? : TransactionModule,
         @inject(TOKENS.modules.roblox) private roblox? : IRobloxModule,
-        @inject(TOKENS.values.uuid) private v4? : typeof uuid
+        @inject(TOKENS.values.uuid) private v4? : typeof uuid,
+        @inject(TOKENS.values.robloxConfig) private robloxConfig? : { placeId : number , cookie : string }
     ) {}
 
     execute(router : Router) : void {
@@ -30,9 +31,9 @@ export class CreateTransactionRoute implements IExpressRoute {
             const totalPriceInRobux = req.totalPriceInRobux!
 
             try {
-                const devProductId = await this.roblox!.createDeveloperProduct(new Cookie("") , {
+                const devProductId = await this.roblox!.createDeveloperProduct(new Cookie(this.robloxConfig!.cookie) , {
                     name : this.v4!(),
-                    placeId : new Id(5303144823),
+                    placeId : new Id(this.robloxConfig!.placeId),
                     priceInRobux : totalPriceInRobux
                 })
 

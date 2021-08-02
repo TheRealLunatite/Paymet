@@ -20,7 +20,8 @@ export const TOKENS = {
         bcryptLib : Symbol(),
         jwtSecret : Symbol(),
         transactionHmacSecret : Symbol(),
-        tsLogger : Symbol()
+        tsLogger : Symbol(),
+        robloxConfig : Symbol()
     },
     components : {
         roblox : {
@@ -86,6 +87,10 @@ container.register(TOKENS.values.appConfig , {
     useValue : appConfig
 })
 
+container.register(TOKENS.values.robloxConfig , {
+    useValue : appConfig.roblox
+})
+
 container.register(TOKENS.values.transactionHmacSecret , {
     useValue : appConfig.hmac.transactionHmacSecret
 })
@@ -141,6 +146,7 @@ container.register(TOKENS.values.jwtSecret, {
 container.register(TOKENS.values.tsLogger , {
     useValue : new Logger()
 })
+
 
 // MODULES
 
