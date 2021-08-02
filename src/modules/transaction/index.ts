@@ -6,6 +6,7 @@ import { Client, ConnectionConfig , QueryConfig } from "pg"
 import { Uuid } from "@common/uuid";
 import { Username } from "@common/username";
 import { DiscordId } from "@common/discordId";
+import { Id } from "@common/id";
 
 @injectable()
 export class TransactionDBModule implements TransactionModule {
@@ -76,12 +77,12 @@ export class TransactionDBModule implements TransactionModule {
             await this.setPGClient()
         }
 
-        const { id , status , username , discordId , items } = data
+        const { id , status , username , discordId , devProductId , items } = data
 
         const query : QueryConfig = {
             name : "add-transaction",
-            text : `INSERT INTO transaction(id , status , username , discordid, items) VALUES($1,$2,$3,$4,$5)`,
-            values : [ id.value , status , username.value , discordId.value , this.toPGArrayFormat(this.sortInventory(items)) ]
+            text : `INSERT INTO transactions(id , status , username , discordid , devProductId , items) VALUES($1,$2,$3,$4,$5,$6)`,
+            values : [ id.value , status , username.value , discordId.value , devProductId.value , this.toPGArrayFormat(this.sortInventory(items)) ]
         }
 
         await this.pgClient!.query(query)
@@ -95,7 +96,7 @@ export class TransactionDBModule implements TransactionModule {
         
         const query : QueryConfig = {
             name : "delete-transaction",
-            text : "DELETE FROM transaction WHERE id = $1",
+            text : "DELETE FROM transactions WHERE id = $1",
             values : [id.value]
         }
 
@@ -109,7 +110,7 @@ export class TransactionDBModule implements TransactionModule {
         }   
 
         const objectKeys = Object.keys(opts)
-        const queryText = "SELECT * FROM transaction WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
+        const queryText = "SELECT * FROM transactions WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
         
         const query : QueryConfig = {
             name : "find-transaction",
@@ -120,11 +121,12 @@ export class TransactionDBModule implements TransactionModule {
         const { rows , rowCount } = await this.pgClient?.query(query)!
 
         if(rowCount >= 1) {
-            const { id , username , discordid , items, status , timestamp }: TransactionDoc = rows[0]
+            const { id , username , discordid , items, status , devProductId , timestamp }: TransactionDoc = rows[0]
             return {
                 id : new Uuid(id),
                 username : new Username(username),
                 discordId : new DiscordId(+discordid),
+                devProductId : new Id(devProductId),
                 status,
                 items : this.toArray(items),
                 timestamp : new Date(timestamp)
@@ -143,7 +145,7 @@ export class TransactionDBModule implements TransactionModule {
 
         const query : QueryConfig = {
             name : "update-transaction",
-            text : "UPDATE transaction SET " + objectEntries.map((value , index) => `${value[0]}='${typeof(value[1]) === "object" ? value[1].value : value[1]}'` + (index === objectEntries.length ? "," : "")) + " WHERE id=$1",
+            text : "UPDATE transactions SET " + objectEntries.map((value , index) => `${value[0]}='${typeof(value[1]) === "object" ? value[1].value : value[1]}'` + (index === objectEntries.length ? "," : "")) + " WHERE id=$1",
             values : [id.value]
         }
 

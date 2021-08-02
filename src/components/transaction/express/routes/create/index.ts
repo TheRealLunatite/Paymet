@@ -14,6 +14,7 @@ import ValidateItemsMiddleware from "../../middleware/validateItems"
 import GetTotalPriceMiddleware from "../../middleware/getTotalPrice"
 import { Cookie } from "@common/cookie";
 import { Id } from "@common/id";
+import { CreateTransactionRequestValidatedBody } from "./types";
 
 
 @autoInjectable()
@@ -26,15 +27,22 @@ export class CreateTransactionRoute implements IExpressRoute {
 
     execute(router : Router) : void {
         router.post('/create' , CreateTransactionValidationMiddleware.value , ValidateItemsMiddleware.value , GetTotalPriceMiddleware.value , async (req , res , next) => {
+            const { username , discordId , items } : CreateTransactionRequestValidatedBody = req.body
+
             try {
-                
+                const createTransaction = await this.transactionDb!.add({
+                    id : new Uuid(this.v4!()),
+                    status : "initalized",
+                    username,
+                    discordId,
+                    devProductId : new Id(1),
+                    items
+                })
 
                 return res.send('hi')
             } catch (e) {
                 return next(e)
             }
-
-
         })
     }
 }

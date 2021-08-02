@@ -4,6 +4,7 @@ CREATE TABLE transactions (
     status text NOT NULL,
     username text NOT NULL,
     discordId bigint NOT NULL,
+    devProductId bigint NOT NULL,
     items itempurchased[] NOT NULL,
     timestamp timestamptz DEFAULT NOW(), 
     CONSTRAINT CHK_TRANSACTION_STATUS CHECK (status = 'initalized' OR status = 'pending' OR status = 'success'),
