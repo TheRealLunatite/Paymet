@@ -38,6 +38,17 @@ export class PlayerConnectModule implements ISocketModule {
 
         const { username , userId , placeId } = ws.user
 
+        // If the connect user for whatever reason is still in the database when the socket instance is closed we'll delete the doc to prevent any constraint errors.
+        try {
+            const findUser = await this.inventoryDb!.findOne({ userId })
+
+            if(findUser) {
+                await this.inventoryDb!.deleteById(findUser.socketId)
+            }
+        } catch {
+            throw new PlayerConnectModuleError("There was an error trying to find/delete a user in the inventory database.")
+        }
+
         try {
             await this.inventoryDb!.add({
                 socketId : ws.id,
