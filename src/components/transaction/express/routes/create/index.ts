@@ -14,7 +14,9 @@ import ValidateItemsMiddleware from "../../middleware/validateItems"
 import GetTotalPriceMiddleware from "../../middleware/getTotalPrice"
 import { Cookie } from "@common/cookie";
 import { Id } from "@common/id";
+
 import { CreateTransactionRequestValidatedBody } from "./types";
+import { Transaction } from "@modules/transaction/types";
 
 @autoInjectable()
 export class CreateTransactionRoute implements IExpressRoute {
@@ -30,21 +32,28 @@ export class CreateTransactionRoute implements IExpressRoute {
             const { username , discordId , items } : CreateTransactionRequestValidatedBody = req.body
             const totalPriceInRobux = req.totalPriceInRobux!
 
+            let devProductId : Id | null
+            let createdTransaction : Transaction
+
             try {
-                const devProductId = await this.roblox!.createDeveloperProduct(new Cookie(this.robloxConfig!.cookie) , {
+                devProductId = await this.roblox!.createDeveloperProduct(new Cookie(this.robloxConfig!.cookie) , {
                     name : this.v4!(),
                     placeId : new Id(this.robloxConfig!.placeId),
                     priceInRobux : totalPriceInRobux
                 })
+            } catch {
+                return next(new Error("There was an error creating a developer product id for your place."))
+            }
 
-                if(!devProductId) {
-                    return res.status(500).json({
-                        success : false,
-                        errors : ['There was an error creating a developer product.']
-                    })
-                }
+            if(!devProductId) {
+                return res.status(500).json({
+                    success : false,
+                    errors : ["A developer product was unable to be created for this transaction."]
+                })
+            }
 
-                const createTransaction = await this.transactionDb!.add({
+            try {
+                createdTransaction = await this.transactionDb!.add({
                     id : new Uuid(this.v4!()),
                     status : "initalized",
                     devProductId,
@@ -52,22 +61,15 @@ export class CreateTransactionRoute implements IExpressRoute {
                     discordId,
                     items
                 })
-
-                if(!createTransaction) {
-                    return res.status(500).json({
-                        success : false,
-                        errors : ["There was an error creating a transaction."]
-                    })
-                }
-
-                return res.status(200).send({
-                    id : createTransaction.id.value,
-                    devProductId : createTransaction.devProductId.value,
-                    totalPrice : totalPriceInRobux
-                })
-            } catch (e) {
-                return next(e)
+            } catch {
+                return next(new Error("There was an error adding a new transaction in the database."))
             }
+
+            return res.status(200).json({
+                id : createdTransaction.id.value,
+                devProductId : devProductId.value,
+                totalPrice : totalPriceInRobux
+            })
         })
     }
 }
