@@ -123,9 +123,9 @@ end
 
 function offerTradeItems(items)
     for _ , itemData in ipairs(items) do
-        for i = 1 , itemData.itemPurchased do
+        for i = 1 , itemData.amount do
             local args = {
-                [1] = itemData.itemRawName,
+                [1] = itemData.itemName,
                 [2] = (itemData.itemType == "Knife" or itemData.itemType == "Gun") and "Weapons" or "Pets"
             }
             
