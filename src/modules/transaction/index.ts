@@ -121,12 +121,12 @@ export class TransactionDBModule implements TransactionModule {
         const { rows , rowCount } = await this.pgClient?.query(query)!
 
         if(rowCount >= 1) {
-            const { id , username , discordid , items, status , devProductId , timestamp }: TransactionDoc = rows[0]
+            const { id , username , discordid , items, status , devproductid , timestamp }: TransactionDoc = rows[0]
             return {
                 id : new Uuid(id),
                 username : new Username(username),
                 discordId : new DiscordId(+discordid),
-                devProductId : new Id(devProductId),
+                devProductId : new Id(+devproductid),
                 status,
                 items : this.toArray(items),
                 timestamp : new Date(timestamp)

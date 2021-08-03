@@ -39,9 +39,9 @@ export type TransactionDoc = {
     id : string,
     status : "success" | "initalized" | "pending",
     username : string,
-    discordid : number,
+    discordid : string,
     timestamp : string,
-    devProductId : number,
+    devproductid : string,
     items : string
 }
 

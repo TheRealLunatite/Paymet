@@ -134,8 +134,6 @@ export class InventoryDBModule implements InventoryModule {
         if(rowCount >= 1) {
             const { socketid , userid , placeid , username , inventory }: InventoryDoc = rows[0]
 
-            
-
             return {
                 socketId : new Uuid(socketid),
                 username : new Username(username),
