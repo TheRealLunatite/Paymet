@@ -42,7 +42,7 @@ export class ReceivedTradeRequestModule implements ISocketModule {
         try {
             const transaction = await this.transactionDb!.findOne({ username : tradeUser })
 
-            if((transaction) && (transaction.status !== "pending")) {
+            if((transaction) && (transaction.status === "pending")) {
                 return ws.send(JSON.stringify({
                     type : "AcceptTradeRequest",
                     username : tradeUser.value
