@@ -26,7 +26,7 @@ export class ValidateItems implements IExecutableValue<RequestHandler> {
                     return res.status(400).json({
                         success : false,
                         errors : [
-                            `There is no current player in the placeId ${itemPlaceId.value}.`
+                            `There is no socket instance that is active in the provided placeId.`
                         ]
                     })
                 }
