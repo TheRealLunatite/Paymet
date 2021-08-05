@@ -5,7 +5,8 @@ import { Uuid } from "@common/uuid";
 export interface InventoryModule {
     add(data : Inventory) : void,
     deleteById(id : Uuid) : Promise<boolean>,
-    findOne(opts : FindInventoryOpts) : Promise<Inventory | null>
+    findOne(opts : FindInventoryOpts) : Promise<Inventory | null>,
+    findAll(opts : FindInventoryOpts) : Promise<Inventory[] | null>
 }
 
 export type Inventory = {
@@ -39,3 +40,5 @@ export type InventoryDoc = {
     username : string,
     inventory : string
 }
+
+export type FindType = "findAll" | "findOne"

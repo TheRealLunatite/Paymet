@@ -2,7 +2,7 @@ import { Uuid } from "@common/uuid";
 import { IPostgresModule } from "@modules/postgres/types";
 import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
-import { FindInventoryOpts, InventoryItem , InventoryDoc } from "./types";
+import { FindInventoryOpts, InventoryItem , InventoryDoc, FindType } from "./types";
 import { singleton , inject } from "tsyringe";
 import { InventoryModule, Inventory } from "./types";
 import { Username } from "@common/username";
@@ -115,34 +115,62 @@ export class InventoryDBModule implements InventoryModule {
         return Promise.resolve(true)
     }
 
-    public async findOne(opts : FindInventoryOpts) : Promise<Inventory | null> {
-        if(!this.pgClient) {
-            await this.setPGClient()
-        }   
+    private async find(opts : FindInventoryOpts , type : FindType) : Promise<Inventory | Inventory[] | null>{
+        if(type !== "findAll" && type !== "findOne") {
+            throw new Error("findAll and findOne is the only options allowed for type.")
+        }
 
         const objectKeys = Object.keys(opts)
         const queryText = "SELECT * FROM inventory WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
         
-        const query : QueryConfig = {
+        const queryOpts : QueryConfig = {
             name : "find-inventory",
             text : queryText,
             values : Object.values(opts).map((val) => val.value)
         }
 
-        const { rows , rowCount } = await this.pgClient?.query(query)!
+        const query = await this.pgClient?.query(queryOpts)!
 
-        if(rowCount >= 1) {
-            const { socketid , userid , placeid , username , inventory }: InventoryDoc = rows[0]
+        if(query.rowCount >= 1) {
+            const rows : InventoryDoc[] = query.rows
 
-            return {
-                socketId : new Uuid(socketid),
-                username : new Username(username),
-                userId : new Id(+userid),
-                placeId : new Id(+placeid),
-                inventory : this.toArray(inventory)
+            if(type === "findAll") {
+                return rows.map(({ socketid , userid , placeid , username , inventory }) : Inventory => ({
+                    socketId : new Uuid(socketid),
+                    username : new Username(username),
+                    userId : new Id(+userid),
+                    placeId : new Id(+placeid),
+                    inventory : this.toArray(inventory)
+                }))
+            } else {
+                const { socketid , userid , placeid , username , inventory }: InventoryDoc = rows[0]
+
+                return {
+                    socketId : new Uuid(socketid),
+                    username : new Username(username),
+                    userId : new Id(+userid),
+                    placeId : new Id(+placeid),
+                    inventory : this.toArray(inventory)
+                }
             }
         }
 
         return Promise.resolve(null)
+    }
+
+    public async findOne(opts : FindInventoryOpts) : Promise<Inventory | null> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }   
+
+        return Promise.resolve(await this.find(opts , "findOne") as Inventory)
+    }
+
+    public async findAll(opts : FindInventoryOpts) : Promise<Inventory[] | null> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }   
+
+        return Promise.resolve(await this.find(opts , "findAll") as Inventory[])
     }
 }
