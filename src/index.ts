@@ -8,6 +8,11 @@ import { AuthExpressComponent } from "@components/auth/express"
 import express , { ErrorRequestHandler } from "express"
 import { LoggerModule } from "@modules/logger/types"
 import { InventoryModule } from "@modules/inventory/types"
+import { InstanceModule } from "@modules/instances/types"
+import { v4 as uuid } from "uuid"
+import { Uuid } from "@common/uuid"
+import { Id } from "@common/id"
+import { Username } from "@common/username"
 
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
@@ -34,18 +39,18 @@ authComponent.execute()
 const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
 transactionComponent.execute()
 
-const inventoryDb = container.resolve<InventoryModule>(TOKENS.modules.inventoryDb)
+const instanceDb = container.resolve<InstanceModule>(TOKENS.modules.instanceDb)
 
 app.use(logErrorHandler)
 app.use(errorHandler)
 
+
 async function test() {
+
+
     await wsServer.listen({ port : 8080 })
     logger.info("Socket server is now listening on Port : 8080")
     app.listen(3000 , () => logger.info("Express server is now listening on Port : 3000"))
-
-    console.log(await inventoryDb.findAll({}))
-
 }
 
 test()
