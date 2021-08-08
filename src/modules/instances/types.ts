@@ -3,7 +3,8 @@ import { Id } from "@common/id"
 import { Username } from "@common/username"
 
 export interface InstanceModule {
-    add(data : Instance) : Promise<Instance>    
+    add(data : Instance) : Promise<Instance>,
+    deleteById(id : Uuid) : Promise<DeleteInstanceResponse>
 }
 
 export type Instance = {
@@ -36,4 +37,8 @@ export type InstanceDoc = {
     placeid : string,
     username : string,
     inventory : string
+}
+
+export type DeleteInstanceResponse = {
+    deleted : number
 }
