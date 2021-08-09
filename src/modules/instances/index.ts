@@ -5,7 +5,7 @@ import { IPostgresModule } from "@modules/postgres/types";
 import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
 import { singleton , inject } from "tsyringe";
-import { InstanceModule , Instance , DeleteInstanceResponse, InstanceOpts , FindType, InstanceDoc } from "./types"
+import { InstanceModule , Instance , DeleteInstanceResponse, InstanceOpts , FindType, InstanceDoc, CountInstancesResponse } from "./types"
 
 @singleton()
 export class InstanceDBModule implements InstanceModule {
@@ -124,7 +124,7 @@ export class InstanceDBModule implements InstanceModule {
     }
 
 
-    public async updateById(id : Uuid , opts : InstanceOpts) : Promise<Instance | null> {
+    public async updateById(id : Uuid , opts : InstanceOpts) : Promise<boolean> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
@@ -142,10 +142,23 @@ export class InstanceDBModule implements InstanceModule {
             values : [id.value]
         }
 
-        const query = await this.pgClient!.query(queryOpts)
-        
-        console.log(query)
+        const { rowCount } = await this.pgClient!.query(queryOpts)
+        return Promise.resolve(rowCount >= 1)
+    }
 
-        return Promise.resolve(null)
+    public async getCount() : Promise<CountInstancesResponse> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }
+
+        const queryOpts : QueryConfig = {
+            name : "get-instance-count",
+            text : "SELECT COUNT(*) FROM instances;"
+        }
+
+        const { rows } = await this.pgClient!.query(queryOpts)
+        return Promise.resolve({
+            count : +rows[0].count
+        })
     }
 }

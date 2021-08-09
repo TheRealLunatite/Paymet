@@ -7,7 +7,8 @@ export interface InstanceModule {
     deleteById(id : Uuid) : Promise<DeleteInstanceResponse>,
     findOne(data : InstanceOpts) : Promise<Instance | null>,
     findAll(data : InstanceOpts) : Promise<Instance[] | null>,
-    updateById(id : Uuid , opts : InstanceOpts) : Promise<Instance | null> 
+    updateById(id : Uuid , opts : InstanceOpts) : Promise<boolean> ,
+    getCount() : Promise<CountInstancesResponse>
 }
 
 export type Instance = {
