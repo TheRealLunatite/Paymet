@@ -52,7 +52,6 @@ export const TOKENS = {
         transactionDb : Symbol(),
         socketServer : Symbol(),
         userDb : Symbol(),
-        inventoryDb : Symbol(),
         instanceDb : Symbol(),
         priceDb : Symbol()
     }
@@ -157,7 +156,6 @@ import { PostgresModule } from "@modules/postgres/pg"
 import { TransactionDBModule } from "@modules/transaction"
 import { WebSocketServerModule } from "@modules/socketServer"
 import { UserDBModule } from "@modules/user"
-import { InventoryDBModule } from "@modules/inventory"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
 import { PriceDBModule } from "@modules/prices"
@@ -187,9 +185,6 @@ container.register<WebSocketServerModule>(TOKENS.modules.socketServer , {
     useClass : WebSocketServerModule
 })
 
-container.register<InventoryDBModule>(TOKENS.modules.inventoryDb , {
-    useClass : InventoryDBModule
-})
 
 container.register<HmacModule>(TOKENS.modules.hmac , {
     useClass : HmacModule
