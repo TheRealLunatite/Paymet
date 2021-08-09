@@ -53,6 +53,7 @@ export const TOKENS = {
         socketServer : Symbol(),
         userDb : Symbol(),
         inventoryDb : Symbol(),
+        instanceDb : Symbol(),
         priceDb : Symbol()
     }
 }
@@ -160,6 +161,7 @@ import { InventoryDBModule } from "@modules/inventory"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
 import { PriceDBModule } from "@modules/prices"
+import { InstanceDBModule } from "@modules/instances"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -199,6 +201,10 @@ container.register<TsLoggerModule>(TOKENS.modules.logger , {
 
 container.register<PriceDBModule>(TOKENS.modules.priceDb , {
     useClass : PriceDBModule
+})
+
+container.register<InstanceDBModule>(TOKENS.modules.instanceDb , {
+    useClass : InstanceDBModule
 })
 
 // SOCKET MODULES
