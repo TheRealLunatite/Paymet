@@ -75,7 +75,7 @@ export class InstanceDBModule implements InstanceModule {
         const queryOpts : QueryConfig = {
             name : "find-inventory",
             text : queryText,
-            values : Object.values(data).map((val) => Array.isArray(val) ? JSON.stringify(val) : null)
+            values : Object.values(data).map((val) => Array.isArray(val) ? JSON.stringify(val) : val.value)
         }
 
         const query = await this.pgClient?.query(queryOpts)!
