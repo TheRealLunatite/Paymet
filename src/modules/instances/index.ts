@@ -75,7 +75,7 @@ export class InstanceDBModule implements InstanceModule {
         const queryOpts : QueryConfig = {
             name : "find-inventory",
             text : queryText,
-            values : Object.values(data).map((val) => val.value)
+            values : Object.values(data).map((val) => Array.isArray(val) ? JSON.stringify(val) : null)
         }
 
         const query = await this.pgClient?.query(queryOpts)!
@@ -131,15 +131,17 @@ export class InstanceDBModule implements InstanceModule {
 
         const objectEntries = Object.entries(opts)
 
+        if(objectEntries.length === 0) {
+            return Promise.resolve(true)
+        }
+
         const queryOpts : QueryConfig = {
             name : "update-instance",
-            text : "UPDATE instances SET " + objectEntries.map((value , index) => `${value[0]}='${typeof(value[1]) === "object" ? 
-            value[1].value : value[1]}'` + 
-            (index === objectEntries.length ? 
-                "," : ""
-            )) + 
-            " WHERE socketid=$1",
-            values : [id.value]
+            text : "UPDATE instances SET " +
+            objectEntries.map((val, index) => `${val[0]}=$${index + 1}` + `${index + 1 !== objectEntries.length ? "," : ""}`).join("") +
+            ` WHERE socketId=$${objectEntries.length + 1}`
+            ,
+            values : [...objectEntries.map((val) => (Array.isArray(val[1]) ? JSON.stringify(val[1]) : val[1].value)) , id.value]
         }
 
         const { rowCount } = await this.pgClient!.query(queryOpts)

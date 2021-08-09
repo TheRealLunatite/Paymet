@@ -32,7 +32,8 @@ export type InstanceOpts = {
     socketId? : Uuid,
     userId? : Id,
     placeId? : Id,
-    username? : Username
+    username? : Username,
+    inventory? : InventoryItem[]
 }
 
 export type InstanceDoc = {

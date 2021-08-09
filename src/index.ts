@@ -46,7 +46,20 @@ app.use(errorHandler)
 
 
 async function test() {
-    console.log(await instanceDb.getCount())
+    console.log(await instanceDb.updateById(new Uuid("e799355a-d0f9-49fa-b536-a3fec5f25c3b") , { 
+        placeId : new Id(123),
+        socketId : new Uuid("bca8d312-afb4-460b-895c-fe6866eacbf3"),
+        inventory : [
+            {
+                itemImage : "",
+                itemName : "",
+                itemRarity : "",
+                itemRawName : "",
+                itemStock : 12312312312,
+                itemType : "123"
+            }
+        ]
+    }))
 
     await wsServer.listen({ port : 8080 })
     logger.info("Socket server is now listening on Port : 8080")
