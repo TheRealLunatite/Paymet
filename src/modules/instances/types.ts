@@ -4,7 +4,9 @@ import { Username } from "@common/username"
 
 export interface InstanceModule {
     add(data : Instance) : Promise<Instance>,
-    deleteById(id : Uuid) : Promise<DeleteInstanceResponse>
+    deleteById(id : Uuid) : Promise<DeleteInstanceResponse>,
+    findOne(data : InstanceOpts) : Promise<Instance | null>,
+    findAll(data : InstanceOpts) : Promise<Instance[] | null>
 }
 
 export type Instance = {
@@ -36,9 +38,11 @@ export type InstanceDoc = {
     userid : string,
     placeid : string,
     username : string,
-    inventory : string
+    inventory : InventoryItem[]
 }
 
 export type DeleteInstanceResponse = {
     deleted : number
 }
+
+export type FindType = "FindAll" | "FindOne"
