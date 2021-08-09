@@ -122,4 +122,30 @@ export class InstanceDBModule implements InstanceModule {
 
         return Promise.resolve(await this.find(data , "FindOne") as Instance[] | null)
     }
+
+
+    public async updateById(id : Uuid , opts : InstanceOpts) : Promise<Instance | null> {
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }
+
+        const objectEntries = Object.entries(opts)
+
+        const queryOpts : QueryConfig = {
+            name : "update-instance",
+            text : "UPDATE instances SET " + objectEntries.map((value , index) => `${value[0]}='${typeof(value[1]) === "object" ? 
+            value[1].value : value[1]}'` + 
+            (index === objectEntries.length ? 
+                "," : ""
+            )) + 
+            " WHERE socketid=$1",
+            values : [id.value]
+        }
+
+        const query = await this.pgClient!.query(queryOpts)
+        
+        console.log(query)
+
+        return Promise.resolve(null)
+    }
 }

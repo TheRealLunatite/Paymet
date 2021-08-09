@@ -6,7 +6,8 @@ export interface InstanceModule {
     add(data : Instance) : Promise<Instance>,
     deleteById(id : Uuid) : Promise<DeleteInstanceResponse>,
     findOne(data : InstanceOpts) : Promise<Instance | null>,
-    findAll(data : InstanceOpts) : Promise<Instance[] | null>
+    findAll(data : InstanceOpts) : Promise<Instance[] | null>,
+    updateById(id : Uuid , opts : InstanceOpts) : Promise<Instance | null> 
 }
 
 export type Instance = {
@@ -43,6 +44,10 @@ export type InstanceDoc = {
 
 export type DeleteInstanceResponse = {
     deleted : number
+}
+
+export type CountInstancesResponse = {
+    count : number
 }
 
 export type FindType = "FindAll" | "FindOne"

@@ -46,7 +46,7 @@ app.use(errorHandler)
 
 
 async function test() {
-    console.log(await instanceDb.findOne({ socketId : new Uuid("e799355a-d0f9-49fa-b536-a3fec5f25c3b")}))
+    console.log(await instanceDb.updateById(new Uuid("e799355a-d0f9-49fa-b536-a3fec5f25c3b") , { username : new Username("fuckyou")}))
 
     await wsServer.listen({ port : 8080 })
     logger.info("Socket server is now listening on Port : 8080")
