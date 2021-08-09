@@ -1,7 +1,7 @@
 import { IPostgresModule } from "@modules/postgres/types";
 import { TOKENS } from "src/di";
 import { inject, injectable } from "tsyringe";
-import { TransactionModule, Transaction, TransactionDoc, TransactionOptional , FindTransactionOptions , ItemPurchased } from "./types";
+import { TransactionModule, Transaction, TransactionDoc, TransactionOptional , FindTransactionOptions } from "./types";
 import { Client, ConnectionConfig , QueryConfig } from "pg"
 import { Uuid } from "@common/uuid";
 import { Username } from "@common/username";
@@ -18,59 +18,6 @@ export class TransactionDBModule implements TransactionModule {
         this.pgClient = await this.postgres.getPGClient(this.pgConnectionConfig)
     }
 
-    private sortInventory(inventory : ItemPurchased[]) : ItemPurchased[] {
-        return inventory.map(({ itemName , itemType , amount }) => ({
-            itemName,
-            itemType,
-            amount
-        }))
-    }
-
-    private toArray(data : string) : ItemPurchased[] {
-        const arrOfItems = data.substr(2 , data.length - 4).replace(/'/gm , "").replace(/","/gm , "|").split("|")
-        
-        return arrOfItems.map((items) => {
-            const [ itemName , itemType , amount ] = items.substring(1,items.length - 1).split(",")
-            
-            return {
-                itemName,
-                itemType,
-                amount : +amount
-            }
-        })
-
-    }
-
-    private toPGArrayFormat(data : ItemPurchased[]) {   
-        if(Array.isArray(data) && data.length >= 1) {
-            const pgArray = data.map((inventoryItem) => {
-                let string = ""
-                const values = Object.values(inventoryItem)
-
-                values.forEach((val , index) => {
-                    val = val.toString().replace(/'/gm,'')
-
-                    if(val.length === 0) {
-                        string += "''"
-                    } else if (index === values.length - 1) {
-                        string += +val
-                    } else {
-                        string += `'${val}'`
-                    }
-
-                    if(index !== values.length - 1) {
-                        string += ","
-                    }
-                })
-                
-                return `(${string})`
-            })
-            
-            return pgArray
-        }
-        
-        return null
-    }
 
     public async add(data : Transaction) : Promise<Transaction> {
         if(!this.pgClient) {
@@ -82,7 +29,7 @@ export class TransactionDBModule implements TransactionModule {
         const query : QueryConfig = {
             name : "add-transaction",
             text : `INSERT INTO transactions(id , status , username , discordid , devProductId , items) VALUES($1,$2,$3,$4,$5,$6)`,
-            values : [ id.value , status , username.value , discordId.value , devProductId.value , this.toPGArrayFormat(this.sortInventory(items)) ]
+            values : [ id.value , status , username.value , discordId.value , devProductId.value , JSON.stringify(items) ]
         }
 
         await this.pgClient!.query(query)
@@ -128,7 +75,7 @@ export class TransactionDBModule implements TransactionModule {
                 discordId : new DiscordId(+discordid),
                 devProductId : new Id(+devproductid),
                 status,
-                items : this.toArray(items),
+                items,
                 timestamp : new Date(timestamp)
             }
         }
@@ -143,13 +90,25 @@ export class TransactionDBModule implements TransactionModule {
 
         const objectEntries = Object.entries(opts)
 
-        const query : QueryConfig = {
-            name : "update-transaction",
-            text : "UPDATE transactions SET " + objectEntries.map((value , index) => `${value[0]}='${typeof(value[1]) === "object" ? value[1].value : value[1]}'` + (index === objectEntries.length ? "," : "")) + " WHERE id=$1",
-            values : [id.value]
+        if(objectEntries.length === 0) {
+            return Promise.resolve(true)
         }
 
-        const { rowCount } = await this.pgClient!.query(query)
+        const queryOpts : QueryConfig = {
+            name : "update-transaction",
+            text : "UPDATE transactions SET " +
+            objectEntries.map((val, index) => `${val[0]}=$${index + 1}` + `${index + 1 !== objectEntries.length ? "," : ""}`).join("") +
+            ` WHERE id=$${objectEntries.length + 1}`
+            ,
+            values : [...objectEntries.map((val) => (Array.isArray(val[1]) ? 
+            JSON.stringify(val[1]) : 
+            val[1] instanceof Object ? 
+            val[1].value :
+            val[1]
+            )) , id.value]
+        }
+
+        const { rowCount } = await this.pgClient!.query(queryOpts)
         return Promise.resolve(rowCount === 1)
     } 
 }
