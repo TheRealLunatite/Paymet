@@ -7,6 +7,11 @@ import { WebSocketServerModule } from "@modules/socketServer"
 import { AuthExpressComponent } from "@components/auth/express"
 import express , { ErrorRequestHandler } from "express"
 import { LoggerModule } from "@modules/logger/types"
+import { InstanceModule } from "@modules/instances/types"
+import { v4 as uuid } from "uuid"
+import { Uuid } from "@common/uuid"
+import { Id } from "@common/id"
+import { Username } from "@common/username"
 
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
@@ -33,8 +38,11 @@ authComponent.execute()
 const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
 transactionComponent.execute()
 
+const instanceDb = container.resolve<InstanceModule>(TOKENS.modules.instanceDb)
+
 app.use(logErrorHandler)
 app.use(errorHandler)
+
 
 async function test() {
     await wsServer.listen({ port : 8080 })

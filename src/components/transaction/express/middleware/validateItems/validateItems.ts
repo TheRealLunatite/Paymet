@@ -1,6 +1,6 @@
 
 import { IExecutableValue } from "@common/interfaces/IExecutable";
-import { Inventory, InventoryModule } from "@modules/inventory/types";
+import { Instance , InstanceModule } from "@modules/instances/types";
 import { RequestHandler } from "express";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
@@ -9,7 +9,7 @@ import { CreateTransactionRequestValidatedBody } from "../../routes/create/types
 @autoInjectable()
 export class ValidateItems implements IExecutableValue<RequestHandler> {
     constructor(
-        @inject(TOKENS.modules.inventoryDb) private inventoryDb? : InventoryModule
+        @inject(TOKENS.modules.instanceDb) private instanceDb? : InstanceModule
     ) {}
 
     public execute() : RequestHandler {
@@ -17,16 +17,16 @@ export class ValidateItems implements IExecutableValue<RequestHandler> {
             const { itemPlaceId , items } : CreateTransactionRequestValidatedBody = req.body
 
             // Place inventory is the entire inventory of a specific game that a socket instance is connected to.
-            let placeInventory : Inventory | null;
+            let placeInventory : Instance | null;
 
             try {
-                placeInventory = await this.inventoryDb!.findOne({ placeId : itemPlaceId })
+                placeInventory = await this.instanceDb!.findOne({ placeId : itemPlaceId })
 
                 if(!placeInventory) {
                     return res.status(400).json({
                         success : false,
                         errors : [
-                            `There is no current player in the placeId ${itemPlaceId.value}.`
+                            `There is no socket instance that is active in the provided placeId.`
                         ]
                     })
                 }

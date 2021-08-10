@@ -3,7 +3,7 @@ import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import { PlayerConnect } from "../types";
 import { LoggerModule } from "@modules/logger/types";
-import { InventoryDBModule } from "@modules/inventory";
+import { InstanceModule } from "@modules/instances/types";
 import { ISocketModule } from "@common/interfaces/ISocketModule";
 import { Username } from "@common/username";
 import { Id } from "@common/id";
@@ -12,7 +12,7 @@ import { RobloxUniverse } from "@common/robloxUniverse";
 @autoInjectable()
 export class PlayerConnectModule implements ISocketModule {
     constructor(
-        @inject(TOKENS.modules.inventoryDb) private inventoryDb? : InventoryDBModule,
+        @inject(TOKENS.modules.instanceDb) private instanceDb? : InstanceModule ,
         @inject(TOKENS.modules.logger) private logger? : LoggerModule
     ){}
 
@@ -40,17 +40,17 @@ export class PlayerConnectModule implements ISocketModule {
 
         // If the connect user for whatever reason is still in the database when the socket instance is closed we'll delete the doc to prevent any constraint errors.
         try {
-            const findUser = await this.inventoryDb!.findOne({ userId })
+            const findUser = await this.instanceDb!.findOne({ userId : ws.user.userId! })
 
             if(findUser) {
-                await this.inventoryDb!.deleteById(findUser.socketId)
+                await this.instanceDb!.deleteById(findUser.socketId)
             }
         } catch {
             throw new PlayerConnectModuleError("There was an error trying to find/delete a user in the inventory database.")
         }
 
         try {
-            await this.inventoryDb!.add({
+            await this.instanceDb!.add({
                 socketId : ws.id,
                 userId : userId,
                 placeId : placeId,

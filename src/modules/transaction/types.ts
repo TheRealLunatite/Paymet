@@ -32,17 +32,18 @@ export type TransactionOptional = {
     status? : "success" | "initalized" | "pending",
     username? : Username,
     devProductId? : number,
-    discordId? : DiscordId
+    discordId? : DiscordId,
+    items : ItemPurchased[]
 }
 
 export type TransactionDoc = {
     id : string,
     status : "success" | "initalized" | "pending",
     username : string,
-    discordid : number,
+    discordid : string,
     timestamp : string,
-    devProductId : number,
-    items : string
+    devproductid : string,
+    items : ItemPurchased[]
 }
 
 export type FindTransactionOptions = {

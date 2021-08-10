@@ -10,7 +10,6 @@ export const TOKENS = {
         postgresLib : Symbol(),
         uuid : Symbol(),
         websocketLib : Symbol(),
-        httpLib : Symbol(),
         expressRouter : Symbol(),
         appConfig : Symbol(),
         postgresConfig : Symbol(),
@@ -52,7 +51,7 @@ export const TOKENS = {
         transactionDb : Symbol(),
         socketServer : Symbol(),
         userDb : Symbol(),
-        inventoryDb : Symbol(),
+        instanceDb : Symbol(),
         priceDb : Symbol()
     }
 }
@@ -65,7 +64,6 @@ import postgres from "pg"
 import { v4 as uuid } from "uuid"
 import ws from "ws"
 import appConfig from "@config/"
-import http from "http"
 import crypto from "crypto"
 import fs from "fs"
 import jwt from "jsonwebtoken"
@@ -131,10 +129,6 @@ container.register(TOKENS.values.uuid , {
     useValue : uuid
 })
 
-container.register(TOKENS.values.httpLib , {
-    useValue : http
-})
-
 container.register(TOKENS.values.fsLib , {
     useValue : fs
 })
@@ -156,10 +150,10 @@ import { PostgresModule } from "@modules/postgres/pg"
 import { TransactionDBModule } from "@modules/transaction"
 import { WebSocketServerModule } from "@modules/socketServer"
 import { UserDBModule } from "@modules/user"
-import { InventoryDBModule } from "@modules/inventory"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
 import { PriceDBModule } from "@modules/prices"
+import { InstanceDBModule } from "@modules/instances"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -185,9 +179,6 @@ container.register<WebSocketServerModule>(TOKENS.modules.socketServer , {
     useClass : WebSocketServerModule
 })
 
-container.register<InventoryDBModule>(TOKENS.modules.inventoryDb , {
-    useClass : InventoryDBModule
-})
 
 container.register<HmacModule>(TOKENS.modules.hmac , {
     useClass : HmacModule
@@ -199,6 +190,10 @@ container.register<TsLoggerModule>(TOKENS.modules.logger , {
 
 container.register<PriceDBModule>(TOKENS.modules.priceDb , {
     useClass : PriceDBModule
+})
+
+container.register<InstanceDBModule>(TOKENS.modules.instanceDb , {
+    useClass : InstanceDBModule
 })
 
 // SOCKET MODULES
