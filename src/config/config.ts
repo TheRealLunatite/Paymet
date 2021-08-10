@@ -37,5 +37,8 @@ export const config = {
     roblox : {
         cookie : getEnvironmentalVariable("robloxCookie"),
         placeId : +getEnvironmentalVariable("robloxPlaceId")
-    }
+    },
+    discord : {
+        token : getEnvironmentalVariable("botToken")
+    }   
 }

@@ -427,6 +427,37 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@discordjs/builders@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@discordjs/builders@npm:0.4.0"
+  dependencies:
+    "@sindresorhus/is": ^4.0.1
+    discord-api-types: ^0.22.0
+    ow: ^0.27.0
+    ts-mixer: ^6.0.0
+    tslib: ^2.3.0
+  checksum: 7dd5fb4864f43786eaff77faa81422a2bc8ea3925a87f89312fee35b27f1f33b3d393fbeec4e28a398e4c65bed64a2654ea15bacc295e595770df276f8e87b72
+  languageName: node
+  linkType: hard
+
+"@discordjs/collection@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@discordjs/collection@npm:0.2.1"
+  checksum: e68d4bbf83b03bc18c7648d0f5c5669d1f1a394596bc2fcbb907284cff65657b28dbf165a1b8ccae20b6bc0726bc8a0a276d8adba8f9413502bb19d61b98598f
+  languageName: node
+  linkType: hard
+
+"@discordjs/form-data@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@discordjs/form-data@npm:3.0.1"
+  dependencies:
+    asynckit: ^0.4.0
+    combined-stream: ^1.0.8
+    mime-types: ^2.1.12
+  checksum: 2b431b1a14f8ac521e1c13567856cef7e61e05aafe2721e03d9e074bb7e5f45c89fc123b126964943edf301ec612d04515dcf068ea9773a2e30a99a844c00603
+  languageName: node
+  linkType: hard
+
 "@istanbuljs/load-nyc-config@npm:^1.0.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
@@ -687,6 +718,20 @@ __metadata:
     mkdirp: ^1.0.4
     rimraf: ^3.0.2
   checksum: c96381d4a37448ea280951e46233f7e541058cf57a57d4094dd4bdcaae43fa5872b5f2eb6bfb004591a68e29c5877abe3cdc210cb3588cbf20ab2877f31a7de7
+  languageName: node
+  linkType: hard
+
+"@sapphire/async-queue@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "@sapphire/async-queue@npm:1.1.4"
+  checksum: 416a8f3b1de7452b251a650c1b33d5bef829a7b6ef215ad58a0cc04847f247f17ebae1e9424a26f29ec2e36d2f98294e71cdafe20a32612356b4674dd4125ae0
+  languageName: node
+  linkType: hard
+
+"@sindresorhus/is@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "@sindresorhus/is@npm:4.0.1"
+  checksum: 92ae3f3d765bd5bc7355852cb9852091ebce6a76bb00eeb37d08e0247b9b3e742eae43ff3753de0c0c00876c526613db6433c9594ae0d17b305b3d6dbeef2514
   languageName: node
   linkType: hard
 
@@ -958,7 +1003,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ws@npm:^7.4.6":
+"@types/ws@npm:^7.4.6, @types/ws@npm:^7.4.7":
   version: 7.4.7
   resolution: "@types/ws@npm:7.4.7"
   dependencies:
@@ -1005,6 +1050,7 @@ __metadata:
     "@types/ws": ^7.4.6
     axios: ^0.21.1
     bcrypt: ^5.0.1
+    discord.js: ^13.0.1
     dotenv: ^10.0.0
     express: ^4.17.1
     jest: ^27.0.5
@@ -1454,7 +1500,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"callsites@npm:^3.0.0":
+"callsites@npm:^3.0.0, callsites@npm:^3.1.0":
   version: 3.1.0
   resolution: "callsites@npm:3.1.0"
   checksum: 072d17b6abb459c2ba96598918b55868af677154bec7e73d222ef95a8fdb9bbf7dae96a8421085cdad8cd190d86653b5b6dc55a4484f2e5b2e27d5e0c3fc15b3
@@ -1844,12 +1890,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"discord-api-types@npm:^0.22.0":
+  version: 0.22.0
+  resolution: "discord-api-types@npm:0.22.0"
+  checksum: 673bcd960e394d8a3752bb03d50de44e74d508450e3d2cce947a69e0a6dc43c00196e18245c88dd26f3a8b0a56b40e0dbf52e058b7aabc7ed77f0f018003cb04
+  languageName: node
+  linkType: hard
+
+"discord.js@npm:^13.0.1":
+  version: 13.0.1
+  resolution: "discord.js@npm:13.0.1"
+  dependencies:
+    "@discordjs/builders": ^0.4.0
+    "@discordjs/collection": ^0.2.1
+    "@discordjs/form-data": ^3.0.1
+    "@sapphire/async-queue": ^1.1.4
+    "@types/ws": ^7.4.7
+    discord-api-types: ^0.22.0
+    node-fetch: ^2.6.1
+    ws: ^7.5.1
+  checksum: be68a19c1008135015de4d205a2d6bdf041cb184463eeaef7f99f9a8d103c6b5b5f67eee2e846b4369c402389362be75116ea797a508588e9d2a3bcfb1f51e94
+  languageName: node
+  linkType: hard
+
 "domexception@npm:^2.0.1":
   version: 2.0.1
   resolution: "domexception@npm:2.0.1"
   dependencies:
     webidl-conversions: ^5.0.0
   checksum: d638e9cb05c52999f1b2eb87c374b03311ea5b1d69c2f875bc92da73e17db60c12142b45c950228642ff7f845c536b65305483350d080df59003a653da80b691
+  languageName: node
+  linkType: hard
+
+"dot-prop@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "dot-prop@npm:6.0.1"
+  dependencies:
+    is-obj: ^2.0.0
+  checksum: 0f47600a4b93e1dc37261da4e6909652c008832a5d3684b5bf9a9a0d3f4c67ea949a86dceed9b72f5733ed8e8e6383cc5958df3bbd0799ee317fd181f2ece700
   languageName: node
   linkType: hard
 
@@ -2552,6 +2630,13 @@ fsevents@^2.3.2:
   version: 7.0.0
   resolution: "is-number@npm:7.0.0"
   checksum: 456ac6f8e0f3111ed34668a624e45315201dff921e5ac181f8ec24923b99e9f32ca1a194912dc79d539c97d33dba17dc635202ff0b2cf98326f608323276d27a
+  languageName: node
+  linkType: hard
+
+"is-obj@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "is-obj@npm:2.0.0"
+  checksum: c9916ac8f4621962a42f5e80e7ffdb1d79a3fab7456ceaeea394cd9e0858d04f985a9ace45be44433bf605673c8be8810540fe4cc7f4266fc7526ced95af5a08
   languageName: node
   linkType: hard
 
@@ -3318,6 +3403,13 @@ fsevents@^2.3.2:
   languageName: node
   linkType: hard
 
+"lodash.isequal@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.isequal@npm:4.5.0"
+  checksum: da27515dc5230eb1140ba65ff8de3613649620e8656b19a6270afe4866b7bd461d9ba2ac8a48dcc57f7adac4ee80e1de9f965d89d4d81a0ad52bb3eec2609644
+  languageName: node
+  linkType: hard
+
 "lodash.isinteger@npm:^4.0.4":
   version: 4.0.4
   resolution: "lodash.isinteger@npm:4.0.4"
@@ -3786,6 +3878,20 @@ fsevents@^2.3.2:
     type-check: ~0.3.2
     word-wrap: ~1.2.3
   checksum: b8695ddf3d593203e25ab0900e265d860038486c943ff8b774f596a310f8ceebdb30c6832407a8198ba3ec9debe1abe1f51d4aad94843612db3b76d690c61d34
+  languageName: node
+  linkType: hard
+
+"ow@npm:^0.27.0":
+  version: 0.27.0
+  resolution: "ow@npm:0.27.0"
+  dependencies:
+    "@sindresorhus/is": ^4.0.1
+    callsites: ^3.1.0
+    dot-prop: ^6.0.1
+    lodash.isequal: ^4.5.0
+    type-fest: ^1.2.1
+    vali-date: ^1.0.0
+  checksum: bffd6fa43d004163bab9821fae4d2eceee92d70059ba2a5dca1ad7497cd167554224a7efab3d41476112fbab4714afa99b8866506e8b9bad5d690cf967146332
   languageName: node
   linkType: hard
 
@@ -4716,6 +4822,13 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
+"ts-mixer@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "ts-mixer@npm:6.0.0"
+  checksum: 791a513c9ca318a979928f5265fd6029858fa21595153a9386063c11239a6b1c352db1e277c19f0544d017a67cf78d120a7438b86b2c828b1115eb607538eff8
+  languageName: node
+  linkType: hard
+
 "ts-node@npm:^10.0.0":
   version: 10.2.0
   resolution: "ts-node@npm:10.2.0"
@@ -4770,6 +4883,13 @@ resolve@^1.20.0:
   languageName: node
   linkType: hard
 
+"tslib@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "tslib@npm:2.3.0"
+  checksum: 8869694c26e4a7b56d449662fd54a4f9ba872c889d991202c74462bd99f10e61d5bd63199566c4284c0f742277736292a969642cc7b590f98727a7cae9529122
+  languageName: node
+  linkType: hard
+
 "tslog@npm:^3.2.0":
   version: 3.2.0
   resolution: "tslog@npm:3.2.0"
@@ -4808,6 +4928,13 @@ resolve@^1.20.0:
   version: 0.21.3
   resolution: "type-fest@npm:0.21.3"
   checksum: e6b32a3b3877f04339bae01c193b273c62ba7bfc9e325b8703c4ee1b32dc8fe4ef5dfa54bf78265e069f7667d058e360ae0f37be5af9f153b22382cd55a9afe0
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^1.2.1":
+  version: 1.4.0
+  resolution: "type-fest@npm:1.4.0"
+  checksum: b011c3388665b097ae6a109a437a04d6f61d81b7357f74cbcb02246f2f5bd72b888ae33631b99871388122ba0a87f4ff1c94078e7119ff22c70e52c0ff828201
   languageName: node
   linkType: hard
 
@@ -4913,6 +5040,13 @@ typescript@^4.3.4:
     convert-source-map: ^1.6.0
     source-map: ^0.7.3
   checksum: 3e8be80b9967a18c2196b016b29a956ffddb8fd2f2abe5ae126a616209c2ed7ba3172a9630715b375c50f88dd1dea3c97ba3e2ebfaee902dc4cc6a177f31a039
+  languageName: node
+  linkType: hard
+
+"vali-date@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "vali-date@npm:1.0.0"
+  checksum: 6464369cb77003a966591f2bd17b7c938c480956992e254b3455fd1651a3b7633e23aac8a03b974bbdfbd2357da52b98d46357bb6f292ffd28768a6d3959e61e
   languageName: node
   linkType: hard
 
@@ -5048,7 +5182,7 @@ typescript@^4.3.4:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.4.6, ws@npm:^7.5.2":
+"ws@npm:^7.4.6, ws@npm:^7.5.1, ws@npm:^7.5.2":
   version: 7.5.3
   resolution: "ws@npm:7.5.3"
   peerDependencies:

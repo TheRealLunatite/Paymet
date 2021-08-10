@@ -8,6 +8,7 @@ export const TOKENS = {
         axiosInstance : Symbol(),
         expressApp : Symbol(),
         postgresLib : Symbol(),
+        discordJsLib : Symbol(),
         uuid : Symbol(),
         websocketLib : Symbol(),
         expressRouter : Symbol(),
@@ -42,6 +43,10 @@ export const TOKENS = {
             message : Symbol()
         }  
     },
+    discord : {
+        listeners : Symbol(),
+        commands : Symbol()
+    },
     modules : {
         logger : Symbol(),
         request : Symbol(),
@@ -51,8 +56,9 @@ export const TOKENS = {
         transactionDb : Symbol(),
         socketServer : Symbol(),
         userDb : Symbol(),
+        priceDb : Symbol(),
         instanceDb : Symbol(),
-        priceDb : Symbol()
+        discordBot : Symbol()
     }
 }
 
@@ -60,6 +66,7 @@ export const TOKENS = {
 // VALUES
 import axios from "axios"
 import express from "express"
+import discordjs from "discord.js"
 import postgres from "pg"
 import { v4 as uuid } from "uuid"
 import ws from "ws"
@@ -141,9 +148,11 @@ container.register(TOKENS.values.tsLogger , {
     useValue : new Logger()
 })
 
+container.register(TOKENS.values.discordJsLib , {
+    useValue : discordjs
+})
 
 // MODULES
-
 import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
 import { PostgresModule } from "@modules/postgres/pg"
@@ -153,10 +162,15 @@ import { UserDBModule } from "@modules/user"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
 import { PriceDBModule } from "@modules/prices"
+import { DiscordBot } from "@modules/discordBot"
 import { InstanceDBModule } from "@modules/instances"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
+})
+
+container.register<InstanceDBModule>(TOKENS.modules.instanceDb , {
+    useClass : InstanceDBModule
 })
 
 container.register<RobloxModule>(TOKENS.modules.roblox , {
@@ -192,8 +206,12 @@ container.register<PriceDBModule>(TOKENS.modules.priceDb , {
     useClass : PriceDBModule
 })
 
-container.register<InstanceDBModule>(TOKENS.modules.instanceDb , {
-    useClass : InstanceDBModule
+container.register<DiscordBot>(TOKENS.modules.discordBot , {
+    useClass : DiscordBot
+})
+
+container.register<DiscordBot>(TOKENS.modules.discordBot , {
+    useClass : DiscordBot
 })
 
 // SOCKET MODULES
@@ -209,7 +227,20 @@ import SocketListeners from "@websocket/listeners"
 
 container.register<ISocket[]>(TOKENS.websocket.listeners , {
     useValue : SocketListeners
-}) 
+})
+
+// DISCORD
+import DiscordBotCommands from "@modules/discordBot/commands"
+import DiscordBotEvents from "@modules/discordBot/events"
+
+container.register(TOKENS.discord.commands , {
+    useValue : DiscordBotCommands
+})
+
+container.register(TOKENS.discord.listeners , {
+    useValue : DiscordBotEvents
+})
+
 
 // ROUTES
 
