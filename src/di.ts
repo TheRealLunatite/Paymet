@@ -10,7 +10,6 @@ export const TOKENS = {
         postgresLib : Symbol(),
         uuid : Symbol(),
         websocketLib : Symbol(),
-        httpLib : Symbol(),
         expressRouter : Symbol(),
         appConfig : Symbol(),
         postgresConfig : Symbol(),
@@ -65,7 +64,6 @@ import postgres from "pg"
 import { v4 as uuid } from "uuid"
 import ws from "ws"
 import appConfig from "@config/"
-import http from "http"
 import crypto from "crypto"
 import fs from "fs"
 import jwt from "jsonwebtoken"
@@ -129,10 +127,6 @@ container.register(TOKENS.values.websocketLib , {
 
 container.register(TOKENS.values.uuid , {
     useValue : uuid
-})
-
-container.register(TOKENS.values.httpLib , {
-    useValue : http
 })
 
 container.register(TOKENS.values.fsLib , {
