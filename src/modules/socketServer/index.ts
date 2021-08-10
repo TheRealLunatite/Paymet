@@ -1,6 +1,5 @@
 import { inject , injectable } from "tsyringe";
 import { TOKENS } from "../../di";
-import { application } from "express"
 import ws  , { ServerOptions } from "ws"
 import { WebSocketServer } from "./types";
 import { v4 } from "uuid"

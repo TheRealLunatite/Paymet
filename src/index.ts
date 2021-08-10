@@ -45,12 +45,7 @@ app.use(errorHandler)
 
 
 async function test() {
-    try {
-        await wsServer.listen({ port : 8000 })
-    } catch (e) {
-        console.log(e)
-    }
-    
+    await wsServer.listen({ port : 8080 })
     logger.info("Socket server is now listening on Port : 8080")
     app.listen(3000 , () => logger.info("Express server is now listening on Port : 3000"))
 }
