@@ -199,7 +199,7 @@ WebSocket.OnMessage:Connect(function(msg)
             if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
                 break
             end
-            tries += 1
+            tries = tries + 1
             wait(1)
         until tries >= 5
 
