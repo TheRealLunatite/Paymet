@@ -53,6 +53,21 @@ export class AddPriceModule implements DiscordSlashCommandModule {
             const priceInRobux = interaction.options.getInteger("priceinrobux")!
             
             try {
+                const findPrice = await this.priceDb!.findOne({ itemName , itemPlaceId })
+
+                if(findPrice) {
+                    return await interaction.reply({
+                        content : "You\'ve already enlisted this item.",
+                        ephemeral : true
+                    })
+                }
+            } catch {
+                return await interaction.reply({
+                    content : "Therer was a problem trying to find a pricing."
+                })
+            }
+
+            try {
                 await this.priceDb!.add({
                     id : new  Uuid(this.v4!()),
                     itemName,
@@ -60,12 +75,12 @@ export class AddPriceModule implements DiscordSlashCommandModule {
                     priceInRobux
                 })
 
-                await interaction.reply({
+                return await interaction.reply({
                     content : `Successfully enlisted ${itemName} <${itemPlaceId.value}> for ${priceInRobux} robux.`,
                     ephemeral : true
                 })
             } catch {
-                await interaction.reply({
+                return await interaction.reply({
                     content : "There was an problem when enlisting an item.",
                     ephemeral : true
                 })
