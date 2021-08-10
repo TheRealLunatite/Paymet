@@ -162,7 +162,7 @@ import { UserDBModule } from "@modules/user"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
 import { PriceDBModule } from "@modules/prices"
-import { DiscordBot } from "@modules/discordBot"
+import { DiscordBot } from "src/discordBot"
 import { InstanceDBModule } from "@modules/instances"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
@@ -230,8 +230,8 @@ container.register<ISocket[]>(TOKENS.websocket.listeners , {
 })
 
 // DISCORD
-import DiscordBotCommands from "@modules/discordBot/commands"
-import DiscordBotEvents from "@modules/discordBot/events"
+import DiscordBotCommands from "src/discordBot/commands"
+import DiscordBotEvents from "src/discordBot/events"
 
 container.register(TOKENS.discord.commands , {
     useValue : DiscordBotCommands

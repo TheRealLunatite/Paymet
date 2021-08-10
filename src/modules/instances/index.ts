@@ -5,7 +5,7 @@ import { IPostgresModule } from "@modules/postgres/types";
 import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
 import { singleton , inject } from "tsyringe";
-import { InstanceModule , Instance , DeleteInstanceResponse, InstanceOpts , FindType, InstanceDoc, CountInstancesResponse } from "./types"
+import { InstanceModule , Instance , DeleteInstanceResponse, InstanceOpts , FindType, InstanceDoc, CountInstancesResponse, InstanceWithTimestamp } from "./types"
 
 @singleton()
 export class InstanceDBModule implements InstanceModule {
@@ -27,14 +27,13 @@ export class InstanceDBModule implements InstanceModule {
 
         const { socketId , userId , placeId , username, inventory } = data
         
-        const query : QueryConfig = {
+        const queryOpts : QueryConfig = {
             name : "add-instance",
             text : `INSERT INTO instances (socketId , userId , placeId , username , inventory) VALUES($1,$2,$3,$4,$5)`,
             values : [socketId.value , userId.value , placeId.value , username.value , JSON.stringify(inventory)]
         }    
 
-        await this.pgClient!.query(query)
-
+        await this.pgClient!.query(queryOpts)
         return Promise.resolve(data)
     }
 
@@ -56,7 +55,7 @@ export class InstanceDBModule implements InstanceModule {
         })
     }
 
-    private async find(data : InstanceOpts , type : FindType) : Promise<Instance | Instance[] | null> {
+    private async find(data : InstanceOpts , type : FindType) : Promise<InstanceWithTimestamp | InstanceWithTimestamp[]> {
         if(type !== "FindAll" && type !== "FindOne") {
             throw new Error("FindAll and FindOne is the only options allowed for type.")
         }
@@ -84,43 +83,45 @@ export class InstanceDBModule implements InstanceModule {
             const rows : InstanceDoc[] = query.rows
 
             if(type === "FindAll") {
-                return Promise.resolve(rows.map(({ socketid , userid , placeid , username , inventory }) : Instance => ({
+                return Promise.resolve(rows.map(({ socketid , userid , placeid , username , inventory , timestamp }) : InstanceWithTimestamp => ({
                     socketId : new Uuid(socketid),
                     username : new Username(username),
                     userId : new Id(+userid),
                     placeId : new Id(+placeid),
+                    timestamp : new Date(timestamp),
                     inventory
                 })))
             }
 
-            const { socketid , userid , placeid , username , inventory } = rows[0]
+            const { socketid , userid , placeid , username , inventory , timestamp } = rows[0]
 
             return Promise.resolve({
                 socketId : new Uuid(socketid),
                 username : new Username(username),
                 userId : new Id(+userid),
                 placeId : new Id(+placeid),
+                timestamp : new Date(timestamp),
                 inventory
             })
         }
 
-        return Promise.resolve(null)
+        return Promise.resolve([])
     }
 
-    public async findOne(data : InstanceOpts) : Promise<Instance | null> {
+    public async findOne(data : InstanceOpts) : Promise<InstanceWithTimestamp> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
 
-        return Promise.resolve(await this.find(data , "FindOne") as Instance | null)
+        return Promise.resolve(await this.find(data , "FindOne") as InstanceWithTimestamp)
     }
 
-    public async findAll(data : InstanceOpts) : Promise<Instance[] | null> {
+    public async findAll(data : InstanceOpts) : Promise<InstanceWithTimestamp[]> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
 
-        return Promise.resolve(await this.find(data , "FindOne") as Instance[] | null)
+        return Promise.resolve(await this.find(data , "FindAll") as InstanceWithTimestamp[])
     }
 
 

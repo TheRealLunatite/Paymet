@@ -7,7 +7,7 @@ import { TransactionExpressComponent } from "@components/transaction/express"
 
 import { WebSocketServer } from "@modules/socketServer/types"
 import { LoggerModule } from "@modules/logger/types"
-import { DiscordBotModule } from "@modules/discordBot/types"
+import { DiscordBotModule } from "src/discordBot/types"
 import appConfig from "@config/"
 
 import { Intents } from "discord.js"

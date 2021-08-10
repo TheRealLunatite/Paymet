@@ -5,18 +5,22 @@ import { Username } from "@common/username"
 export interface InstanceModule {
     add(data : Instance) : Promise<Instance>,
     deleteById(id : Uuid) : Promise<DeleteInstanceResponse>,
-    findOne(data : InstanceOpts) : Promise<Instance | null>,
-    findAll(data : InstanceOpts) : Promise<Instance[] | null>,
+    findOne(data : InstanceOpts) : Promise<InstanceWithTimestamp>,
+    findAll(data : InstanceOpts) : Promise<InstanceWithTimestamp[]>,
     updateById(id : Uuid , opts : InstanceOpts) : Promise<boolean> ,
     getCount() : Promise<CountInstancesResponse>
 }
 
-export type Instance = {
+export interface Instance {
     socketId : Uuid,
     userId : Id,
     placeId : Id,
     username : Username,
     inventory : Array<InventoryItem>
+}
+
+export interface InstanceWithTimestamp extends Instance {
+    timestamp : Date
 }
 
 export type InventoryItem = {
@@ -42,6 +46,7 @@ export type InstanceDoc = {
     placeid : string,
     username : string,
     inventory : InventoryItem[]
+    timestamp : string
 }
 
 export type DeleteInstanceResponse = {

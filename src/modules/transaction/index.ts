@@ -7,7 +7,6 @@ import { Uuid } from "@common/uuid";
 import { Username } from "@common/username";
 import { DiscordId } from "@common/discordId";
 import { Id } from "@common/id";
-import instance from "tsyringe/dist/typings/dependency-container";
 
 @injectable()
 export class TransactionDBModule implements TransactionModule {

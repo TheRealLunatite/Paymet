@@ -1,7 +1,7 @@
 import { Client } from "discord.js";
 import { autoInjectable } from "tsyringe";
 import { DiscordEventListener } from "../types";
-import { DiscordSlashCommandsCollection } from "@modules/discordBot/commands/types";
+import { DiscordSlashCommandsCollection } from "src/discordBot/commands/types";
 
 @autoInjectable()
 export class DiscordReadyEvent implements DiscordEventListener {
