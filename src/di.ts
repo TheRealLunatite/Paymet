@@ -21,7 +21,9 @@ export const TOKENS = {
         jwtSecret : Symbol(),
         transactionHmacSecret : Symbol(),
         tsLogger : Symbol(),
-        robloxConfig : Symbol()
+        robloxConfig : Symbol(),
+        discordMessageEmbed : Symbol(),
+        discordMessageActionRow : Symbol()
     },
     components : {
         roblox : {
@@ -58,7 +60,8 @@ export const TOKENS = {
         userDb : Symbol(),
         priceDb : Symbol(),
         instanceDb : Symbol(),
-        discordBot : Symbol()
+        discordBot : Symbol(),
+        discordPagination : Symbol()
     }
 }
 
@@ -66,7 +69,7 @@ export const TOKENS = {
 // VALUES
 import axios from "axios"
 import express from "express"
-import discordjs from "discord.js"
+import discordjs , { MessageActionRow, MessageEmbed } from "discord.js"
 import postgres from "pg"
 import { v4 as uuid } from "uuid"
 import ws from "ws"
@@ -152,6 +155,14 @@ container.register(TOKENS.values.discordJsLib , {
     useValue : discordjs
 })
 
+container.register(TOKENS.values.discordMessageEmbed , {
+    useValue : MessageEmbed
+})
+
+container.register(TOKENS.values.discordMessageActionRow , {
+    useValue : MessageActionRow
+})
+
 // MODULES
 import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
@@ -162,8 +173,8 @@ import { UserDBModule } from "@modules/user"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
 import { PriceDBModule } from "@modules/prices"
-import { DiscordBot } from "src/discordBot"
 import { InstanceDBModule } from "@modules/instances"
+import { DiscordPagination } from "@modules/discordPagination"
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -205,6 +216,12 @@ container.register<TsLoggerModule>(TOKENS.modules.logger , {
 container.register<PriceDBModule>(TOKENS.modules.priceDb , {
     useClass : PriceDBModule
 })
+
+container.register<DiscordPagination>(TOKENS.modules.discordPagination , {
+    useClass : DiscordPagination
+})
+
+import { DiscordBot } from "src/discordBot"
 
 container.register<DiscordBot>(TOKENS.modules.discordBot , {
     useClass : DiscordBot
