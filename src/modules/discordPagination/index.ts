@@ -7,7 +7,7 @@ import { Pagination } from "./types";
 export class DiscordPagination implements Pagination {
     private currentPage = 1
     
-    private isPreviousButtonDisabled = false //  Because we start on the first page of pagination.
+    private isPreviousButtonDisabled = true //  Because we start on the first page of pagination.
     private isNextButtonDisabled = false
     
     private embeds : MessageEmbed[]
@@ -54,7 +54,6 @@ export class DiscordPagination implements Pagination {
 
         if(embeds.length <= 1) {
             this.isNextButtonDisabled = true
-            this.isPreviousButtonDisabled = true
         }
 
         const collector = interaction.channel!.createMessageComponentCollector({

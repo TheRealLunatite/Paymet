@@ -8,7 +8,7 @@ import { Pagination } from "@modules/discordPagination/types";
 import { RobloxUniverse } from "@common/robloxUniverse";
 
 @autoInjectable()
-export class GetInstancesModule implements DiscordSlashCommandModule {
+export class GetInstancesCommand implements DiscordSlashCommandModule {
     name = "getinstances"
     description = "Get info on all socket instances that are currently connected."
     options = []

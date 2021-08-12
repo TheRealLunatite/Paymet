@@ -25,11 +25,10 @@ export class DiscordReadyEvent implements DiscordEventListener {
             // Set slash permissions.
             const cacheSlashCommands = await client.guilds.cache.get("557900033631059969")?.commands.cache
             const setBulkSlashPermissionCommandsData = Array.from(cacheSlashCommands!.mapValues((value) => {
-                const permission = slashCommands.get(value.name)!.permissions
-
+                const permissions = slashCommands.get(value.name)!.permissions ?? []
                 return {
                     id : value.id,  
-                    permissions : permission || []
+                    permissions
                 }
             }).values())
 
