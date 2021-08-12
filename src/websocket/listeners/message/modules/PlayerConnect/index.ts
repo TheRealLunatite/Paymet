@@ -46,7 +46,7 @@ export class PlayerConnectModule implements ISocketModule {
                 await this.instanceDb!.deleteById(findUser.socketId)
             }
         } catch {
-            throw new PlayerConnectModuleError("There was an error trying to find/delete a user in the inventory database.")
+            throw new PlayerConnectModuleError("There was an error trying to find/delete a user in the instance database.")
         }
 
         try {
@@ -58,7 +58,7 @@ export class PlayerConnectModule implements ISocketModule {
                 inventory : data.inventory
             })
         } catch (e) {
-            throw new PlayerConnectModuleError("There was an error adding the connected user to the inventory database.")
+            throw new PlayerConnectModuleError("There was an error adding the connected user to the instance database.")
         }
 
         this.logger!.info(`${username.value} <${userId.value}> has joined ${RobloxUniverse[placeId.value]}.`)

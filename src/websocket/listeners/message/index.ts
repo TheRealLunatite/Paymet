@@ -27,7 +27,7 @@ export class MessageSocketListener implements ISocket {
             }
 
             switch(wsData.type) {
-                case "PlayerConnect":                   
+                case "PlayerConnect":               
                     await this.modules!.get("PlayerConnect")!.execute(ws , wsData)
                     break
                 case "ReceivedTradeRequest":

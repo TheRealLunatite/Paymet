@@ -51,7 +51,11 @@ export class DiscordPagination implements Pagination {
     
     execute(interaction : CommandInteraction , embeds : MessageEmbed[]) {
         this.embeds = embeds
-        embeds.length === 1 ? this.isNextButtonDisabled = false : null
+
+        if(embeds.length <= 1) {
+            this.isNextButtonDisabled = true
+            this.isPreviousButtonDisabled = true
+        }
 
         const collector = interaction.channel!.createMessageComponentCollector({
             filter : (collectorInteraction) => (collectorInteraction.user.id === interaction.user.id) && (collectorInteraction.customId === "next" || collectorInteraction.customId === "previous"),

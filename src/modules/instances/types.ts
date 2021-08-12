@@ -5,8 +5,8 @@ import { Username } from "@common/username"
 export interface InstanceModule {
     add(data : Instance) : Promise<Instance>,
     deleteById(id : Uuid) : Promise<DeleteInstanceResponse>,
-    findOne(data : InstanceOpts) : Promise<InstanceWithTimestamp>,
-    findAll(data : InstanceOpts) : Promise<InstanceWithTimestamp[]>,
+    findOne(data : InstanceOpts) : Promise<InstanceWithTimestamp | null>,
+    findAll(data : InstanceOpts) : Promise<InstanceWithTimestamp[] | null>,
     updateById(id : Uuid , opts : InstanceOpts) : Promise<boolean> ,
     getCount() : Promise<CountInstancesResponse>
 }

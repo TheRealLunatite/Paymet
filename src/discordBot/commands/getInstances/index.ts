@@ -5,6 +5,7 @@ import { autoInjectable, inject } from "tsyringe";
 import { v4 as uuid } from "uuid"
 import { DiscordSlashCommandModule } from "../types";
 import { Pagination } from "@modules/discordPagination/types";
+import { RobloxUniverse } from "@common/robloxUniverse";
 
 @autoInjectable()
 export class GetInstancesModule implements DiscordSlashCommandModule {
@@ -38,11 +39,9 @@ export class GetInstancesModule implements DiscordSlashCommandModule {
         return new Promise(async (resolve , reject) => {
             const instances = await this.instanceDb!.findAll({})
 
-            if(instances.length <= 0) {
+            if(!instances) {
                 return await interaction.reply("There is currently no connected socket instances.")
             }
-
-
 
             const embeds = instances.map((instance , index) => (
                 new this.embed!()
@@ -57,6 +56,11 @@ export class GetInstancesModule implements DiscordSlashCommandModule {
                     {
                         name : "PlaceId",
                         value : instance.placeId.value.toString(),
+                        inline : true
+                    },
+                    {
+                        name : "Place Name",
+                        value : RobloxUniverse[instance.placeId.value] ?? "Unknown",
                         inline : true
                     },
                     {

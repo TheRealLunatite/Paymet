@@ -55,7 +55,7 @@ export class InstanceDBModule implements InstanceModule {
         })
     }
 
-    private async find(data : InstanceOpts , type : FindType) : Promise<InstanceWithTimestamp | InstanceWithTimestamp[]> {
+    private async find(data : InstanceOpts , type : FindType) : Promise<InstanceWithTimestamp | InstanceWithTimestamp[] | null> {
         if(type !== "FindAll" && type !== "FindOne") {
             throw new Error("FindAll and FindOne is the only options allowed for type.")
         }
@@ -105,23 +105,23 @@ export class InstanceDBModule implements InstanceModule {
             })
         }
 
-        return Promise.resolve([])
+        return Promise.resolve(null)
     }
 
-    public async findOne(data : InstanceOpts) : Promise<InstanceWithTimestamp> {
+    public async findOne(data : InstanceOpts) : Promise<InstanceWithTimestamp | null> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
 
-        return Promise.resolve(await this.find(data , "FindOne") as InstanceWithTimestamp)
+        return Promise.resolve(await this.find(data , "FindOne") as InstanceWithTimestamp | null)
     }
 
-    public async findAll(data : InstanceOpts) : Promise<InstanceWithTimestamp[]> {
+    public async findAll(data : InstanceOpts) : Promise<InstanceWithTimestamp[] | null> {
         if(!this.pgClient) {
             await this.setPGClient()
         }
 
-        return Promise.resolve(await this.find(data , "FindAll") as InstanceWithTimestamp[])
+        return Promise.resolve(await this.find(data , "FindAll") as InstanceWithTimestamp[] | null)
     }
 
 
