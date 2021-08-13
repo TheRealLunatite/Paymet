@@ -4,6 +4,7 @@ import { Id } from "@common/id"
 export interface PriceModule {
     add(item : Item) : Promise<boolean>,
     findOne(opts : ItemOptional) : Promise<null | Item>,
+    findAll(opts : ItemOptional) : Promise<null | Item[]>
     updateById(id : Uuid , opts : ItemOptional) : Promise<boolean>,
     deleteById(id : Uuid) : Promise<boolean>
 }
@@ -26,5 +27,7 @@ export type ItemDoc = {
     id : string,
     itemname : string,
     itemplaceid : string,
-    priceinrobux : number
+    priceinrobux : string
 }
+
+export type FindType = "FindAll" | "FindOne"

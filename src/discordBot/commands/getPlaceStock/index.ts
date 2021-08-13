@@ -1,90 +1,109 @@
 import { Id } from "@common/id";
-import { Uuid } from "@common/uuid";
-import { PriceDBModule } from "@modules/prices";
-import { CommandInteraction } from "discord.js";
+import { RobloxUniverse } from "@common/robloxUniverse";
+import { InstanceModule } from "@modules/instances/types";
+import { PriceModule } from "@modules/prices/types";
+import { Pagination } from "@modules/discordPagination/types";
+import { CommandInteraction, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
-import { v4 as uuid } from "uuid"
 import { DiscordSlashCommandModule } from "../types";
 
 @autoInjectable()
-export class AddPriceCommand implements DiscordSlashCommandModule {
-    name = "addprice"
-    description = "Adding a price to an item enables customers to purchase that specific item."
+export class GetPlaceStockCommand implements DiscordSlashCommandModule {
+    name = "getplacestock"
+    description = "Get the item stock of a active placeId."
     options = [
-        {
-            name : "itemname",
-            type : 3,
-            description : "An item name.",
-            required : true
-        },
         {
             name : "placeid",   
             type : 4,
-            description : "This item belongs to this placeId.",
-            required : true
-        },
-        {
-            name : "priceinrobux",
-            type : 4,
-            description : "Set a price in robux for this item.",
+            description : "An active placeId.",
             required : true
         }
     ]
-    defaultPermission = false
-    permissions = [
-        {
-            id : '573639162733789197',
-            type : 2,
-            permission : true
-        }
-    ]
+    defaultPermission = true
+    permissions = []
 
     constructor(
-        @inject(TOKENS.modules.priceDb) private priceDb? : PriceDBModule,
-        @inject(TOKENS.values.uuid) private v4? : typeof uuid
+        @inject(TOKENS.modules.priceDb) private priceDb? : PriceModule,
+        @inject(TOKENS.modules.instanceDb) private instanceDb? : InstanceModule,
+        @inject(TOKENS.modules.discordPagination) private pagination? : Pagination,
+        @inject(TOKENS.values.discordMessageEmbed) private embed? : typeof MessageEmbed
     ) {}
     
+    // Split an array to <num> in length.
+    private splitArray<T>(arr : T[] , num : number) : T[][] {
+        const amountOfSections = Math.floor(arr.length / num)
+    
+        const sections = []
+
+        for(let i = 0; i < amountOfSections; i++) {
+            sections.push(arr.splice(0,num))
+        }
+
+        // Sections var should contain arrays that equal <num> array length.
+        // The array var should be left with the items that couldn't be seperated into an array of length <num>.
+        return [...sections , arr]
+    }
 
     execute(interaction : CommandInteraction): Promise<void> {
         return new Promise(async (resolve , reject) => {
-            const itemName = interaction.options.getString("itemname")!
+            console.time("khai")
+
             const itemPlaceId = new Id(interaction.options.getInteger("placeid")!)
-            const priceInRobux = interaction.options.getInteger("priceinrobux")!
+            const instances = await this.instanceDb!.findAll({ placeId : itemPlaceId })
             
-            try {
-                const findPrice = await this.priceDb!.findOne({ itemName , itemPlaceId })
+            if(!instances) {
+                return await interaction.reply(`There is currently no active place with an id of ${itemPlaceId.value}`)
+            }
 
-                if(findPrice) {
-                    return await interaction.reply({
-                        content : "You\'ve already enlisted this item.",
-                        ephemeral : true
-                    })
+            // Get all of the enlisted prices for this specific place.
+            const enlistedItems = await this.priceDb!.findAll({ itemPlaceId })
+
+            if(!enlistedItems) {
+                return await interaction.reply(`The owner did not enlist a price for any item at the moment. Please try again later.`)
+            }
+
+            const inventory = instances
+            .flatMap(({ inventory }) => inventory)
+            .filter((item1 , index , array) => { // Merge all duplicated items into one if found.
+                const findIndex = array.findIndex((item2) => (item1.itemRawName === item2.itemRawName && item1.itemRarity === item2.itemRarity && item1.itemType === item2.itemType))
+
+                // If the findIndex doesn't equal the index then it's a duplicate or didn't pass the test.
+                if(findIndex !== index) {
+                    array[findIndex].itemStock += item1.itemStock
+                    return false
                 }
-            } catch {
-                return await interaction.reply({
-                    content : "Therer was a problem trying to find a pricing."
-                })
+
+                return true
+            }) // Filter all of the inventory items that aren't enlisted.
+            .filter((inventoryItem) => enlistedItems.some((itemPrice) => itemPrice.itemName === inventoryItem.itemName))
+            
+            if(inventory.length === 0) {
+                return await interaction.reply("The owner has enlisted items for sale but currently does not have the items in stock.")
             }
 
-            try {
-                await this.priceDb!.add({
-                    id : new  Uuid(this.v4!()),
-                    itemName,
-                    itemPlaceId,
-                    priceInRobux
-                })
+            const data = inventory.map((inventoryItem) => ({
+                itemName : inventoryItem.itemName,
+                itemStock : inventoryItem.itemStock,
+                price : +enlistedItems.find((enlistedItem) => enlistedItem.itemName === inventoryItem.itemRawName)!.priceInRobux
+            }))
 
-                return await interaction.reply({
-                    content : `Successfully enlisted ${itemName} <${itemPlaceId.value}> for ${priceInRobux} robux.`,
-                    ephemeral : true
-                })
-            } catch {
-                return await interaction.reply({
-                    content : "There was an problem when enlisting an item.",
-                    ephemeral : true
-                })
-            }
+            const sections = this.splitArray(data , 10)
+
+            const embeds = sections.map((data , index) => {
+                let description = ``
+
+                data.forEach(({ itemName , itemStock , price }) => description += `**${itemName}** | **Stock : __${itemStock}__** [**[⏣ ${price}]**](https://www.youtube.com/watch?v=9bDPAOuizsQ)\n This item is purchasable for ${price} Robux.\n\n`)
+
+                return new this.embed!()
+                .setTitle(`${RobloxUniverse[itemPlaceId.value] ?? itemPlaceId.value} Item Shop.`)
+                .setColor("RANDOM")
+                .setDescription(description)
+                .setFooter(`Page ${index + 1} / ${sections.length}`)
+                .setTimestamp()
+            })
+
+            await this.pagination!.execute(interaction , embeds)
         })
     }
 }

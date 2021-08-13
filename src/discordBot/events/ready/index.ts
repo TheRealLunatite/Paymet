@@ -5,6 +5,8 @@ import { DiscordSlashCommandsCollection } from "src/discordBot/commands/types";
 
 @autoInjectable()
 export class DiscordReadyEvent implements DiscordEventListener {
+    private serverId = "557900033631059969"
+
     constructor(
     ) {}
 
@@ -20,10 +22,10 @@ export class DiscordReadyEvent implements DiscordEventListener {
                 defaultPermission : value.defaultPermission && true
             })).values())
 
-            await client.guilds.cache.get("557900033631059969")!.commands.set(setBulkSlashCommandsData)
+            await client.guilds.cache.get(this.serverId)!.commands.set(setBulkSlashCommandsData)
 
             // Set slash permissions.
-            const cacheSlashCommands = await client.guilds.cache.get("557900033631059969")?.commands.cache
+            const cacheSlashCommands = await client.guilds.cache.get(this.serverId)?.commands.cache
             const setBulkSlashPermissionCommandsData = Array.from(cacheSlashCommands!.mapValues((value) => {
                 const permissions = slashCommands.get(value.name)!.permissions ?? []
                 return {
@@ -32,7 +34,7 @@ export class DiscordReadyEvent implements DiscordEventListener {
                 }
             }).values())
 
-            await client.guilds.cache.get("557900033631059969")!.commands.permissions.set({
+            await client.guilds.cache.get(this.serverId)!.commands.permissions.set({
                 fullPermissions : setBulkSlashPermissionCommandsData
             }) 
         })

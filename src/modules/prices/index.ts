@@ -2,7 +2,7 @@ import { IPostgresModule } from "@modules/postgres/types"
 import { TOKENS } from "src/di";
 import { inject, singleton } from "tsyringe";
 import { Client, ConnectionConfig, QueryConfig } from   "pg"
-import { Item, ItemOptional, PriceModule , ItemDoc } from "./types";
+import { Item, ItemOptional, PriceModule , ItemDoc , FindType } from "./types";
 import { Uuid } from "@common/uuid";
 import { Id } from "@common/id";
 
@@ -36,26 +36,44 @@ export class PriceDBModule implements PriceModule {
         return Promise.resolve(true)
     }
 
-    public async findOne(opts : ItemOptional) : Promise<null | Item>{
-        if(!this.pgClient) {
-            await this.setPGClient()
+    private async find(data : ItemOptional , type : FindType) : Promise<Item | Item[] | null> {
+        if(type !== "FindAll" && type !== "FindOne") {
+            throw new Error("FindAll and FindOne is the only options allowed for type.")
         }
 
-        const objectKeys = Object.keys(opts)
-        
-        const queryText = "SELECT * FROM prices WHERE " + (objectKeys.length === 0 ? "1 = 1;" : objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + " LIMIT 1;")
-        
-        const query : QueryConfig = {
+        const objectKeys = Object.keys(data)
+        const queryText = "SELECT * FROM prices WHERE " +
+        ( objectKeys.length === 0 ? (
+            "1 = 1;"
+        ) : (
+            objectKeys.map((key , index) => `${key} = $${index + 1}` + (index + 1 === objectKeys.length ? "" : " AND ")).join("") + 
+            (
+                type === "FindOne" ? " LIMIT 1;"  : ";"
+            )
+        ))
+
+        const queryOpts : QueryConfig = {
             name : "find-price",
             text : queryText,
-            values : Object.values(opts).map((val) => val instanceof Object ? val.value : val)
-        } 
+            values : Object.values(data).map((val) => val instanceof Object ? val.value : val)
+        }
 
-        const { rows , rowCount } = await this.pgClient!.query(query)
+        const query = await this.pgClient?.query(queryOpts)!
 
-        if(rowCount >= 1) {
-            const { id , itemname , itemplaceid , priceinrobux } : ItemDoc = rows[0]
-            
+        if(query.rowCount >= 1) {
+            const rows : ItemDoc[] = query.rows
+
+            if(type === "FindAll") {
+                return Promise.resolve(rows.map(({ id , itemname , itemplaceid , priceinrobux }) : Item => ({
+                    id : new Uuid(id),
+                    itemName : itemname,
+                    itemPlaceId : new Id(+itemplaceid),
+                    priceInRobux : +priceinrobux
+                })))
+            }
+
+            const { id , itemname , itemplaceid , priceinrobux } = rows[0]
+
             return Promise.resolve({
                 id : new Uuid(id),
                 itemName : itemname,
@@ -65,6 +83,22 @@ export class PriceDBModule implements PriceModule {
         }
 
         return Promise.resolve(null)
+    }
+
+    public async findOne(opts : ItemOptional) : Promise<null | Item>{
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }
+
+        return Promise.resolve(await this.find(opts , "FindOne") as Item | null)
+    }
+
+    public async findAll(opts : ItemOptional) : Promise<null | Item[]>{
+        if(!this.pgClient) {
+            await this.setPGClient()
+        }
+
+        return Promise.resolve(await this.find(opts , "FindAll") as Item[] | null)
     }
 
     public async updateById(id : Uuid , opts : ItemOptional) : Promise<boolean>{

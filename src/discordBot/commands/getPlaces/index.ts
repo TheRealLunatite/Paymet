@@ -8,7 +8,7 @@ import { DiscordSlashCommandModule } from "../types";
 @autoInjectable()
 export class GetPlacesCommand implements DiscordSlashCommandModule {
     name = "getplaces"
-    description = "Active places where you can purchase items from."
+    description = "Get all of the active places where you can purchase items from."
     options = []
     defaultPermission = true
     permissions = []
@@ -26,8 +26,14 @@ export class GetPlacesCommand implements DiscordSlashCommandModule {
                 return await interaction.reply("There is currently no active places that sell items.")
             }
 
+            // Filter the instances to get unique place ids.
+            const filteredInstances = instances.filter((instance , index , self) => {
+                const placeId = instance.placeId.value
+                return index === self.findIndex((instance) => instance.placeId.value === placeId)
+            })
+
             let string = ``
-            instances.forEach((instance) => string += `${RobloxUniverse[instance.placeId.value]} | ${instance.placeId.value} \n`)
+            filteredInstances.forEach((instance) => string += `${RobloxUniverse[instance.placeId.value] ?? "Unknown"} | ${instance.placeId.value} \n`)
 
             return interaction.reply({
                 content : string,
