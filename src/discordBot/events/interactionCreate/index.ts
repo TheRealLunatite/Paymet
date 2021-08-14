@@ -15,7 +15,7 @@ export class DiscordInteractionCreateEvent implements DiscordEventListener {
             if(!interaction.isCommand()) {
                 return
             }
-
+            
             try {
                 await client.slashCommands!.get(interaction.commandName)!.execute(interaction)
             } catch {

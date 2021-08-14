@@ -3,7 +3,7 @@ import { CommandInteraction, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { DiscordSlashCommandModule } from "../types";
-import { Pagination } from "@modules/discordPagination/types";
+import { DiscordPagination } from "@modules/discordPagination";
 import { RobloxUniverse } from "@common/robloxUniverse";
 
 @autoInjectable()
@@ -22,7 +22,7 @@ export class GetInstancesCommand implements DiscordSlashCommandModule {
 
     constructor(
         @inject(TOKENS.modules.instanceDb) private instanceDb? : InstanceModule,
-        @inject(TOKENS.modules.discordPagination) private pagination? : Pagination,
+        @inject(TOKENS.modules.discordPagination) private pagination? : typeof DiscordPagination,
         @inject(TOKENS.values.discordMessageEmbed) private embed? : typeof MessageEmbed,
     ) {}
     
@@ -75,7 +75,7 @@ export class GetInstancesCommand implements DiscordSlashCommandModule {
                 .setTimestamp()
             ))
 
-            return this.pagination!.execute(interaction , embeds)
+            return new this.pagination!().execute(interaction , embeds)
         })
     }
 }

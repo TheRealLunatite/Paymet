@@ -217,8 +217,8 @@ container.register<PriceDBModule>(TOKENS.modules.priceDb , {
     useClass : PriceDBModule
 })
 
-container.register<DiscordPagination>(TOKENS.modules.discordPagination , {
-    useClass : DiscordPagination
+container.register<typeof DiscordPagination>(TOKENS.modules.discordPagination , {
+    useValue : DiscordPagination
 })
 
 import { DiscordBot } from "src/discordBot"
