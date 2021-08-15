@@ -2,14 +2,14 @@ import { Id } from "@common/id";
 import { RobloxUniverse } from "@common/robloxUniverse";
 import { InstanceModule } from "@modules/instances/types";
 import { PriceModule } from "@modules/prices/types";
-import { Pagination } from "@modules/discordPagination/types";
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
-import { DiscordSlashCommandModule } from "../types";
+import { SlashCommand } from "@discordbot/types"
+import { DiscordPagination } from "@modules/discordPagination";
 
 @autoInjectable()
-export class GetPlaceStockCommand implements DiscordSlashCommandModule {
+export class GetPlaceStockCommand implements SlashCommand {
     name = "getplacestock"
     description = "Get the item stock of a active placeId."
     options = [
@@ -26,7 +26,7 @@ export class GetPlaceStockCommand implements DiscordSlashCommandModule {
     constructor(
         @inject(TOKENS.modules.priceDb) private priceDb? : PriceModule,
         @inject(TOKENS.modules.instanceDb) private instanceDb? : InstanceModule,
-        @inject(TOKENS.modules.discordPagination) private pagination? : Pagination,
+        @inject(TOKENS.modules.discordPagination) private pagination? : typeof DiscordPagination,
         @inject(TOKENS.values.discordMessageEmbed) private embed? : typeof MessageEmbed
     ) {}
     
@@ -103,7 +103,7 @@ export class GetPlaceStockCommand implements DiscordSlashCommandModule {
                 .setTimestamp()
             })
 
-            await this.pagination!.execute(interaction , embeds)
+            await new this.pagination!().execute(interaction , embeds)
         })
     }
 }

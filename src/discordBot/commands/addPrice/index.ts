@@ -5,10 +5,10 @@ import { CommandInteraction } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { v4 as uuid } from "uuid"
-import { DiscordSlashCommandModule } from "../types";
+import { SlashCommand } from "@discordbot/types"
 
 @autoInjectable()
-export class AddPriceCommand implements DiscordSlashCommandModule {
+export class AddPriceCommand implements SlashCommand {
     name = "addprice"
     description = "Adding a price to an item enables customers to purchase that specific item."
     options = [

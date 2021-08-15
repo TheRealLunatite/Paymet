@@ -21,6 +21,7 @@ export const TOKENS = {
         jwtSecret : Symbol(),
         transactionHmacSecret : Symbol(),
         tsLogger : Symbol(),
+        pathJoin : Symbol(),
         robloxConfig : Symbol(),
         discordMessageEmbed : Symbol(),
         discordMessageActionRow : Symbol()
@@ -46,8 +47,9 @@ export const TOKENS = {
         }  
     },
     discord : {
-        listeners : Symbol(),
-        commands : Symbol()
+        bot : Symbol(),
+        commandLoader : Symbol(),
+        eventLoader : Symbol()
     },
     modules : {
         logger : Symbol(),
@@ -60,7 +62,6 @@ export const TOKENS = {
         userDb : Symbol(),
         priceDb : Symbol(),
         instanceDb : Symbol(),
-        discordBot : Symbol(),
         discordPagination : Symbol()
     }
 }
@@ -71,6 +72,7 @@ import axios from "axios"
 import express from "express"
 import discordjs , { MessageActionRow, MessageEmbed } from "discord.js"
 import postgres from "pg"
+import path from "path"
 import { v4 as uuid } from "uuid"
 import ws from "ws"
 import appConfig from "@config/"
@@ -89,6 +91,10 @@ container.register(TOKENS.values.axiosInstance , {
         //     port : 8866
         // }
     })
+})
+
+container.register(TOKENS.values.pathJoin , {
+    useValue : path.join
 })
 
 container.register(TOKENS.values.appConfig , {
@@ -221,16 +227,6 @@ container.register<typeof DiscordPagination>(TOKENS.modules.discordPagination , 
     useValue : DiscordPagination
 })
 
-import { DiscordBot } from "src/discordBot"
-
-container.register<DiscordBot>(TOKENS.modules.discordBot , {
-    useClass : DiscordBot
-})
-
-container.register<DiscordBot>(TOKENS.modules.discordBot , {
-    useClass : DiscordBot
-})
-
 // SOCKET MODULES
 import MessageModules from "@websocket/listeners/message/modules"
 import { MessageType } from "@websocket/listeners/message/modules/types"
@@ -247,17 +243,21 @@ container.register<ISocket[]>(TOKENS.websocket.listeners , {
 })
 
 // DISCORD
-import DiscordBotCommands from "src/discordBot/commands"
-import DiscordBotEvents from "src/discordBot/events"
+import { DiscordBot } from "@discordbot/index"
+import { DiscordCommandLoader } from "@discordbot/commandLoader"
+import { DiscordEventLoader } from "@discordbot/eventLoader"
 
-container.register(TOKENS.discord.commands , {
-    useValue : DiscordBotCommands
+container.register<DiscordBot>(TOKENS.discord.bot , {
+    useClass : DiscordBot
 })
 
-container.register(TOKENS.discord.listeners , {
-    useValue : DiscordBotEvents
+container.register<DiscordCommandLoader>(TOKENS.discord.commandLoader , {
+    useClass : DiscordCommandLoader
 })
 
+container.register<DiscordEventLoader>(TOKENS.discord.eventLoader , {
+    useClass : DiscordEventLoader
+})
 
 // ROUTES
 

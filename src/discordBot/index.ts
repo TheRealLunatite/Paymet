@@ -1,17 +1,19 @@
-import discordJs , { Client , ClientOptions , Intents } from "discord.js";
+import discordJs , { Client , ClientOptions } from "discord.js";
+import { IFileLoader } from "@common/interfaces/IFileLoader";
 import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
-import { DiscordBotModule, DiscordConfig } from "./types";
-import { DiscordEventListener } from "./events/types";
+import path from "path"
+import { DiscordBotModule, DiscordConfig, DiscordSlashCommandsCollection , DiscordEventListenersCollection } from "./types";
 
 @autoInjectable()
 export class DiscordBot implements DiscordBotModule {
     private client : Client | null = null
-    
+
     constructor(
         @inject(TOKENS.values.discordJsLib) private discordJsLib? : typeof discordJs,
-        @inject(TOKENS.discord.commands) private discordSlashCommands? : Client['slashCommands'],
-        @inject(TOKENS.discord.listeners) private discordEventListeners? : DiscordEventListener[]
+        @inject(TOKENS.values.pathJoin) private pathJoin? : typeof path.join,
+        @inject(TOKENS.discord.commandLoader) private discordCommandLoader? : IFileLoader<DiscordSlashCommandsCollection>,
+        @inject(TOKENS.discord.eventLoader) private discordEventLoader? : IFileLoader<DiscordEventListenersCollection>
     ) {}
 
     async execute(config : DiscordConfig , clientOptions: ClientOptions): Promise<Client> {
@@ -22,13 +24,14 @@ export class DiscordBot implements DiscordBotModule {
         this.client = new this.discordJsLib!.Client(clientOptions)
 
         // This property will be used inside the event listeners.
-        this.client.slashCommands = this.discordSlashCommands!
+        this.client.slashCommands = await this.discordCommandLoader!.execute(this.pathJoin!(__dirname , config.commandPath))
 
         // Load each discord event listener.
-        this.discordEventListeners!.forEach((event) => event.execute(this.client!))
-        
+        const eventListeners = await this.discordEventLoader!.execute(this.pathJoin!(__dirname , config.eventPath))
+        eventListeners.mapValues((eventListener) => eventListener.execute(this.client!))
+
         await this.client.login(config.token)
-        
+
         return Promise.resolve(this.client)
     }
 

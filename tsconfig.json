@@ -13,7 +13,8 @@
       "@common/*" : ["src/common/*"],
       "@static/*" : ["src/static/*"],
       "@config/" : ["src/config/"],
-      "@websocket/*" : ["src/websocket/*"]
+      "@websocket/*" : ["src/websocket/*"],
+      "@discordbot/*" : ["src/discordBot/*"]
     },
     "typeRoots": ["src/typings"],
     "esModuleInterop": true,

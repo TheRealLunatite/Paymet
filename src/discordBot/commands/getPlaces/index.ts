@@ -3,10 +3,10 @@ import { InstanceDBModule } from "@modules/instances";
 import { CommandInteraction } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
-import { DiscordSlashCommandModule } from "../types";
+import { SlashCommand } from "@discordbot/types"
 
 @autoInjectable()
-export class GetPlacesCommand implements DiscordSlashCommandModule {
+export class GetPlacesCommand implements SlashCommand {
     name = "getplaces"
     description = "Get all of the active places where you can purchase items from."
     options = []

@@ -11,6 +11,9 @@ import { DiscordBotModule } from "src/discordBot/types"
 import appConfig from "@config/"
 
 import { Intents } from "discord.js"
+import config from "@config/"
+import path from "path"
+
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
 
@@ -36,7 +39,7 @@ authComponent.execute()
 const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
 transactionComponent.execute()
 
-const discordBot = container.resolve<DiscordBotModule>(TOKENS.modules.discordBot)
+const discordBot = container.resolve<DiscordBotModule>(TOKENS.discord.bot)
 
 app.use(logErrorHandler)
 app.use(errorHandler)
@@ -46,7 +49,7 @@ async function test() {
     logger.info("Socket server is now listening on Port : 8080")
     app.listen(3000 , () => logger.info("Express server is now listening on Port : 3000"))
 
-    const { user } = await discordBot.execute(appConfig.discord , {
+    const { user } = await discordBot.execute(appConfig.discord, {
         presence : {
             status : "dnd",
             afk : true,

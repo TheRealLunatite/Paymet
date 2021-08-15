@@ -2,12 +2,12 @@ import { InstanceModule } from "@modules/instances/types"
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
-import { DiscordSlashCommandModule } from "../types";
+import { SlashCommand } from "@discordbot/types"
 import { DiscordPagination } from "@modules/discordPagination";
 import { RobloxUniverse } from "@common/robloxUniverse";
 
 @autoInjectable()
-export class GetInstancesCommand implements DiscordSlashCommandModule {
+export class GetInstancesCommand implements SlashCommand {
     name = "getinstances"
     description = "Get info on all socket instances that are currently connected."
     options = []

@@ -1,14 +1,10 @@
-import { LoggerModule } from "@modules/logger/types";
 import { Client } from "discord.js";
-import { TOKENS } from "src/di";
-import { autoInjectable, inject } from "tsyringe";
-import { DiscordEventListener } from "../types";
+import { autoInjectable } from "tsyringe";
+import { DiscordEventListener } from "@discordbot/types"
 
 @autoInjectable()
 export class DiscordInteractionCreateEvent implements DiscordEventListener {
-    constructor(
-        @inject(TOKENS.modules.logger) private logger? : LoggerModule
-    ) {}
+    constructor() {}
 
     execute(client: Client): void {
         client.on("interactionCreate" , async (interaction) => {
@@ -19,7 +15,7 @@ export class DiscordInteractionCreateEvent implements DiscordEventListener {
             try {
                 await client.slashCommands!.get(interaction.commandName)!.execute(interaction)
             } catch {
-                this.logger!.error(`${interaction.commandName} slash command does not exist.`)
+                await interaction.reply(`${interaction.commandName} slash command does not exist.`)
             }
         })
     }

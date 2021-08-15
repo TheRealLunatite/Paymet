@@ -1,14 +1,10 @@
-import { LoggerModule } from "@modules/logger/types";
 import { Client } from "discord.js";
-import { TOKENS } from "src/di";
-import { autoInjectable, inject } from "tsyringe";
-import { DiscordEventListener } from "../types";
+import { autoInjectable } from "tsyringe";
+import { DiscordEventListener } from "@discordbot/types"
 
 @autoInjectable()
 export class DiscordMessageCreateEvent implements DiscordEventListener {
-    constructor(
-        @inject(TOKENS.modules.logger) private logger? : LoggerModule
-    ) {}
+    constructor() {}
 
     execute(client: Client): void {
         // client.on("messageCreate" , async (message) => {

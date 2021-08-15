@@ -39,6 +39,8 @@ export const config = {
         placeId : +getEnvironmentalVariable("robloxPlaceId")
     },
     discord : {
-        token : getEnvironmentalVariable("botToken")
+        token : getEnvironmentalVariable("discordBotToken"),
+        eventPath : getEnvironmentalVariable("discordEventsDirPath" , "/events/"),
+        commandPath : getEnvironmentalVariable("discordCommandsDirPath" , "/commands/")
     }   
 }
