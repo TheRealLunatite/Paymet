@@ -1,4 +1,4 @@
-import { CommandInteraction, MessageActionRow as MsgActionRow , MessageActionRowComponentOptions, MessageEmbed } from "discord.js";
+import { CommandInteraction, Message, MessageActionRow as MsgActionRow , MessageActionRowComponentOptions, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { Pagination } from "./types";
@@ -56,7 +56,12 @@ export class DiscordPagination implements Pagination {
             this.isNextButtonDisabled = true
         }
 
-        const collector = interaction.channel!.createMessageComponentCollector({
+        const message = await interaction.reply({
+            ...this.getMessageContent(),
+            fetchReply : true
+        }) as Message
+
+        const collector = message.createMessageComponentCollector({
             filter : (collectorInteraction) => (collectorInteraction.user.id === interaction.user.id) && (collectorInteraction.customId === "next" || collectorInteraction.customId === "previous"),
             time : 1000 * 30,
             idle : 5000,
@@ -64,28 +69,27 @@ export class DiscordPagination implements Pagination {
         })
 
         collector.on("collect" , async (collectorInteraction) => {
-            try {
-                await collectorInteraction.deferUpdate()
+            const { customId } = collectorInteraction
+            switch(customId) {
+                case "previous":
+                    this.currentPage = this.currentPage > 1 ? --this.currentPage : this.currentPage                    
+                    break
+                case "next":
+                    this.currentPage = this.currentPage + 1 <= embeds.length ? ++this.currentPage : this.currentPage
+                    break
+                default:
+                    break
+            }
 
-                const { customId } = collectorInteraction
-                switch(customId) {
-                    case "previous":
-                        this.currentPage = this.currentPage > 1 ? --this.currentPage : this.currentPage                    
-                        break
-                    case "next":
-                        this.currentPage = this.currentPage + 1 <= embeds.length ? ++this.currentPage : this.currentPage
-                        break
-                    default:
-                        break
-                }
+            this.isPreviousButtonDisabled = this.currentPage > 1 ? false : true
+            this.isNextButtonDisabled = this.currentPage + 1 <= embeds.length ? false : true
 
-                this.isPreviousButtonDisabled = this.currentPage > 1 ? false : true
-                this.isNextButtonDisabled = this.currentPage + 1 <= embeds.length ? false : true
-                
-                await collectorInteraction.editReply({ 
-                    ...this.getMessageContent()
-                })
-            } catch (e) {}
+            await collectorInteraction.deferUpdate()
+            await collectorInteraction.editReply({ 
+                ...this.getMessageContent()
+            })
+            
+            collector.resetTimer()
         })
 
         collector.on("end" , async () => {
@@ -95,11 +99,6 @@ export class DiscordPagination implements Pagination {
             await interaction.editReply({
                 ...this.getMessageContent()
             })
-        })
-
-        return await interaction.reply({
-            ...this.getMessageContent(),
-            ephemeral : true
         })
     }
 }

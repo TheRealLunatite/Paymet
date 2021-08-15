@@ -11,8 +11,6 @@ import { DiscordBotModule } from "src/discordBot/types"
 import appConfig from "@config/"
 
 import { Intents } from "discord.js"
-import config from "@config/"
-import path from "path"
 
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
