@@ -74,14 +74,15 @@ export class GetInstancesCommand implements SlashCommand {
         const embeds = sections.map((data , index) => {
             let description = ``
 
-            data.forEach(({ itemStock , itemName , itemRawName , itemRarity }) => (
+            data.forEach(({ itemStock , itemName , itemRawName , itemRarity , itemType }) => {
+                (itemRawName === itemName) ? description += `Name : **${itemName}**` : description += `Name : **${itemName}** \n Raw Name : **${itemRawName}**`
+                
                 description += `
-                    Raw Name : **${itemRawName}**
-                    Name : **${itemName}**
                     Rarity : **${itemRarity}**
                     Stock : **${itemStock}**
+                    Type : **${itemType}** \n
                 `
-            ))
+            })
 
             return new this.embed!()
             .setDescription(description)
