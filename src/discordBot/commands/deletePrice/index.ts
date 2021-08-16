@@ -36,37 +36,28 @@ export class DeletePriceCommand implements SlashCommand {
     ]
 
     constructor(
-        @inject(TOKENS.modules.priceDb) private priceDb? : PriceDBModule,
-        @inject(TOKENS.modules.logger) private logger? : Logger
+        @inject(TOKENS.modules.priceDb) private priceDb? : PriceDBModule
     ) {}
     
 
     async execute(interaction : CommandInteraction): Promise<void> {
-        try {
-            const itemName = interaction.options.getString("itemname")!
-            const itemPlaceId = new Id(interaction.options.getInteger("placeid")!)
-            
-            const findEnlistedItem = await this.priceDb!.findOne({ itemName , itemPlaceId })
+        const itemName = interaction.options.getString("itemname")!
+        const itemPlaceId = new Id(interaction.options.getInteger("placeid")!)
+        
+        const findEnlistedItem = await this.priceDb!.findOne({ itemName , itemPlaceId })
 
-            if(!findEnlistedItem) {
-                return interaction.reply({
-                    content : "This enlisted item does not exist.",
-                    ephemeral : true
-                })
-            }
-
-            await this.priceDb!.deleteById(findEnlistedItem.id)
-
+        if(!findEnlistedItem) {
             return interaction.reply({
-                content : `Successfully deleted enlisted item. ${itemName} <${itemPlaceId.value}>`,
-                ephemeral : true
-            })
-        } catch (e) {
-            this.logger!.error(`deleteprice command : ${e.message}`)
-            return interaction.reply({
-                content : "There was an error running the command.",
+                content : "This enlisted item does not exist.",
                 ephemeral : true
             })
         }
+
+        await this.priceDb!.deleteById(findEnlistedItem.id)
+
+        return interaction.reply({
+            content : `Successfully deleted enlisted item. ${itemName} <${itemPlaceId.value}>`,
+            ephemeral : true
+        })
     }
 }

@@ -46,45 +46,30 @@ export class AddPriceCommand implements SlashCommand {
     ) {}
     
 
-    execute(interaction : CommandInteraction): Promise<void> {
-        return new Promise(async (resolve , reject) => {
-            const itemName = interaction.options.getString("itemname")!
-            const itemPlaceId = new Id(interaction.options.getInteger("placeid")!)
-            const priceInRobux = interaction.options.getInteger("priceinrobux")!
-            
-            try {
-                const findPrice = await this.priceDb!.findOne({ itemName , itemPlaceId })
+    async execute(interaction : CommandInteraction): Promise<void> {
+        const itemName = interaction.options.getString("itemname")!
+        const itemPlaceId = new Id(interaction.options.getInteger("placeid")!)
+        const priceInRobux = interaction.options.getInteger("priceinrobux")!
+        
+        const findPrice = await this.priceDb!.findOne({ itemName , itemPlaceId })
 
-                if(findPrice) {
-                    return await interaction.reply({
-                        content : "You\'ve already enlisted this item.",
-                        ephemeral : true
-                    })
-                }
-            } catch {
-                return await interaction.reply({
-                    content : "Therer was a problem trying to find a pricing."
-                })
-            }
+        if(findPrice) {
+            return await interaction.reply({
+                content : "You\'ve already enlisted this item.",
+                ephemeral : true
+            })
+        }
 
-            try {
-                await this.priceDb!.add({
-                    id : new  Uuid(this.v4!()),
-                    itemName,
-                    itemPlaceId,
-                    priceInRobux
-                })
+        await this.priceDb!.add({
+            id : new  Uuid(this.v4!()),
+            itemName,
+            itemPlaceId,
+            priceInRobux
+        })
 
-                return await interaction.reply({
-                    content : `Successfully enlisted ${itemName} <${itemPlaceId.value}> for ${priceInRobux} robux.`,
-                    ephemeral : true
-                })
-            } catch {
-                return await interaction.reply({
-                    content : "There was an problem when enlisting an item.",
-                    ephemeral : true
-                })
-            }
+        return await interaction.reply({
+            content : `Successfully enlisted ${itemName} <${itemPlaceId.value}> for ${priceInRobux} robux.`,
+            ephemeral : true
         })
     }
 }
