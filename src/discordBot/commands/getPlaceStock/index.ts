@@ -7,7 +7,6 @@ import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { SlashCommand } from "@discordbot/types"
 import { DiscordPagination } from "@modules/discordPagination";
-import { Logger } from "tslog";
 
 @autoInjectable()
 export class GetPlaceStockCommand implements SlashCommand {
@@ -82,6 +81,7 @@ export class GetPlaceStockCommand implements SlashCommand {
 
         const data = inventory.map((inventoryItem) => ({
             itemName : inventoryItem.itemName,
+            itemRawName : inventoryItem.itemRawName,
             itemStock : inventoryItem.itemStock,
             price : +enlistedItems.find((enlistedItem) => enlistedItem.itemName === inventoryItem.itemRawName)!.priceInRobux
         }))
@@ -91,7 +91,12 @@ export class GetPlaceStockCommand implements SlashCommand {
         const embeds = sections.map((data , index) => {
             let description = ``
 
-            data.forEach(({ itemName , itemStock , price }) => description += `**${itemName}** | **Stock : __${itemStock}__** [**[⏣ ${price}]**](https://www.youtube.com/watch?v=9bDPAOuizsQ)\n This item is purchasable for ${price} Robux.\n\n`)
+            data.forEach(({ itemName , itemStock , price , itemRawName }) => {
+                (itemRawName === itemName) ? description += `Name : **${itemName}**\n` : description += `Name : **${itemName}** | Raw Name : **${itemRawName}**\n`
+
+                description += `**Stock : __${itemStock}__** [**[⏣ ${price}]**](https://www.youtube.com/watch?v=9bDPAOuizsQ)
+                This item is purchasable for ${price} Robux.\n\n`
+            })
 
             return new this.embed!()
             .setTitle(`${RobloxUniverse[itemPlaceId.value] ?? itemPlaceId.value} Item Shop.`)
