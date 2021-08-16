@@ -1,7 +1,7 @@
 import fs , { PathLike } from "fs";
 import { Collection } from "discord.js";
 import { IFileLoader } from "@common/interfaces/IFileLoader";
-import { DiscordSlashCommandsCollection , SlashCommand } from "./types";
+import { DiscordSlashCommandsCollection , SlashCommand } from "../types";
 import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 

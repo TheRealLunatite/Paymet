@@ -244,8 +244,8 @@ container.register<ISocket[]>(TOKENS.websocket.listeners , {
 
 // DISCORD
 import { DiscordBot } from "@discordbot/index"
-import { DiscordCommandLoader } from "@discordbot/commandLoader"
-import { DiscordEventLoader } from "@discordbot/eventLoader"
+import { DiscordCommandLoader } from "@discordbot/loader/commandLoader"
+import { DiscordEventLoader } from "@discordbot/loader/eventLoader"
 
 container.register<DiscordBot>(TOKENS.discord.bot , {
     useClass : DiscordBot

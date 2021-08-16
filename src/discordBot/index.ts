@@ -4,6 +4,7 @@ import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import path from "path"
 import { DiscordBotModule, DiscordConfig, DiscordSlashCommandsCollection , DiscordEventListenersCollection } from "./types";
+import { Logger } from "tslog";
 
 @autoInjectable()
 export class DiscordBot implements DiscordBotModule {

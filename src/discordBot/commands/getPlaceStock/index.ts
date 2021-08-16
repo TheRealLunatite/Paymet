@@ -7,6 +7,7 @@ import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { SlashCommand } from "@discordbot/types"
 import { DiscordPagination } from "@modules/discordPagination";
+import { Logger } from "tslog";
 
 @autoInjectable()
 export class GetPlaceStockCommand implements SlashCommand {
@@ -26,6 +27,7 @@ export class GetPlaceStockCommand implements SlashCommand {
     constructor(
         @inject(TOKENS.modules.priceDb) private priceDb? : PriceModule,
         @inject(TOKENS.modules.instanceDb) private instanceDb? : InstanceModule,
+        @inject(TOKENS.modules.logger) private logger? : Logger,
         @inject(TOKENS.modules.discordPagination) private pagination? : typeof DiscordPagination,
         @inject(TOKENS.values.discordMessageEmbed) private embed? : typeof MessageEmbed
     ) {}
@@ -45,15 +47,13 @@ export class GetPlaceStockCommand implements SlashCommand {
         return [...sections , arr]
     }
 
-    execute(interaction : CommandInteraction): Promise<void> {
-        return new Promise(async (resolve , reject) => {
-            console.time("khai")
-
+    async execute(interaction : CommandInteraction): Promise<void> {
+        try {
             const itemPlaceId = new Id(interaction.options.getInteger("placeid")!)
             const instances = await this.instanceDb!.findAll({ placeId : itemPlaceId })
             
             if(!instances) {
-                return await interaction.reply(`There is currently no active place with an id of ${itemPlaceId.value}`)
+                return await interaction.reply(`There is currently no active instance with a placeid of ${itemPlaceId.value}.`)
             }
 
             // Get all of the enlisted prices for this specific place.
@@ -76,7 +76,7 @@ export class GetPlaceStockCommand implements SlashCommand {
 
                 return true
             }) // Filter all of the inventory items that aren't enlisted.
-            .filter((inventoryItem) => enlistedItems.some((itemPrice) => itemPrice.itemName === inventoryItem.itemName))
+            .filter((inventoryItem) => enlistedItems.some((enlistedItem) => enlistedItem.itemName === inventoryItem.itemRawName))
             
             if(inventory.length === 0) {
                 return await interaction.reply("The owner has enlisted items for sale but currently does not have the items in stock.")
@@ -103,7 +103,13 @@ export class GetPlaceStockCommand implements SlashCommand {
                 .setTimestamp()
             })
 
-            await new this.pagination!().execute(interaction , embeds)
-        })
+            new this.pagination!().execute(interaction , embeds)
+        } catch (e) {
+            this.logger!.error(`getplacestock command : ${e.message}.`)
+            return interaction.reply({
+                content : "There was a problem running this command.",
+                ephemeral : true
+            })
+        }
     }
 }

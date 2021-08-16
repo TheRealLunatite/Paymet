@@ -427,16 +427,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@discordjs/builders@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@discordjs/builders@npm:0.4.0"
+"@discordjs/builders@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@discordjs/builders@npm:0.5.0"
   dependencies:
     "@sindresorhus/is": ^4.0.1
     discord-api-types: ^0.22.0
     ow: ^0.27.0
     ts-mixer: ^6.0.0
     tslib: ^2.3.0
-  checksum: 7dd5fb4864f43786eaff77faa81422a2bc8ea3925a87f89312fee35b27f1f33b3d393fbeec4e28a398e4c65bed64a2654ea15bacc295e595770df276f8e87b72
+  checksum: 064bd547b63a8cc593b3f8b0e290cb1c27cf335a89addd77aeb078055a92201a6905d0a67919004da0c915d01c0104383c5c06a07df751e4a4e921d7a000f6e3
   languageName: node
   linkType: hard
 
@@ -1050,7 +1050,7 @@ __metadata:
     "@types/ws": ^7.4.6
     axios: ^0.21.1
     bcrypt: ^5.0.1
-    discord.js: ^13.0.1
+    discord.js: ^13.1.0
     dotenv: ^10.0.0
     express: ^4.17.1
     jest: ^27.0.5
@@ -1897,11 +1897,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord.js@npm:^13.0.1":
-  version: 13.0.1
-  resolution: "discord.js@npm:13.0.1"
+"discord.js@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "discord.js@npm:13.1.0"
   dependencies:
-    "@discordjs/builders": ^0.4.0
+    "@discordjs/builders": ^0.5.0
     "@discordjs/collection": ^0.2.1
     "@discordjs/form-data": ^3.0.1
     "@sapphire/async-queue": ^1.1.4
@@ -1909,7 +1909,7 @@ __metadata:
     discord-api-types: ^0.22.0
     node-fetch: ^2.6.1
     ws: ^7.5.1
-  checksum: be68a19c1008135015de4d205a2d6bdf041cb184463eeaef7f99f9a8d103c6b5b5f67eee2e846b4369c402389362be75116ea797a508588e9d2a3bcfb1f51e94
+  checksum: 90f629be6296c89bfa25bd8a2bb486c3e00deb25fd1e0ae931658ee3f58e83fbe5e205180ab795aa39a2614c74d4dc9e8bb5aa0c9b3a7ebdcf03992f18602372
   languageName: node
   linkType: hard
 

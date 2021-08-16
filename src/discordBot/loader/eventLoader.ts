@@ -2,7 +2,7 @@ import fs , { PathLike } from "fs"
 import { IFileLoader } from "@common/interfaces/IFileLoader"
 import { Collection } from "discord.js"
 import { autoInjectable, inject } from "tsyringe"
-import { DiscordEventListener, DiscordEventListenersCollection } from "./types"
+import { DiscordEventListener, DiscordEventListenersCollection } from "../types"
 import { TOKENS } from "src/di"
 
 @autoInjectable()
