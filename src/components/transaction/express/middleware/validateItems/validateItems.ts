@@ -39,15 +39,15 @@ export class ValidateItems implements IExecutableValue<RequestHandler> {
 
             try {   
                 items.forEach((x) => {
-                    const findItem = placeInventory!.inventory.find((y) => (x.itemName === y.itemRawName) && (x.itemType === y.itemType))
+                    const findItem = placeInventory!.inventory.find((y) => (x.itemRawName === y.itemRawName) && (x.itemType === y.itemType))
 
                     if(!findItem) {
-                        errors.push(`${x.itemName} <${x.itemType}> does not exist in the inventory.`)
+                        errors.push(`${x.itemRawName} <${x.itemType}> does not exist in the inventory.`)
                         return
                     } 
 
                     if(+x.amount > findItem.itemStock) {
-                        errors.push(`${x.itemName} <${x.itemType}> cannot be purchased at this time because it exceeds our stock.`)
+                        errors.push(`${x.itemRawName} <${x.itemType}> cannot be purchased at this time because it exceeds our stock.`)
                         return
                     }
 

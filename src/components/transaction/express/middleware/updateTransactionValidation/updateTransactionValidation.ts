@@ -53,7 +53,7 @@ export class UpdateTransactionValidation implements IExecutableValue<RequestHand
 
             if(discordId) {
                 try {
-                    req.body.opts.discordId = new DiscordId(discordId)
+                    req.body.opts.discordId = new DiscordId(discordId.toString())
                 } catch {
                     errors.push("DiscordId field contains an invalid snowflake.")
                 }

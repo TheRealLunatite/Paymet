@@ -24,12 +24,12 @@ export class TransactionDBModule implements TransactionModule {
             await this.setPGClient()
         }
 
-        const { id , status , username , discordId , devProductId , items } = data
+        const { id , status , username , discordId , assetId , items } = data
 
         const query : QueryConfig = {
             name : "add-transaction",
             text : `INSERT INTO transactions(id , status , username , discordid , devProductId , items) VALUES($1,$2,$3,$4,$5,$6)`,
-            values : [ id.value , status , username.value , discordId.value , devProductId.value , JSON.stringify(items) ]
+            values : [ id.value , status , username.value , discordId.value , assetId.value , JSON.stringify(items) ]
         }
 
         await this.pgClient!.query(query)
@@ -68,12 +68,12 @@ export class TransactionDBModule implements TransactionModule {
         const { rows , rowCount } = await this.pgClient?.query(query)!
 
         if(rowCount >= 1) {
-            const { id , username , discordid , items, status , devproductid , timestamp }: TransactionDoc = rows[0]
+            const { id , username , discordid , items, status , assetid , timestamp }: TransactionDoc = rows[0]
             return {
                 id : new Uuid(id),
                 username : new Username(username),
-                discordId : new DiscordId(+discordid),
-                devProductId : new Id(+devproductid),
+                discordId : new DiscordId(discordid),
+                assetId : new Id(+assetid),
                 status,
                 items,
                 timestamp : new Date(timestamp)

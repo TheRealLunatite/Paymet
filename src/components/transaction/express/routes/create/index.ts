@@ -32,11 +32,11 @@ export class CreateTransactionRoute implements IExpressRoute {
             const { username , discordId , items } : CreateTransactionRequestValidatedBody = req.body
             const totalPriceInRobux = req.totalPriceInRobux!
 
-            let devProductId : Id | null
+            let assetId : Id | null
             let createdTransaction : Transaction
 
             try {
-                devProductId = await this.roblox!.createDeveloperProduct(new Cookie(this.robloxConfig!.cookie) , {
+                assetId = await this.roblox!.createDeveloperProduct(new Cookie(this.robloxConfig!.cookie) , {
                     name : this.v4!(),
                     placeId : new Id(this.robloxConfig!.placeId),
                     priceInRobux : totalPriceInRobux
@@ -45,7 +45,7 @@ export class CreateTransactionRoute implements IExpressRoute {
                 return next(new Error("There was an error creating a developer product id for your place."))
             }
 
-            if(!devProductId) {
+            if(!assetId) {
                 return res.status(500).json({
                     success : false,
                     errors : ["A developer product was unable to be created for this transaction."]
@@ -56,7 +56,7 @@ export class CreateTransactionRoute implements IExpressRoute {
                 createdTransaction = await this.transactionDb!.add({
                     id : new Uuid(this.v4!()),
                     status : "initalized",
-                    devProductId,
+                    assetId,
                     username,
                     discordId,
                     items
@@ -67,7 +67,7 @@ export class CreateTransactionRoute implements IExpressRoute {
 
             return res.status(200).json({
                 id : createdTransaction.id.value,
-                devProductId : devProductId.value,
+                devProductId : assetId.value,
                 totalPrice : totalPriceInRobux
             })
         })

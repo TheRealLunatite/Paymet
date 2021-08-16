@@ -40,7 +40,7 @@ export class CreateTransactionValidation implements IExecutableValue<RequestHand
             let validatedItemPlaceId : Id
 
             try {
-                validatedDiscordId = new DiscordId(discordId)
+                validatedDiscordId = new DiscordId(discordId.toString())
             } catch {
                 errors.push("DiscordId field contains an invalid snowflake.")
             }
@@ -69,7 +69,7 @@ export class CreateTransactionValidation implements IExecutableValue<RequestHand
                 return res.status(400).json({ success : false , errors : ["Items field cannot contain an empty array."] })
             }
 
-            items.forEach(({ amount , itemType , itemName }) => {
+            items.forEach(({ amount , itemType , itemRawName: itemName }) => {
                 if(typeof itemName !== "string") {
                     errors.push("An object in the items array field does not exist or contain a non-string value.")
                     return

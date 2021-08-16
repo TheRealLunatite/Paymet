@@ -62,6 +62,7 @@ export const TOKENS = {
         userDb : Symbol(),
         priceDb : Symbol(),
         instanceDb : Symbol(),
+        cartDb : Symbol(),
         discordPagination : Symbol()
     }
 }
@@ -181,6 +182,11 @@ import { TsLoggerModule } from "@modules/logger"
 import { PriceDBModule } from "@modules/prices"
 import { InstanceDBModule } from "@modules/instances"
 import { DiscordPagination } from "@modules/discordPagination"
+import { CartDBModule } from "@modules/cartDb"
+
+container.register<CartDBModule>(TOKENS.modules.cartDb , {
+    useClass : CartDBModule
+})
 
 container.register<AxiosModule>(TOKENS.modules.request , {
     useClass : AxiosModule
@@ -209,7 +215,6 @@ container.register<UserDBModule>(TOKENS.modules.userDb , {
 container.register<WebSocketServerModule>(TOKENS.modules.socketServer , {
     useClass : WebSocketServerModule
 })
-
 
 container.register<HmacModule>(TOKENS.modules.hmac , {
     useClass : HmacModule

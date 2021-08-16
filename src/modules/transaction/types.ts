@@ -12,7 +12,7 @@ export interface TransactionModule {
 }
 
 export type ItemPurchased = {
-    itemName : string,
+    itemRawName : string,
     itemType : string,
     amount : number
 }
@@ -22,7 +22,7 @@ export type Transaction = {
     status : "success" | "initalized" | "pending",
     username : Username,
     discordId : DiscordId,
-    devProductId : Id,
+    assetId : Id,
     items : ItemPurchased[],
     timestamp? : Date
 }
@@ -31,7 +31,7 @@ export type TransactionOptional = {
     id? : Uuid,
     status? : "success" | "initalized" | "pending",
     username? : Username,
-    devProductId? : number,
+    assetId? : number,
     discordId? : DiscordId,
     items : ItemPurchased[]
 }
@@ -42,7 +42,7 @@ export type TransactionDoc = {
     username : string,
     discordid : string,
     timestamp : string,
-    devproductid : string,
+    assetid : string,
     items : ItemPurchased[]
 }
 
@@ -50,5 +50,5 @@ export type FindTransactionOptions = {
     id? : Uuid,
     discordId? : DiscordId,
     username? : Username,
-    devProductId? : Id
+    assetId? : Id
 }
