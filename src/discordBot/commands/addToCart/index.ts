@@ -33,13 +33,7 @@ export class AddToCartCommand implements SlashCommand {
         }
     ]
     defaultPermission = true
-    permissions = [
-        {
-            id : '573639162733789197',
-            type : 2,
-            permission : true
-        }
-    ]
+    permissions = []
 
     constructor(
         @inject(TOKENS.modules.cartDb) private cartDb? : CartModule,
