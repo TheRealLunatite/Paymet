@@ -2,7 +2,7 @@ import { ISocket } from "@common/interfaces/ISocket";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { WebSocket } from "ws";
-import { InstanceModule } from "@modules/instances/types"
+import { InstanceModule } from "@modules/instanceDb/types"
 import { LoggerModule } from "@modules/logger/types";
 import { RobloxUniverse } from "@common/robloxUniverse";
 

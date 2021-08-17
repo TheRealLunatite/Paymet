@@ -1,7 +1,7 @@
 import { Id } from "@common/id";
 import { RobloxUniverse } from "@common/robloxUniverse";
-import { InstanceModule } from "@modules/instances/types";
-import { PriceModule } from "@modules/prices/types";
+import { InstanceModule } from "@modules/instanceDb/types";
+import { PriceModule } from "@modules/priceDb/types";
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";

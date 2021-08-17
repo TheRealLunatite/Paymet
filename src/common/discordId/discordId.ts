@@ -7,7 +7,7 @@ export class DiscordId implements IValidate , IEquatable<DiscordId> , IValueObje
 
     constructor(discordId : string) {
         this.value = discordId    
-
+        
         if(!this.isValid()) {
             throw new DiscordIdIsNotValid("Discord ID is not valid.")
         }
@@ -23,13 +23,13 @@ export class DiscordId implements IValidate , IEquatable<DiscordId> , IValueObje
         }   
 
         // 4194304 is the lowest value a Discord ID can be.
-        if(+this.value < 4194304) {
+        if(this.value as any as number < 4194304) {
             return false
         }
         
         try {
             // convert to discord unix
-            new Date((this.value as any / 4194304) + 1420070400000)
+            new Date((this.value as any as number / 4194304) + 1420070400000)
         } catch {
             return false
         }

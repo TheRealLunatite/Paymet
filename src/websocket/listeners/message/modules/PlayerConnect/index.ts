@@ -3,7 +3,7 @@ import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import { PlayerConnect } from "../types";
 import { LoggerModule } from "@modules/logger/types";
-import { InstanceModule } from "@modules/instances/types";
+import { InstanceModule } from "@modules/instanceDb/types";
 import { ISocketModule } from "@common/interfaces/ISocketModule";
 import { Username } from "@common/username";
 import { Id } from "@common/id";

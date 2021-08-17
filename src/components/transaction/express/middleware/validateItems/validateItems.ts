@@ -1,6 +1,6 @@
 
 import { IExecutableValue } from "@common/interfaces/IExecutable";
-import { Instance , InstanceModule } from "@modules/instances/types";
+import { Instance , InstanceModule } from "@modules/instanceDb/types";
 import { RequestHandler } from "express";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";

@@ -64,17 +64,17 @@ export class CartDBModule implements CartModule {
 
             if(type === "FindAll") {
                 return Promise.resolve(
-                    rows.map(({ discordId , cart }) => ({
-                        discordId : new DiscordId(discordId),
+                    rows.map(({ discordid , cart }) => ({
+                        discordId : new DiscordId(discordid),
                         cart
                     }))
                 )
             }
 
-            const { discordId , cart } = rows[0]
+            const { discordid , cart } = rows[0]
 
             return Promise.resolve({
-                discordId : new DiscordId(discordId),
+                discordId : new DiscordId(discordid),
                 cart
             })
         }
@@ -114,7 +114,7 @@ export class CartDBModule implements CartModule {
             name : "update-cart",
             text : "UPDATE cart SET " +
             objectEntries.map((val, index) => `${val[0]}=$${index + 1}` + `${index + 1 !== objectEntries.length ? "," : ""}`).join("") +
-            ` WHERE socketId=$${objectEntries.length + 1}`
+            ` WHERE discordId=$${objectEntries.length + 1}`
             ,
             values : [...objectEntries.map((val) => (Array.isArray(val[1]) ? JSON.stringify(val[1]) : val[1].value)) , id.value]
         }

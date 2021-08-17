@@ -1,6 +1,6 @@
 
 import { IExecutableValue } from "@common/interfaces/IExecutable";
-import { PriceModule } from "@modules/prices/types";
+import { PriceModule } from "@modules/priceDb/types";
 import { RequestHandler } from "express";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";

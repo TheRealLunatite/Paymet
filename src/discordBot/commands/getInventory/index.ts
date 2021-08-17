@@ -1,4 +1,4 @@
-import { InstanceModule, InventoryItem } from "@modules/instances/types"
+import { InstanceModule, InventoryItem } from "@modules/instanceDb/types"
 import { CommandInteraction, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";

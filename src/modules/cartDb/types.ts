@@ -14,17 +14,18 @@ export type Cart = {
 }
 
 export type CartItem = {
-    placeId : Id,
+    placeId : number,
     itemRawName : string,
-    itemName : string
+    quantity : number
 }
 
 export type CartOpts = {
-    discordId : DiscordId
+    discordId? : DiscordId,
+    cart? : CartItem[]
 }
 
 export type CartDoc = {
-    discordId : string,
+    discordid : string,
     cart : CartItem[]
 }
 

@@ -1,5 +1,5 @@
 import { RobloxUniverse } from "@common/robloxUniverse";
-import { InstanceDBModule } from "@modules/instances";
+import { InstanceDBModule } from "@modules/instanceDb";
 import { CommandInteraction } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";

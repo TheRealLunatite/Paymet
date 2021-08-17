@@ -19,14 +19,20 @@ export class DiscordInteractionCreateEvent implements DiscordEventListener {
             const slashCommand = client.slashCommands!.get(interaction.commandName)
 
             if(!slashCommand) {
-                return interaction.reply(`${interaction.commandName} slash command does not exist.`)
+                return interaction.reply({
+                    content : `${interaction.commandName} slash command does not exist.`,
+                    ephemeral : true
+                })
             }
 
             try {
                 await slashCommand.execute(interaction)
             } catch (e) {
                 this.logger!.error(`${slashCommand.name} command : ${e.message}.`)
-                await interaction.reply(`There was an error running this command.`)
+                await interaction.reply({
+                    content : `There was an error running this command.`,
+                    ephemeral : true
+                })
             }
         })
     }

@@ -1,6 +1,6 @@
 import { Id } from "@common/id";
 import { Uuid } from "@common/uuid";
-import { PriceDBModule } from "@modules/prices";
+import { PriceDBModule } from "@modules/priceDb";
 import { CommandInteraction } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";

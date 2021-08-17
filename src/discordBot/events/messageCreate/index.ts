@@ -7,8 +7,6 @@ export class DiscordMessageCreateEvent implements DiscordEventListener {
     constructor() {}
 
     execute(client: Client): void {
-        // client.on("messageCreate" , async (message) => {
-            
-        // })
-    }
+        
+    }   
 }

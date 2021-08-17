@@ -4,7 +4,6 @@ import { autoInjectable, inject } from "tsyringe";
 import { TOKENS } from "src/di";
 import path from "path"
 import { DiscordBotModule, DiscordConfig, DiscordSlashCommandsCollection , DiscordEventListenersCollection } from "./types";
-import { Logger } from "tslog";
 
 @autoInjectable()
 export class DiscordBot implements DiscordBotModule {
@@ -21,7 +20,6 @@ export class DiscordBot implements DiscordBotModule {
         if(this.client) {
             throw new Error("PaymetDiscordBot : There's an instance of a Discord client that was already declared.")
         }
-        
         this.client = new this.discordJsLib!.Client(clientOptions)
 
         // This property will be used inside the event listeners.
