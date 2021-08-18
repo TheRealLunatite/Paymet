@@ -96,6 +96,6 @@ export class AddToCartCommand implements SlashCommand {
             cart : [...cartUser.cart , { placeId : placeId.value , itemRawName : itemName , quantity }]
         })
 
-        return interaction.reply(`Successfully added ${quantity}x ${itemName} to cart.`)
+        return interaction.reply(`Successfully added ${quantity}x \`\`${itemName}\`\` to cart.`)
     }
 }
