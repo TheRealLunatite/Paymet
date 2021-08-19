@@ -56,7 +56,7 @@ export class RemoveFromCartCommand implements SlashCommand {
             })
         }
 
-        const findCartItem = userCart.findIndex(({ itemRawName , placeId : cartPlaceId }) => itemRawName === itemName && cartPlaceId === placeId.value)
+        const findCartItem = userCart.findIndex(({ itemRawName , placeId : cartPlaceId }) => itemRawName === itemName && cartPlaceId.value === placeId.value)
 
         if(findCartItem === -1) {
             return interaction.reply({

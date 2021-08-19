@@ -40,7 +40,7 @@ export class ViewCartCommand implements SlashCommand {
 
     async execute(interaction : CommandInteraction): Promise<void> {
         const discordId = new DiscordId(interaction.user.id)
-        const inventory = new Map<number , InventoryItem[]>()
+        const inventory = new Map<Id , InventoryItem[]>()
         
         let cartUser = await this.cartDb!.findOne({ discordId })
         let subTotal = 0
@@ -69,7 +69,7 @@ export class ViewCartCommand implements SlashCommand {
                 continue
             }
 
-            const instance = await this.instanceDb!.findOne({ placeId : new Id(placeId) })
+            const instance = await this.instanceDb!.findOne({ placeId })
 
             if(!instance) {
                 // Remove the item from the user cart.
@@ -113,7 +113,7 @@ export class ViewCartCommand implements SlashCommand {
                 continue
             }
 
-            const priceOfItem = await this.priceDb!.findOne({ itemName : itemRawName , itemPlaceId : new Id(placeId)})
+            const priceOfItem = await this.priceDb!.findOne({ itemName : itemRawName , itemPlaceId : placeId})
 
             // If the item is not enlisted for sale.
             if(!priceOfItem) {

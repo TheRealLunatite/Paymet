@@ -3,7 +3,7 @@ import { ISocket } from "@common/interfaces/ISocket"
 import { TOKENS } from "src/di"
 import { autoInjectable, inject } from "tsyringe"
 import { WebSocket } from "ws"
-import { MessageSocketData, MessageType } from "./modules/types"
+import { MessageSocketData, MessageType } from "../../modules/types"
 import { ISocketModule } from "@common/interfaces/ISocketModule"
 import { LoggerModule } from "@modules/logger/types"
 

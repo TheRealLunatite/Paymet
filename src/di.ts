@@ -41,10 +41,11 @@ export const TOKENS = {
         }
     },
     websocket : {
+        server : Symbol(),
         listeners : Symbol(),
         modules : {
             message : Symbol()
-        }  
+        }
     },
     discord : {
         bot : Symbol(),
@@ -58,7 +59,6 @@ export const TOKENS = {
         roblox : Symbol(),
         postgres : Symbol(),
         transactionDb : Symbol(),
-        socketServer : Symbol(),
         userDb : Symbol(),
         priceDb : Symbol(),
         instanceDb : Symbol(),
@@ -175,7 +175,6 @@ import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
 import { PostgresModule } from "@modules/postgres/pg"
 import { TransactionDBModule } from "@modules/transaction"
-import { WebSocketServerModule } from "@modules/socketServer"
 import { UserDBModule } from "@modules/user"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
@@ -212,10 +211,6 @@ container.register<UserDBModule>(TOKENS.modules.userDb , {
     useClass : UserDBModule
 })
 
-container.register<WebSocketServerModule>(TOKENS.modules.socketServer , {
-    useClass : WebSocketServerModule
-})
-
 container.register<HmacModule>(TOKENS.modules.hmac , {
     useClass : HmacModule
 })
@@ -233,19 +228,27 @@ container.register<typeof DiscordPagination>(TOKENS.modules.discordPagination , 
 })
 
 // SOCKET MODULES
-import MessageModules from "@websocket/listeners/message/modules"
-import { MessageType } from "@websocket/listeners/message/modules/types"
+import MessageModules from "@socketServer/modules"
+import { MessageType } from "@socketServer/modules/types"
 
 container.register<Map<MessageType , ISocketModule>>(TOKENS.websocket.modules.message , {
     useValue : MessageModules
 })
 
 // SOCKET LISTENERS
-import SocketListeners from "@websocket/listeners"
+import SocketListeners from "@socketServer/listeners"
 
 container.register<ISocket[]>(TOKENS.websocket.listeners , {
     useValue : SocketListeners
 })
+
+// SOCKET SERVER
+import { WebSocketServer } from "@socketServer/index"
+
+container.register<WebSocketServer>(TOKENS.websocket.server , {
+    useClass : WebSocketServer
+})
+
 
 // DISCORD
 import { DiscordBot } from "@discordbot/index"

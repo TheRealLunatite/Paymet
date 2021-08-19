@@ -3,7 +3,7 @@ import { IPostgresModule } from "@modules/postgres/types";
 import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
 import { singleton , inject } from "tsyringe";
-import { Cart, CartDoc, CartModule, CartOpts , CountCartResponse, FindType } from "./types";
+import { Cart, CartDoc, CartItemSanitize, CartModule, CartOpts , CountCartResponse, FindType } from "./types";
 
 @singleton()
 export class CartDBModule implements CartModule {
@@ -24,11 +24,12 @@ export class CartDBModule implements CartModule {
         }
 
         const { discordId , cart } = data
-        
+        const sanitizeCart = cart.map(({ placeId }) => placeId.value)
+
         const queryOpts : QueryConfig = {
             name : "add-cart",
             text : `INSERT INTO cart (discordId , cart) VALUES($1,$2)`,
-            values : [discordId.value , JSON.stringify(cart)]
+            values : [discordId.value , JSON.stringify(sanitizeCart)]
         }    
 
         await this.pgClient!.query(queryOpts)
@@ -50,11 +51,14 @@ export class CartDBModule implements CartModule {
                 type === "FindOne" ? " LIMIT 1;"  : ";"
             )
         ))
-
+        
         const queryOpts : QueryConfig = {
             name : "find-cart",
             text : queryText,
-            values : Object.values(data).map((val) => Array.isArray(val) ? JSON.stringify(val) : val.value)
+            values : Object.values(data).map((val) => Array.isArray(val) ? 
+                JSON.stringify(val.map(({ placeId }) => placeId.value )) : 
+                val.value
+            )
         }
 
         const query = await this.pgClient?.query(queryOpts)!
@@ -116,7 +120,11 @@ export class CartDBModule implements CartModule {
             objectEntries.map((val, index) => `${val[0]}=$${index + 1}` + `${index + 1 !== objectEntries.length ? "," : ""}`).join("") +
             ` WHERE discordId=$${objectEntries.length + 1}`
             ,
-            values : [...objectEntries.map((val) => (Array.isArray(val[1]) ? JSON.stringify(val[1]) : val[1].value)) , id.value]
+            values : [...objectEntries.map((val) => (
+                Array.isArray(val[1]) ? 
+                JSON.stringify(val[1].map((cartItem) => ({ ...cartItem , placeId : cartItem.placeId.value }))) : 
+                val[1].value
+            )) , id.value]
         }
 
         const { rowCount } = await this.pgClient!.query(queryOpts)

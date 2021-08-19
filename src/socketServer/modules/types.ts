@@ -1,4 +1,4 @@
-import { InventoryItem } from "@modules/inventory/types";
+import { InventoryItem } from "@modules/instanceDb/types";
 
 export type MessageSocketData = PlayerConnect | TradeInfo
 

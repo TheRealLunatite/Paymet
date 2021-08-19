@@ -13,7 +13,7 @@
       "@common/*" : ["src/common/*"],
       "@static/*" : ["src/static/*"],
       "@config/" : ["src/config/"],
-      "@websocket/*" : ["src/websocket/*"],
+      "@socketServer/*" : ["src/socketServer/*"],
       "@discordbot/*" : ["src/discordBot/*"]
     },
     "typeRoots": ["src/typings"],

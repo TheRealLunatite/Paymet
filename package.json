@@ -1,17 +1,19 @@
 {
-  "name": "Paymet",
+  "name": "paymet",
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/TheRealLunatite/Paymet.git",
   "author": "Luna <bedgowns@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "ts-node -r tsconfig-paths/register src/index.ts",
+    "discordBot": "ts-node -r tsconfig-paths/register src/discordBot.ts",
+    "socketServer" : "ts-node -r tsconfig-paths/register src/socketServer.ts",
+    "expressServer" : "ts-node -r tsconfig-paths/register src/expressServer.ts",
     "test": "jest"
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "bcrypt": "^5.0.1",
+    "bcrypt": "^5.ya0.1",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

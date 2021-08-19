@@ -1,13 +1,13 @@
 import { inject , injectable } from "tsyringe";
-import { TOKENS } from "../../di";
+import { TOKENS } from "../di";
 import ws  , { ServerOptions } from "ws"
-import { WebSocketServer } from "./types";
+import { SocketServer } from "./types";
 import { v4 } from "uuid"
 import { ISocket } from "@common/interfaces/ISocket";
 import { Uuid } from "@common/uuid";
 
 @injectable()
-export class WebSocketServerModule implements WebSocketServer {
+export class WebSocketServer implements SocketServer {
     private wsServer : ws.Server
     
     constructor(

@@ -93,7 +93,7 @@ export class AddToCartCommand implements SlashCommand {
         }
 
         await this.cartDb!.updateById(discordId , {
-            cart : [...cartUser.cart , { placeId : placeId.value , itemRawName : itemName , quantity }]
+            cart : [...cartUser.cart , { placeId , itemRawName : itemName , quantity }]
         })
 
         return interaction.reply(`Successfully added ${quantity}x \`\`${itemName}\`\` to cart.`)

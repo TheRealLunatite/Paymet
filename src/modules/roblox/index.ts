@@ -1,4 +1,4 @@
-import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser, CreateDevProductOpts, CreateDevProductResponse, DeveloperProduct, GetDeveloperProducts, PlaceDetail } from "./types";
+import { NewUniverse, IRobloxModule, RobloxUserSettings, ConfigureUniverseOpts, AuthenticatedUser, CreateDevProductOpts, CreateDevProductResponse, DeveloperProduct, GetDeveloperProducts, PlaceDetail , UserInventoryResponse } from "./types";
 import { TOKENS } from "src/di";
 import { injectable , inject } from "tsyringe";
 import { RequestModule, RequestOptions, RequestResponse } from "@modules/request/types";
@@ -165,13 +165,26 @@ export class RobloxModule implements IRobloxModule {
         return Promise.resolve(response.data[0].universeId)
     }
 
-    public async getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts> {
+    private async getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts> {
         const response = await this.request<GetDeveloperProducts>({
             url : `http://api.roblox.com/developerproducts/list?placeid=${placeId.value}&page=${pageNum}`,
             method : "GET"
         })
 
         return Promise.resolve(response.data)
+    }
+
+    public async playerOwnsAsset(cookie : Cookie , playerId : Id , assetId : Id) : Promise<boolean> {
+        try {
+            const response = await this.requestWithCookie<UserInventoryResponse>(cookie , {
+                url : `https://inventory.roblox.com/v1/users/${playerId.value}/items/Asset/${assetId.value}`,
+                method : "GET"
+            })
+
+            return response.data.data.length >= 1 ? true : false
+        } catch {
+            return false
+        }
     }
 
     public async getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>{

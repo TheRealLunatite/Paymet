@@ -13,10 +13,23 @@ export type Cart = {
     cart : CartItem[]
 }
 
-export type CartItem = {
+export interface CartItem {
+    placeId : Id,
+    itemRawName : string,
+    quantity : number
+}
+
+export type CartItemSanitize = {
     placeId : number,
     itemRawName : string,
     quantity : number
+}
+
+export interface CartItemWithPrice extends CartItem {
+    placeId : Id,
+    itemRawName : string,
+    quantity : number,
+    price : number
 }
 
 export type CartOpts = {

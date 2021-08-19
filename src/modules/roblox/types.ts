@@ -12,10 +12,10 @@ export interface IRobloxModule {
     configureUniverse(cookie : Cookie , placeId : Id , opts : ConfigureUniverseOpts) : Promise<boolean>,
     getXsrfToken(cookie : Cookie) : Promise<string | null>,
     createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<Id | null>,
-    getDeveloperProducts(placeId : Id , pageNum : number) : Promise<GetDeveloperProducts>,
     getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>,
-    getUniverseId(cookie : Cookie , placeId : Id) : Promise<null | number>
-}
+    getUniverseId(cookie : Cookie , placeId : Id) : Promise<null | number>,
+    playerOwnsAsset(cookie : Cookie , playerId : Id , assetId : Id) : Promise<boolean>
+}   
 
 export type AuthenticatedUser = {
     id : number,
@@ -82,4 +82,17 @@ export type PlaceDetail = {
     universeRootPlaceId : number,
     price : number,
     imageToken : string
+}
+
+export type AssetItem = {
+    type : "Asset",
+    id : number,
+    name : string,
+    instanceId : number
+}
+
+export type UserInventoryResponse = {
+    previousPageCursor : string | null,
+    nextPageCursor : string | null,
+    data : AssetItem[]
 }

@@ -1037,37 +1037,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"Paymet@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "Paymet@workspace:."
-  dependencies:
-    "@types/bcrypt": ^5.0.0
-    "@types/express": ^4.17.12
-    "@types/jest": ^26.0.23
-    "@types/jsonwebtoken": ^8.5.4
-    "@types/pg": ^8.6.0
-    "@types/uuid": ^8.3.1
-    "@types/ws": ^7.4.6
-    axios: ^0.21.1
-    bcrypt: ^5.0.1
-    discord.js: ^13.1.0
-    dotenv: ^10.0.0
-    express: ^4.17.1
-    jest: ^27.0.5
-    jsonwebtoken: ^8.5.1
-    module-alias: ^2.2.2
-    pg: ^8.6.0
-    reflect-metadata: ^0.1.13
-    ts-node: ^10.0.0
-    tsconfig-paths: ^3.9.0
-    tslog: ^3.2.0
-    tsyringe: ^4.5.0
-    typescript: ^4.3.4
-    uuid: ^8.3.2
-    ws: ^7.5.2
-  languageName: unknown
-  linkType: soft
-
 "abab@npm:^2.0.3, abab@npm:^2.0.5":
   version: 2.0.5
   resolution: "abab@npm:2.0.5"
@@ -3991,6 +3960,37 @@ fsevents@^2.3.2:
   checksum: 69a14ea24db543e8b0f4353305c5eac6907917031340e5a8b37df688e52accd09e3cebfe1660b70d76b6bd89152f52183f28c74813dbf454ba1a01c82a38abce
   languageName: node
   linkType: hard
+
+"paymet@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "paymet@workspace:."
+  dependencies:
+    "@types/bcrypt": ^5.0.0
+    "@types/express": ^4.17.12
+    "@types/jest": ^26.0.23
+    "@types/jsonwebtoken": ^8.5.4
+    "@types/pg": ^8.6.0
+    "@types/uuid": ^8.3.1
+    "@types/ws": ^7.4.6
+    axios: ^0.21.1
+    bcrypt: ^5.0.1
+    discord.js: ^13.1.0
+    dotenv: ^10.0.0
+    express: ^4.17.1
+    jest: ^27.0.5
+    jsonwebtoken: ^8.5.1
+    module-alias: ^2.2.2
+    pg: ^8.6.0
+    reflect-metadata: ^0.1.13
+    ts-node: ^10.0.0
+    tsconfig-paths: ^3.9.0
+    tslog: ^3.2.0
+    tsyringe: ^4.5.0
+    typescript: ^4.3.4
+    uuid: ^8.3.2
+    ws: ^7.5.2
+  languageName: unknown
+  linkType: soft
 
 "pg-connection-string@npm:^2.5.0":
   version: 2.5.0

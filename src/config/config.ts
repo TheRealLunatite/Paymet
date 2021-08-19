@@ -36,11 +36,17 @@ export const config = {
     },
     roblox : {
         cookie : getEnvironmentalVariable("robloxCookie"),
-        placeId : +getEnvironmentalVariable("robloxPlaceId")
+        assetId : getEnvironmentalVariable("robloxAssetId")
     },
     discord : {
         token : getEnvironmentalVariable("discordBotToken"),
         eventPath : getEnvironmentalVariable("discordEventsDirPath" , "/events/"),
         commandPath : getEnvironmentalVariable("discordCommandsDirPath" , "/commands/")
-    }   
+    },
+    socketServer : {
+        port : +getEnvironmentalVariable("socketServerPort" , "8080")
+    },
+    expressServer : {
+        port : +getEnvironmentalVariable("expressServerPort" , "3000")
+    }
 }
