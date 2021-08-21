@@ -130,6 +130,10 @@ export class CheckoutCommand implements SlashCommand {
         return bool
     }
 
+    private isUserInCheckout(interaction : CommandInteraction) {
+        return interaction.client.isUserInCheckout
+    }
+
     private async sendPurchasePrompt(opts : LoadPurchasePrompt) : Promise<PurchasePromptResponse> {
         return new Promise(async (resolve , reject) => {
             const { interaction , userId , assetId , cookie } = opts
@@ -210,12 +214,14 @@ export class CheckoutCommand implements SlashCommand {
     }
 
     async execute(interaction : CommandInteraction): Promise<void> {
-        if(interaction.client.isUserInCheckout!) {
+        if(this.isUserInCheckout(interaction)) {
             return interaction.reply({
                 content : "Please try again later.  There is currently a user checking out their cart at the moment.",
                 ephemeral : true
             })
         }
+
+        this.setIsUserInCheckout(interaction , true)
 
         const userId = new Id(+interaction.options.getInteger("userid")!)
         const assetId = new Id(this.robloxConfig!.assetId)
@@ -226,6 +232,8 @@ export class CheckoutCommand implements SlashCommand {
         const isAuthenticated = this.roblox!.isUserAuthenticated(cookie)
 
         if(!isAuthenticated) {
+            this.setIsUserInCheckout(interaction , false)
+
             return interaction.reply({
                 content : `${interaction.user} The owner has an invalid cookie and cannot perform this action at this time.`,
                 ephemeral : true
@@ -237,31 +245,27 @@ export class CheckoutCommand implements SlashCommand {
             userInfo = await this.roblox!.getUserInfoById(cookie , userId)
 
             if(userInfo.isBanned) {
+                this.setIsUserInCheckout(interaction , false)
                 return interaction.reply({
                     content : `${interaction.user} This user is banned.`,
                     ephemeral : true
                 })
             }            
         } catch {
+            this.setIsUserInCheckout(interaction , false)
             return interaction.reply({
                 content : `${interaction.user} You've provided an invalid userId.`,
                 ephemeral : true
             })
         }
 
-        try {
-            if(await this.roblox!.playerOwnsAsset(cookie , userId , assetId)) {
-                return interaction.reply({
-                    content : "Please delete the asset from your inventory from the previous purchase to continue.",
-                    ephemeral : true
-                })
-            }
-        } catch {
-            return interaction.reply({
-                content : `${interaction.user} Unable to find out if you own the asset or not.`,
-                ephemeral : true
-            })
-        }
+        // if(await this.roblox!.playerOwnsAsset(cookie , userId , assetId)) {
+        //     this.setIsUserInCheckout(interaction , false)
+        //     return interaction.reply({
+        //         content : "Please delete the asset from your inventory from the previous purchase to continue.",
+        //         ephemeral : true
+        //     })
+        // }
 
         const userCart = await this.cartDb!.findOne({ discordId }) ?? await this.cartDb!.add({ discordId , cart : [] })
         let cart = userCart.cart
@@ -278,6 +282,7 @@ export class CheckoutCommand implements SlashCommand {
         // If the inventory size is 0 means all items are unable to be purchased.
         if(inventory.size <= 0) {
             await this.cartDb!.updateById(discordId , { cart : [] })
+            this.setIsUserInCheckout(interaction , false)
             return interaction.reply({
                 content : `${interaction.user} your items are unable to be purchased. I've cleared your inventory.`,
                 ephemeral : true
@@ -291,13 +296,13 @@ export class CheckoutCommand implements SlashCommand {
                 return false
             }
 
-
             const findItemInInventory = inventory.get(placeId.value)!.inventory!.find(({ itemRawName , itemStock }) => itemRawName === cartItemRawName && quantity <= itemStock)
             return findItemInInventory ? true : false
         })
 
         if(cart.length <= 0) {
             await this.cartDb!.updateById(discordId , { cart : [] })
+            this.setIsUserInCheckout(interaction , false)
             return interaction.reply({
                 content : `${interaction.user} Items are unable to be purchased. I've cleared your inventory.`,
                 ephemeral : true
@@ -308,16 +313,10 @@ export class CheckoutCommand implements SlashCommand {
         const cartItemsWithPrice = await this.getPriceOfCartItems(cart)
         const subTotal = cartItemsWithPrice.reduce((total , cartItem) => total + cartItem.price, 0)
 
-        try {
-            if(!await this.roblox!.updateAssetPrice(cookie , assetId , subTotal)) {
-                return interaction.reply({
-                    content : `${interaction.user} Unable to configure the price of asset.`,
-                    ephemeral : true
-                })
-            }
-        } catch {
+        if(!await this.roblox!.updateAssetPrice(cookie , assetId , subTotal)) {
+            this.setIsUserInCheckout(interaction , false)
             return interaction.reply({
-                content : `${interaction.user} There was a problem configuring the price of asset.`,
+                content : `${interaction.user} Unable to configure the price of asset.`,
                 ephemeral : true
             })
         }
@@ -337,6 +336,7 @@ export class CheckoutCommand implements SlashCommand {
         })
 
         if(!isPurchaseSuccessful.success) {
+            this.setIsUserInCheckout(interaction , false)
             return
         }
 
@@ -344,31 +344,20 @@ export class CheckoutCommand implements SlashCommand {
         this.updateInventory(inventory , cart)
 
         // Create an transaction.
-        try {
-            await this.transactionDb!.add({
-                id : new Uuid(this.uuid!()),
-                username : new Username(userInfo!.name),
-                status : "initalized",
-                items : cartItemsWithPrice,
-                discordId
-            })
-        } catch (e) {
-            interaction.channel!.send({
-                content :  `${interaction.user} There was a problem creating your transaction.`,
-                components : []
-            })
+        await this.transactionDb!.add({
+            id : new Uuid(this.uuid!()),
+            username : new Username(userInfo!.name),
+            status : "initalized",
+            items : cartItemsWithPrice,
+            discordId
+        })
+    
 
-            return
-        }
-
-        try {
-            await this.cartDb!.updateById(discordId , { cart : [] })
-        } catch {
-
-        }
+        await this.cartDb!.updateById(discordId , { cart : [] })
 
         const userDMChannel = await interaction.user.createDM()
         await userDMChannel.send(this.parseInventoryUserId(inventory).toString())
+        this.setIsUserInCheckout(interaction , false)
         return
     }
 }
