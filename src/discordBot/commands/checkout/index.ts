@@ -259,13 +259,13 @@ export class CheckoutCommand implements SlashCommand {
             })
         }
 
-        // if(await this.roblox!.playerOwnsAsset(cookie , userId , assetId)) {
-        //     this.setIsUserInCheckout(interaction , false)
-        //     return interaction.reply({
-        //         content : "Please delete the asset from your inventory from the previous purchase to continue.",
-        //         ephemeral : true
-        //     })
-        // }
+        if(await this.roblox!.playerOwnsAsset(cookie , userId , assetId)) {
+            this.setIsUserInCheckout(interaction , false)
+            return interaction.reply({
+                content : "Please delete the asset from your inventory from the previous purchase to continue.",
+                ephemeral : true
+            })
+        }
 
         const userCart = await this.cartDb!.findOne({ discordId }) ?? await this.cartDb!.add({ discordId , cart : [] })
         let cart = userCart.cart
