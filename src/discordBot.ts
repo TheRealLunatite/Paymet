@@ -1,5 +1,5 @@
 import "reflect-metadata"
-import { Intents, User } from "discord.js"
+import { Intents } from "discord.js"
 import { container } from "tsyringe";
 import appConfig from "@config/"
 
