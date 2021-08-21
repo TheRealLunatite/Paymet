@@ -80,9 +80,7 @@ export class GetPlaceStockCommand implements SlashCommand {
         }
 
         const data = inventory.map((inventoryItem) => ({
-            itemName : inventoryItem.itemName,
-            itemRawName : inventoryItem.itemRawName,
-            itemStock : inventoryItem.itemStock,
+            ...inventoryItem,
             price : +enlistedItems.find((enlistedItem) => enlistedItem.itemName === inventoryItem.itemRawName)!.priceInRobux
         }))
 
@@ -91,8 +89,8 @@ export class GetPlaceStockCommand implements SlashCommand {
         const embeds = sections.map((data , index) => {
             let description = ``
 
-            data.forEach(({ itemName , itemStock , price , itemRawName }) => {
-                (itemRawName === itemName) ? description += `Name : **${itemName}**\n` : description += `Name : **${itemName}** | Raw Name : **${itemRawName}**\n`
+            data.forEach(({ itemName , itemStock , itemType , price , itemRawName }) => {
+                (itemRawName === itemName) ? description += `Name : **${itemName}** | Type : **${itemType}**\n` : description += `Name : **${itemName}** | Raw Name : **${itemRawName}** | Type : **${itemType}**\n`
 
                 description += `**Stock : __${itemStock}__** [**[⏣ ${price}]**](https://www.youtube.com/watch?v=9bDPAOuizsQ)
                 This item is purchasable for ${price} Robux.\n\n`

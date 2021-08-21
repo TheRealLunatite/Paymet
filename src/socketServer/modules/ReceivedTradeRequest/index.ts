@@ -4,7 +4,7 @@ import { TOKENS } from "src/di";
 import { TradeInfo } from "../types";
 import { LoggerModule } from "@modules/logger/types";
 import { ISocketModule } from "@common/interfaces/ISocketModule";
-import { TransactionDBModule } from "@modules/transaction";
+import { TransactionDBModule } from "@modules/transactionDb";
 import { Username } from "@common/username";
 import { RobloxUniverse } from "@common/robloxUniverse";
 
@@ -42,7 +42,7 @@ export class ReceivedTradeRequestModule implements ISocketModule {
         try {
             const transaction = await this.transactionDb!.findOne({ username : tradeUser })
 
-            if((transaction) && (transaction.status === "pending")) {
+            if((transaction) && (transaction.status === "initalized")) {
                 console.log(transaction.items)
                 
                 return ws.send(JSON.stringify({

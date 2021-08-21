@@ -6,7 +6,6 @@ import appConfig from "@config/"
 import { LoggerModule } from "@modules/logger/types"
 import { AuthExpressComponent } from "@components/auth/express"
 import { RobloxExpressComponent } from "@components/roblox/express"
-import { TransactionExpressComponent } from "@components/transaction/express"
 
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
@@ -28,9 +27,6 @@ robloxComponent.execute()
 
 const authComponent = container.resolve<AuthExpressComponent>(TOKENS.components.auth.component)
 authComponent.execute()
-
-const transactionComponent = container.resolve<TransactionExpressComponent>(TOKENS.components.transaction.component)
-transactionComponent.execute()
 
 app.use(logErrorHandler)
 app.use(errorHandler);

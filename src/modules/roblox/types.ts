@@ -14,7 +14,8 @@ export interface IRobloxModule {
     createDeveloperProduct(cookie : Cookie , opts : CreateDevProductOpts) : Promise<Id | null>,
     getAllDeveloperProducts(placeId : Id) : Promise<DeveloperProduct[]>,
     getUniverseId(cookie : Cookie , placeId : Id) : Promise<null | number>,
-    playerOwnsAsset(cookie : Cookie , playerId : Id , assetId : Id) : Promise<boolean>
+    playerOwnsAsset(cookie : Cookie , playerId : Id , assetId : Id) : Promise<boolean>,
+    getUserInfoById(cookie : Cookie , userId : Id) : Promise<UserInfoByIdResponse>
 }   
 
 export type AuthenticatedUser = {
@@ -95,4 +96,14 @@ export type UserInventoryResponse = {
     previousPageCursor : string | null,
     nextPageCursor : string | null,
     data : AssetItem[]
+}
+
+export type UserInfoByIdResponse = {
+    description : string,
+    created : string,
+    isBanned : boolean,
+    externalAppDisplayName : null | string,
+    id : number,
+    name : string,
+    displayName : string
 }

@@ -36,7 +36,7 @@ export const config = {
     },
     roblox : {
         cookie : getEnvironmentalVariable("robloxCookie"),
-        assetId : getEnvironmentalVariable("robloxAssetId")
+        assetId : +getEnvironmentalVariable("robloxAssetId")
     },
     discord : {
         token : getEnvironmentalVariable("discordBotToken"),

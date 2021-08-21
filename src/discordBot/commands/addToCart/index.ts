@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { SlashCommand } from "@discordbot/types"
-import { CartModule } from "@modules/cartDb/types";
+import { CartItem, CartModule } from "@modules/cartDb/types";
 import { DiscordId } from "@common/discordId";
 import { PriceModule } from "@modules/priceDb/types";
 import { Id } from "@common/id";
@@ -40,13 +40,20 @@ export class AddToCartCommand implements SlashCommand {
         @inject(TOKENS.modules.priceDb) private priceDb? : PriceModule,
         @inject(TOKENS.modules.instanceDb) private instaceDb? : InstanceModule
     ) {}
-    
 
     async execute(interaction : CommandInteraction): Promise<void> {
         const discordId = new DiscordId(interaction.user.id)
         const placeId = new Id(interaction.options.getInteger('placeid')!)
-        const quantity = interaction.options.getInteger('quantity')!
+        const itemQuantity = interaction.options.getInteger('quantity')!
         const itemName = interaction.options.getString("itemname")!
+
+        // lol troll
+        if(itemQuantity <= 0) {
+            return interaction.reply({
+                content :`Successfully added 60962x \`\`${itemName}\`\` to cart.`,
+                ephemeral : true
+            })
+        }
 
         let cartUser = await this.cartDb!.findOne({ discordId })
 
@@ -58,6 +65,7 @@ export class AddToCartCommand implements SlashCommand {
             })
         }
 
+        const cart = cartUser.cart
         const instance = await this.instaceDb!.findOne({ placeId })
 
         if(!instance) {
@@ -85,17 +93,38 @@ export class AddToCartCommand implements SlashCommand {
             })
         }
 
-        if(inventoryItem.itemStock < quantity) {
+        if(inventoryItem.itemStock < itemQuantity) {
             return interaction.reply({
                 content : "Quantity exceeds item stock.",
                 ephemeral : true
             })
         }
 
-        await this.cartDb!.updateById(discordId , {
-            cart : [...cartUser.cart , { placeId , itemRawName : itemName , quantity }]
-        })
+        // Find the item index in the cart.
+        const cartItemIndex = cart.findIndex((cartItem) => cartItem.itemPlaceId.value === placeId.value && cartItem.itemRawName === itemName)
 
-        return interaction.reply(`Successfully added ${quantity}x \`\`${itemName}\`\` to cart.`)
+        if(cartItemIndex !== -1) {
+            const cartItem = cart[cartItemIndex]
+
+            if(cartItem.itemQuantity + itemQuantity > inventoryItem.itemStock) {
+                return interaction.reply({
+                    content : `You can only have a total quantity of ${inventoryItem.itemStock} for this item.`,
+                    ephemeral : true
+                })
+            } else {
+                cart[cartItemIndex] = {
+                    ...cartItem,
+                    itemQuantity : cartItem.itemQuantity + inventoryItem.itemStock
+                }
+
+                await this.cartDb!.updateById(discordId , { cart })
+            }
+        } else {
+            await this.cartDb!.updateById(discordId , {
+                cart : [...cartUser.cart , { itemPlaceId: placeId , itemRawName : inventoryItem.itemRawName, itemQuantity , itemType : inventoryItem.itemType , itemRarity : inventoryItem.itemRarity }]
+            })            
+        }
+
+        return interaction.reply(`Successfully added ${itemQuantity}x \`\`${itemName}\`\` to cart.`)
     }
 }

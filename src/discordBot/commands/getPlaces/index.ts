@@ -22,7 +22,7 @@ export class GetPlacesCommand implements SlashCommand {
         const instances = await this.instanceDb!.findAll({})
 
         if(!instances) {
-            return await interaction.reply("There is currently no active places that sell items.")
+            return await interaction.reply("There is currently no active place(s) at the moment.")
         }
 
         // Filter the instances to get unique place ids.

@@ -14,21 +14,22 @@ export type Cart = {
 }
 
 export interface CartItem {
-    placeId : Id,
+    itemPlaceId : Id,
     itemRawName : string,
-    quantity : number
+    itemType : string,
+    itemRarity : string,
+    itemQuantity : number
 }
 
 export type CartItemSanitize = {
-    placeId : number,
+    itemPlaceId : number,
     itemRawName : string,
-    quantity : number
+    itemType : string,
+    itemQuantity : number,
+    itemRarity : string
 }
 
 export interface CartItemWithPrice extends CartItem {
-    placeId : Id,
-    itemRawName : string,
-    quantity : number,
     price : number
 }
 

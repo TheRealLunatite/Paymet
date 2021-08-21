@@ -10,7 +10,6 @@ import { InstanceModule , Instance , DeleteInstanceResponse, InstanceOpts , Find
 @singleton()
 export class InstanceDBModule implements InstanceModule {
     private pgClient : Client | null = null
-    private cacheInventory = new Map()
 
     constructor(
         @inject(TOKENS.modules.postgres) private postgres : IPostgresModule,
@@ -73,12 +72,10 @@ export class InstanceDBModule implements InstanceModule {
         ))
 
         const queryOpts : QueryConfig = {
-            name : "find-inventory",
+            name : "find-instance",
             text : queryText,
-            values : Object.values(data).map((val) => Array.isArray(val) ? JSON.stringify(val) : val.value)
+            values : Object.values(data).map((val) => Array.isArray(val) ? JSON.stringify(val.map) : val.value)
         }
-
-        console.log(queryOpts)
 
         const query = await this.pgClient?.query(queryOpts)!
 

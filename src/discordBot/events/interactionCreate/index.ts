@@ -28,6 +28,10 @@ export class DiscordInteractionCreateEvent implements DiscordEventListener {
             try {
                 await slashCommand.execute(interaction)
             } catch (e) {
+                if(slashCommand.name === "checkout") {
+                    client.isUserInCheckout = false
+                }
+                
                 this.logger!.error(`${slashCommand.name} command : ${e.message}.`)
                 await interaction.reply({
                     content : `There was an error running this command.`,

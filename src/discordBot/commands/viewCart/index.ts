@@ -2,11 +2,12 @@ import { CommandInteraction, MessageEmbed } from "discord.js";
 import { TOKENS } from "src/di";
 import { autoInjectable, inject } from "tsyringe";
 import { SlashCommand } from "@discordbot/types"
-import { CartModule } from "@modules/cartDb/types";
+import { CartItem, CartItemWithPrice, CartModule } from "@modules/cartDb/types";
 import { DiscordId } from "@common/discordId";
 import { PriceModule } from "@modules/priceDb/types";
 import { InstanceModule } from "@modules/instanceDb/types";
 import { Id } from "@common/id";
+import { InventoryData } from "../checkout/types";
 
 @autoInjectable()
 export class ViewCartCommand implements SlashCommand {
@@ -38,9 +39,30 @@ export class ViewCartCommand implements SlashCommand {
         return [...sections , arr]
     }
 
+    private async getInstancesInventoryByPlaceId(placeIds : Id[]) : Promise<Map<number , InventoryData>>{
+        const inventory = new Map<number , InventoryData>()
+
+        for(let i = 0; i < placeIds.length; i++) {
+            const placeId = placeIds[i]
+            // If the placeId already exists in the map.
+            if(inventory.has(placeId.value)) {
+                continue
+            }
+
+            const instance = await this.instanceDb!.findOne({ placeId })
+
+            if(!instance) {
+                continue
+            }
+            
+            inventory.set(placeId.value , { socketId : instance.socketId , inventory : instance.inventory , userId : instance.userId })
+        }
+
+        return inventory
+    }
+
     async execute(interaction : CommandInteraction): Promise<void> {
         const discordId = new DiscordId(interaction.user.id)
-        const inventory = new Map<Id , InventoryItem[]>()
         
         let cartUser = await this.cartDb!.findOne({ discordId })
         let subTotal = 0
@@ -63,22 +85,7 @@ export class ViewCartCommand implements SlashCommand {
         }
 
         // Get the inventory(s) for each placeId.
-        for(let i = 0; i < cart.length; i++) {
-            const { placeId } = cart[i]
-            if(inventory.has(placeId)) {
-                continue
-            }
-
-            const instance = await this.instanceDb!.findOne({ placeId })
-
-            if(!instance) {
-                // Remove the item from the user cart.
-                cart.splice(i , 1)
-                continue
-            }   
-
-            inventory.set(placeId , instance.inventory)
-        }
+        const inventory = await this.getInstancesInventoryByPlaceId(cart.map(({ itemPlaceId }) => itemPlaceId))
 
         // If the inventory size is 0 that means all the items in the cart are unable to be purchased at the moment.
         if(inventory.size === 0) {
@@ -95,10 +102,10 @@ export class ViewCartCommand implements SlashCommand {
         }
 
         for(let i = 0; i < cart.length; i++) {
-            const { placeId , itemRawName , quantity } = cart[i]
+            const { itemPlaceId: placeId , itemRawName , itemQuantity: quantity } = cart[i]
 
             // There's already a check on line 66 to check if an socket instance exists for each corresponding placeId item.
-            const placeInventory = inventory.get(placeId)!
+            const placeInventory = inventory.get(placeId.value)!.inventory
             const findItemIndex = placeInventory.findIndex(({ itemRawName : inventoryItemRawName }) => itemRawName === inventoryItemRawName)
 
             // If the socket instance does not have the item in the inventory anymore.
@@ -123,15 +130,20 @@ export class ViewCartCommand implements SlashCommand {
 
             subTotal += quantity * priceOfItem.priceInRobux
         }   
-        
-        const sections = this.splitArray(cart , 5)
 
-        // ! Need to display the total of each individual item in the embed.
+        // If anything from the cart was removed because it was unavailable then we update the user's cart.
+        if(cartUser.cart.length !== cart.length) {
+            await this.cartDb!.updateById(discordId , { cart })
+        }
+
+        const sections = this.splitArray(cart , 5)
         const embeds = sections.map((cartSection , index) => {
             let description = ""
 
-            cartSection.forEach(({ itemRawName , quantity }) => {
-                description += `Item : **${itemRawName}** | Quantity : **${quantity}** \n`
+            cartSection.forEach(({ itemRawName , itemQuantity }) => {
+                description += `
+                    Item : **${itemRawName}** | Quantity : **${itemQuantity}**
+                `
             })
 
             return new this.embed!()
@@ -143,7 +155,7 @@ export class ViewCartCommand implements SlashCommand {
         })
 
         return interaction.reply({ 
-            content : `Subtotal : ${subTotal} robux`,
+            content : `Subtotal : \`\`${subTotal}\`\` robux`,
             embeds
         })
     }

@@ -22,6 +22,10 @@ export class DiscordBot implements DiscordBotModule {
         }
         this.client = new this.discordJsLib!.Client(clientOptions)
 
+        // This property is to set if a user is currently checking out their cart at the moment or not.
+        // Only 1 user is able to checkout at a time.
+        this.client.isUserInCheckout = false
+
         // This property will be used inside the event listeners.
         this.client.slashCommands = await this.discordCommandLoader!.execute(this.pathJoin!(__dirname , config.commandPath))
 

@@ -34,10 +34,6 @@ export const TOKENS = {
         auth : {
             routes : Symbol(),
             component : Symbol()
-        },
-        transaction : {
-            routes : Symbol(),
-            component : Symbol()
         }
     },
     websocket : {
@@ -174,7 +170,7 @@ container.register(TOKENS.values.discordMessageActionRow , {
 import { AxiosModule } from "@modules/request/axios"
 import { RobloxModule } from "@modules/roblox"
 import { PostgresModule } from "@modules/postgres/pg"
-import { TransactionDBModule } from "@modules/transaction"
+import { TransactionDBModule } from "@modules/transactionDb"
 import { UserDBModule } from "@modules/user"
 import { HmacModule } from "@modules/hmac"
 import { TsLoggerModule } from "@modules/logger"
@@ -271,7 +267,6 @@ container.register<DiscordEventLoader>(TOKENS.discord.eventLoader , {
 
 import RobloxExpressComponentRoutes from "@components/roblox/express/routes"
 import AuthExpressComponentRoutes from "@components/auth/express/routes"
-import TransactionExpressComponentRoutes from "@components/transaction/express/routes"
 
 container.register(TOKENS.components.roblox.routes , {
     useValue : RobloxExpressComponentRoutes
@@ -281,15 +276,10 @@ container.register(TOKENS.components.auth.routes , {
     useValue : AuthExpressComponentRoutes
 })
 
-container.register(TOKENS.components.transaction.routes , {
-    useValue : TransactionExpressComponentRoutes
-})
-
 // COMPONENTS
 
 import { RobloxExpressComponent } from "@components/roblox/express"
 import { AuthExpressComponent } from "@components/auth/express"
-import { TransactionExpressComponent } from "@components/transaction/express"
 import { ISocketModule } from "@common/interfaces/ISocketModule"
 
 container.register(TOKENS.components.roblox.component , {
@@ -298,8 +288,4 @@ container.register(TOKENS.components.roblox.component , {
 
 container.register(TOKENS.components.auth.component , {
     useClass : AuthExpressComponent
-})
-
-container.register(TOKENS.components.transaction.component , {
-    useClass : TransactionExpressComponent
 })

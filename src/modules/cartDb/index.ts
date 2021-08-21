@@ -1,5 +1,7 @@
 import { DiscordId } from "@common/discordId";
+import { Id } from "@common/id";
 import { IPostgresModule } from "@modules/postgres/types";
+import { query } from "express";
 import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
 import { singleton , inject } from "tsyringe";
@@ -24,7 +26,12 @@ export class CartDBModule implements CartModule {
         }
 
         const { discordId , cart } = data
-        const sanitizeCart = cart.map(({ placeId }) => placeId.value)
+        const sanitizeCart : CartItemSanitize[] = cart.map((cartItem) => (
+            {
+                ...cartItem,
+                itemPlaceId :  cartItem.itemPlaceId.value
+            }
+        ))
 
         const queryOpts : QueryConfig = {
             name : "add-cart",
@@ -56,7 +63,7 @@ export class CartDBModule implements CartModule {
             name : "find-cart",
             text : queryText,
             values : Object.values(data).map((val) => Array.isArray(val) ? 
-                JSON.stringify(val.map(({ placeId }) => placeId.value )) : 
+                JSON.stringify(val.map(({ itemPlaceId: placeId }) => placeId.value)) : 
                 val.value
             )
         }
@@ -70,7 +77,7 @@ export class CartDBModule implements CartModule {
                 return Promise.resolve(
                     rows.map(({ discordid , cart }) => ({
                         discordId : new DiscordId(discordid),
-                        cart
+                        cart : cart.map((cartItem) => ({ ...cartItem , itemPlaceId : new Id(+cartItem.itemPlaceId)}))
                     }))
                 )
             }
@@ -79,7 +86,7 @@ export class CartDBModule implements CartModule {
 
             return Promise.resolve({
                 discordId : new DiscordId(discordid),
-                cart
+                cart : cart.map((cartItem) => ({ ...cartItem , itemPlaceId : new Id(+cartItem.itemPlaceId)}))
             })
         }
 
@@ -122,7 +129,7 @@ export class CartDBModule implements CartModule {
             ,
             values : [...objectEntries.map((val) => (
                 Array.isArray(val[1]) ? 
-                JSON.stringify(val[1].map((cartItem) => ({ ...cartItem , placeId : cartItem.placeId.value }))) : 
+                JSON.stringify(val[1].map((cartItem) => ({ ...cartItem , itemPlaceId : cartItem.itemPlaceId.value }))) : 
                 val[1].value
             )) , id.value]
         }
