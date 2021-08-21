@@ -33,5 +33,20 @@ export const config = {
     } ,
     hmac : {
         transactionHmacSecret : getEnvironmentalVariable("transactionHmacSecret")
+    },
+    roblox : {
+        cookie : getEnvironmentalVariable("robloxCookie"),
+        assetId : +getEnvironmentalVariable("robloxAssetId")
+    },
+    discord : {
+        token : getEnvironmentalVariable("discordBotToken"),
+        eventPath : getEnvironmentalVariable("discordEventsDirPath" , "/events/"),
+        commandPath : getEnvironmentalVariable("discordCommandsDirPath" , "/commands/")
+    },
+    socketServer : {
+        port : +getEnvironmentalVariable("socketServerPort" , "8080")
+    },
+    expressServer : {
+        port : +getEnvironmentalVariable("expressServerPort" , "3000")
     }
 }

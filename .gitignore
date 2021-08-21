@@ -104,3 +104,14 @@ dist
 
 # TernJS port file
 .tern-port
+
+# sql
+sql/
+
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
