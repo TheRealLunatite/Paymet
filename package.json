@@ -6,6 +6,7 @@
   "author": "Luna <bedgowns@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "dev": "ts-node -r tsconfig-paths/register src/index.ts",
     "discordBot": "ts-node -r tsconfig-paths/register src/discordBot.ts",
     "socketServer": "ts-node -r tsconfig-paths/register src/socketServer.ts",
     "expressServer": "ts-node -r tsconfig-paths/register src/expressServer.ts"
