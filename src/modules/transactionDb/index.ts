@@ -78,7 +78,7 @@ export class TransactionDBModule implements TransactionModule {
                 username : new Username(username),
                 discordId : new DiscordId(discordid),
                 status,
-                items,
+                items : items.map((itemPurchased) => ({ ...itemPurchased , itemPlaceId : new Id(itemPurchased.itemPlaceId)})),
                 timestamp : new Date(timestamp)
             }
         }

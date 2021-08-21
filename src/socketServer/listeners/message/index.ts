@@ -26,24 +26,11 @@ export class MessageSocketListener implements ISocket {
                 return
             }
 
-            switch(wsData.type) {
-                case "PlayerConnect":               
-                    await this.modules!.get("PlayerConnect")!.execute(ws , wsData)
-                    break
-                case "ReceivedTradeRequest":
-                    await this.modules!.get("ReceivedTradeRequest")!.execute(ws , wsData)
-                    break
-                case "AcceptedTradeRequest":
-                    await this.modules!.get("AcceptedTradeRequest")!.execute(ws, wsData)
-                    break
-                case "DeclinedTradeRequest":
-                    await this.modules!.get("DeclinedTradeRequest")!.execute(ws , wsData)
-                    break
-                case "AcceptedTrade":
-                    break
-                default:
-                    this.logger!.warn("Your websocket server has received an unsupported message type.")
-                    break
+            try {   
+                await this.modules!.get(wsData.type)!.execute(ws , wsData)
+            } catch (e) {
+                console.log(e)
+                this.logger!.error("Your websocket server has received an unsupported message type or error.")
             }
         })
     }

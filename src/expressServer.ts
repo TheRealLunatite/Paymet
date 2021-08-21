@@ -33,5 +33,4 @@ app.use(errorHandler);
 
 (async () => {
     app.listen(appConfig.expressServer.port , () => logger.info(`Express server is now listening on Port : ${appConfig.expressServer.port}.`))
-
 })()

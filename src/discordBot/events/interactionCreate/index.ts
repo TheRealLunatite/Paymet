@@ -33,10 +33,7 @@ export class DiscordInteractionCreateEvent implements DiscordEventListener {
                 }
                 
                 this.logger!.error(`${slashCommand.name} command : ${e.message}.`)
-                await interaction.reply({
-                    content : `There was an error running this command.`,
-                    ephemeral : true
-                })
+                interaction.channel?.send(`${interaction.member}. There was an error running this command.`)
             }
         })
     }

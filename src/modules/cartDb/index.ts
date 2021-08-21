@@ -1,7 +1,6 @@
 import { DiscordId } from "@common/discordId";
 import { Id } from "@common/id";
 import { IPostgresModule } from "@modules/postgres/types";
-import { query } from "express";
 import { Client , ConnectionConfig, QueryConfig } from "pg";
 import { TOKENS } from "src/di";
 import { singleton , inject } from "tsyringe";

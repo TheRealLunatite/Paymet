@@ -41,14 +41,13 @@ export class ReceivedTradeRequestModule implements ISocketModule {
 
         try {
             const transaction = await this.transactionDb!.findOne({ username : tradeUser })
-
-            if((transaction) && (transaction.status === "initalized")) {
-                console.log(transaction.items)
-                
+            
+            if((transaction) && (transaction.status === "initalized")) {     
                 return ws.send(JSON.stringify({
+                    transactionId : transaction.id.value,
                     type : "AcceptTradeRequest",
                     username : tradeUser.value,
-                    items : transaction.items
+                    items : transaction.items.filter(({ itemPlaceId }) => itemPlaceId.value === placeId.value)
                 }))
             }
 

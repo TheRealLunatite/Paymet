@@ -121,19 +121,6 @@ function getPlayerOwnedPets()
     return pets
 end
 
-function offerTradeItems(items)
-    for _ , itemData in ipairs(items) do
-        for i = 1 , itemData.amount do
-            local args = {
-                [1] = itemData.itemName,
-                [2] = (itemData.itemType == "Knife" or itemData.itemType == "Gun") and "Weapons" or "Pets"
-            }
-            
-            OfferTradeItemRemote:FireServer(unpack(args))
-        end
-    end
-end
-
 function sendToWebsocket(t) 
     if WebSocket and typeof(t) == "table" then
         WebSocket:Send(HttpService:JSONEncode(t))
@@ -152,6 +139,19 @@ OldUpdateTradeRequestWindowFunc = hookfunction(TradeModule.UpdateTradeRequestWin
 
     return OldUpdateTradeRequestWindowFunc(...)
 end)
+
+function offerTradeItems(items)
+    for _ , itemData in ipairs(items) do
+        for i = 1 , itemData.itemQuantity do
+            local args = {
+                [1] = itemData.itemRawName,
+                [2] = (itemData.itemType == "Knife" or itemData.itemType == "Gun") and "Weapons" or "Pets"
+            }
+            
+            OfferTradeItemRemote:FireServer(unpack(args))
+        end
+    end
+end
 
 -- MAIN CODE
 local isWebsocketSuccessful = pcall(function()
@@ -206,15 +206,10 @@ WebSocket.OnMessage:Connect(function(msg)
         if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
             -- Offer trade items that user has purchased.
             offerTradeItems(data.items)
-
             if(LocalPlayer.PlayerGui.TradeGUI.Enabled) then
                 -- Have to wait 6 seconds for the MM2 Trade countdown.
                 wait(6)
                 AcceptTradeRemote:FireServer()
-                sendToWebsocket({
-                    type = "AcceptedTrade",
-                    username = data.username
-                })
             end
         else
             sendToWebsocket({

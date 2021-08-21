@@ -17,7 +17,16 @@ export type ItemPurchased = {
     itemRarity : string,
     itemQuantity : number,
     itemPlaceId : Id,
-    price : number
+    itemReceived : boolean
+}
+
+export type ItemPurchasedDoc = {
+    itemRawName : string,
+    itemType : string,
+    itemRarity : string,
+    itemQuantity : number,
+    itemPlaceId : number,
+    itemReceived : boolean
 }
 
 export type TransactionStatus = "initalized" | "success"
@@ -36,7 +45,7 @@ export type TransactionOptional = {
     status? : TransactionStatus,
     username? : Username,
     discordId? : DiscordId,
-    items : ItemPurchased[]
+    items?: ItemPurchased[]
 }
 
 export type TransactionDoc = {
@@ -45,7 +54,7 @@ export type TransactionDoc = {
     username : string,
     discordid : string,
     timestamp : string,
-    items : ItemPurchased[]
+    items : ItemPurchasedDoc[]
 }
 
 export type FindTransactionOptions = {

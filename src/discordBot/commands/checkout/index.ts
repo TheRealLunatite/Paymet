@@ -348,7 +348,7 @@ export class CheckoutCommand implements SlashCommand {
             id : new Uuid(this.uuid!()),
             username : new Username(userInfo!.name),
             status : "initalized",
-            items : cartItemsWithPrice,
+            items : cart.map((cartItem) => ( { ...cartItem , itemReceived : false })),
             discordId
         })
     
