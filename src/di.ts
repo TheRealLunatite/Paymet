@@ -27,14 +27,10 @@ export const TOKENS = {
         discordMessageActionRow : Symbol()
     },
     components : {
-        roblox : {
+        status : {
             routes : Symbol(),
             component : Symbol()
         },
-        auth : {
-            routes : Symbol(),
-            component : Symbol()
-        }
     },
     websocket : {
         server : Symbol(),
@@ -75,8 +71,6 @@ import ws from "ws"
 import appConfig from "@config/"
 import crypto from "crypto"
 import fs from "fs"
-import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
 import { Logger } from "tslog"
 
 container.register(TOKENS.values.axiosInstance , {
@@ -104,14 +98,6 @@ container.register(TOKENS.values.robloxConfig , {
 
 container.register(TOKENS.values.transactionHmacSecret , {
     useValue : appConfig.hmac.transactionHmacSecret
-})
-
-container.register(TOKENS.values.jwtLib , {
-    useValue : jwt
-})
-
-container.register(TOKENS.values.bcryptLib , {
-    useValue : bcrypt
 })
 
 container.register(TOKENS.values.expressApp , {
@@ -265,27 +251,17 @@ container.register<DiscordEventLoader>(TOKENS.discord.eventLoader , {
 
 // ROUTES
 
-import RobloxExpressComponentRoutes from "@components/roblox/express/routes"
-import AuthExpressComponentRoutes from "@components/auth/express/routes"
+import StatusExpressComponentRoutes from "@components/status/express/routes"
 
-container.register(TOKENS.components.roblox.routes , {
-    useValue : RobloxExpressComponentRoutes
-})
-
-container.register(TOKENS.components.auth.routes , {
-    useValue : AuthExpressComponentRoutes
+container.register(TOKENS.components.status.routes , {
+    useValue : StatusExpressComponentRoutes
 })
 
 // COMPONENTS
 
-import { RobloxExpressComponent } from "@components/roblox/express"
-import { AuthExpressComponent } from "@components/auth/express"
+import { StatusExpressComponent } from "@components/status/express"
 import { ISocketModule } from "@common/interfaces/ISocketModule"
 
-container.register(TOKENS.components.roblox.component , {
-    useClass : RobloxExpressComponent
-})
-
-container.register(TOKENS.components.auth.component , {
-    useClass : AuthExpressComponent
+container.register(TOKENS.components.status.component , {
+    useClass : StatusExpressComponent
 })

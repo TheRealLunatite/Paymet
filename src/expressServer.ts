@@ -4,8 +4,7 @@ import { TOKENS } from "./di"
 import { container } from "tsyringe"
 import appConfig from "@config/"
 import { LoggerModule } from "@modules/logger/types"
-import { AuthExpressComponent } from "@components/auth/express"
-import { RobloxExpressComponent } from "@components/roblox/express"
+import { StatusExpressComponent } from "@components/status/express"
 
 const app = container.resolve<typeof application>(TOKENS.values.expressApp)
 const logger = container.resolve<LoggerModule>(TOKENS.modules.logger)
@@ -22,11 +21,8 @@ const errorHandler : ErrorRequestHandler = function(err , req , res , next) {
 
 app.use(express.json())
 
-const robloxComponent = container.resolve<RobloxExpressComponent>(TOKENS.components.roblox.component)
-robloxComponent.execute()
-
-const authComponent = container.resolve<AuthExpressComponent>(TOKENS.components.auth.component)
-authComponent.execute()
+const statusComponent = container.resolve<StatusExpressComponent>(TOKENS.components.status.component)
+statusComponent.execute()
 
 app.use(logErrorHandler)
 app.use(errorHandler);
