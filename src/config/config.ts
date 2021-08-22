@@ -28,12 +28,6 @@ export const config = {
         password : getEnvironmentalVariable("pgPassword"),
         database : getEnvironmentalVariable("pgDatabase")
     },
-    jwt : {
-        secret : getEnvironmentalVariable("jwtSecret")
-    } ,
-    hmac : {
-        transactionHmacSecret : getEnvironmentalVariable("transactionHmacSecret")
-    },
     roblox : {
         cookie : getEnvironmentalVariable("robloxCookie"),
         assetId : +getEnvironmentalVariable("robloxAssetId")
