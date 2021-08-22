@@ -16,9 +16,7 @@ export const TOKENS = {
         postgresConfig : Symbol(),
         cryptoLib : Symbol(),
         fsLib : Symbol(),
-        jwtLib : Symbol(),
         bcryptLib : Symbol(),
-        jwtSecret : Symbol(),
         transactionHmacSecret : Symbol(),
         tsLogger : Symbol(),
         pathJoin : Symbol(),
@@ -96,10 +94,6 @@ container.register(TOKENS.values.robloxConfig , {
     useValue : appConfig.roblox
 })
 
-container.register(TOKENS.values.transactionHmacSecret , {
-    useValue : appConfig.hmac.transactionHmacSecret
-})
-
 container.register(TOKENS.values.expressApp , {
     useValue : express()
 })
@@ -130,10 +124,6 @@ container.register(TOKENS.values.uuid , {
 
 container.register(TOKENS.values.fsLib , {
     useValue : fs
-})
-
-container.register(TOKENS.values.jwtSecret, {
-    useValue : appConfig.jwt.secret
 })
 
 container.register(TOKENS.values.tsLogger , {
