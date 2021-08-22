@@ -8,6 +8,7 @@ Use this project as a learning guide for those who want to be upcoming devs.
 # Table Of Contents
 
 # Prerequisites
+- [Synapse-X](https://x.synapse.to/)
 - [NodeJS](https://nodejs.org/en/) 16.6.0 or newer is required.
 - [PostgreSQL](https://www.postgresql.org/download/)
 - [Yarn Package Manager](https://yarnpkg.com/getting-started/install#about-global-installs)
